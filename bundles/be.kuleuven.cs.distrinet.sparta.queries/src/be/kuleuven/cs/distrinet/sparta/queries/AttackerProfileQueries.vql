@@ -1,0 +1,11 @@
+package be.kuleuven.cs.distrinet.sparta.queries
+
+import "http://distrinet.cs.kuleuven.be/spartamodel"
+import "http://www.eclipse.org/emf/2002/Ecore"
+
+
+
+pattern attackerProfiles(ap : AttackerProfile) {
+	AttackerProfile(ap);
+}
+

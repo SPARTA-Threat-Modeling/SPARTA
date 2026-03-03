@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?><plugin>
+  <extension id="be.kuleuven.cs.distrinet.sparta.queries.AttackerProfileQueries" point="org.eclipse.viatra.query.runtime.queryspecification">
+    <group group="org.eclipse.viatra.query.runtime.extensibility.SingletonExtensionFactory:be.kuleuven.cs.distrinet.sparta.queries.AttackerProfileQueries" id="be.kuleuven.cs.distrinet.sparta.queries.AttackerProfileQueries">
+      <query-specification fqn="be.kuleuven.cs.distrinet.sparta.queries.attackerProfiles"/>
+    </group>
+  </extension>
+  <extension id="be.kuleuven.cs.distrinet.sparta.queries.DFDQueries" point="org.eclipse.viatra.query.runtime.queryspecification">
+    <group group="org.eclipse.viatra.query.runtime.extensibility.SingletonExtensionFactory:be.kuleuven.cs.distrinet.sparta.queries.DFDQueries" id="be.kuleuven.cs.distrinet.sparta.queries.DFDQueries">
+      <query-specification fqn="be.kuleuven.cs.distrinet.sparta.queries.flowComm"/>
+      <query-specification fqn="be.kuleuven.cs.distrinet.sparta.queries.processToProcessComm"/>
+      <query-specification fqn="be.kuleuven.cs.distrinet.sparta.queries.processToExternalEntityComm"/>
+      <query-specification fqn="be.kuleuven.cs.distrinet.sparta.queries.processToDataStoreComm"/>
+      <query-specification fqn="be.kuleuven.cs.distrinet.sparta.queries.dataStoreToProcessComm"/>
+      <query-specification fqn="be.kuleuven.cs.distrinet.sparta.queries.dataStoreToDataStoreComm"/>
+      <query-specification fqn="be.kuleuven.cs.distrinet.sparta.queries.dataStoreToExternalEntityComm"/>
+      <query-specification fqn="be.kuleuven.cs.distrinet.sparta.queries.externalEntityToProcessComm"/>
+      <query-specification fqn="be.kuleuven.cs.distrinet.sparta.queries.externalEntityToDataStoreComm"/>
+      <query-specification fqn="be.kuleuven.cs.distrinet.sparta.queries.externalEntityToExternalEntityComm"/>
+      <query-specification fqn="be.kuleuven.cs.distrinet.sparta.queries.flowThroughComm"/>
+      <query-specification fqn="be.kuleuven.cs.distrinet.sparta.queries.processThroughProcessComm"/>
+      <query-specification fqn="be.kuleuven.cs.distrinet.sparta.queries.processThroughExternalEntityComm"/>
+      <query-specification fqn="be.kuleuven.cs.distrinet.sparta.queries.processThroughDataStoreComm"/>
+      <query-specification fqn="be.kuleuven.cs.distrinet.sparta.queries.dataStoreThroughProcessComm"/>
+      <query-specification fqn="be.kuleuven.cs.distrinet.sparta.queries.dataStoreThroughDataStoreComm"/>
+      <query-specification fqn="be.kuleuven.cs.distrinet.sparta.queries.dataStoreThroughExternalEntityComm"/>
+      <query-specification fqn="be.kuleuven.cs.distrinet.sparta.queries.externalEntityThroughProcessComm"/>
+      <query-specification fqn="be.kuleuven.cs.distrinet.sparta.queries.externalEntityThroughDataStoreComm"/>
+      <query-specification fqn="be.kuleuven.cs.distrinet.sparta.queries.externalEntityThroughExternalEntityComm"/>
+      <query-specification fqn="be.kuleuven.cs.distrinet.sparta.queries.flowThroughElementComm"/>
+      <query-specification fqn="be.kuleuven.cs.distrinet.sparta.queries.threatTypeAncestor"/>
+      <query-specification fqn="be.kuleuven.cs.distrinet.sparta.queries.flowContainerDiff"/>
+    </group>
+  </extension>
+  <extension id="be.kuleuven.cs.distrinet.sparta.queries.DataQueries" point="org.eclipse.viatra.query.runtime.queryspecification">
+    <group group="org.eclipse.viatra.query.runtime.extensibility.SingletonExtensionFactory:be.kuleuven.cs.distrinet.sparta.queries.DataQueries" id="be.kuleuven.cs.distrinet.sparta.queries.DataQueries">
+      <query-specification fqn="be.kuleuven.cs.distrinet.sparta.queries.dataSubjects"/>
+      <query-specification fqn="be.kuleuven.cs.distrinet.sparta.queries.dataTypes"/>
+      <query-specification fqn="be.kuleuven.cs.distrinet.sparta.queries.personalDataTypes"/>
+      <query-specification fqn="be.kuleuven.cs.distrinet.sparta.queries.dataTypeAssignments"/>
+      <query-specification fqn="be.kuleuven.cs.distrinet.sparta.queries.dfdElement"/>
+    </group>
+  </extension>
+  <extension id="be.kuleuven.cs.distrinet.sparta.queries.PatternSupport" point="org.eclipse.viatra.query.runtime.queryspecification">
+    <group group="org.eclipse.viatra.query.runtime.extensibility.SingletonExtensionFactory:be.kuleuven.cs.distrinet.sparta.queries.PatternSupport" id="be.kuleuven.cs.distrinet.sparta.queries.PatternSupport">
+      <query-specification fqn="be.kuleuven.cs.distrinet.sparta.queries.IsThreatTypeCatalog"/>
+      <query-specification fqn="be.kuleuven.cs.distrinet.sparta.queries.ThreatTypeCatalogThreatTypes"/>
+      <query-specification fqn="be.kuleuven.cs.distrinet.sparta.queries.ThreatTypeContains"/>
+      <query-specification fqn="be.kuleuven.cs.distrinet.sparta.queries.ThreatTypeCatalogThreatTypesWithNonEmptyPatterns"/>
+      <query-specification fqn="be.kuleuven.cs.distrinet.sparta.queries.ThreatTypeTopLevel"/>
+    </group>
+  </extension>
+</plugin>

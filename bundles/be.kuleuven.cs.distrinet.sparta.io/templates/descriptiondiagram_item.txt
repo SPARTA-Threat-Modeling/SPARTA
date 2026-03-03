@@ -1,0 +1,2 @@
+\subsection{$$DIAGRAM_TITLE$$}
+

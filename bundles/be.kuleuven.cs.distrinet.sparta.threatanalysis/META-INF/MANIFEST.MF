@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: SPARTA Threat Analysis
+Bundle-SymbolicName: be.kuleuven.cs.distrinet.sparta.threatanalysis
+Bundle-Version: 2026.0.0
+Bundle-Vendor: DistriNet
+Automatic-Module-Name: be.kuleuven.cs.distrinet.sparta.threatanalysis
+Bundle-RequiredExecutionEnvironment: JavaSE-11
+Require-Bundle: be.kuleuven.cs.distrinet.sparta.spartamodel;bundle-version="2025.0.0",
+ be.kuleuven.cs.distrinet.sparta.core;bundle-version="2025.0.0"
+Export-Package: be.kuleuven.cs.distrinet.sparta.analysis

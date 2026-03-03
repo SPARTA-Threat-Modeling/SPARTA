@@ -1,0 +1,562 @@
+package be.kuleuven.cs.distrinet.sparta.queries
+
+import "http://distrinet.cs.kuleuven.be/spartamodel"
+import "http://www.eclipse.org/emf/2002/Ecore"
+
+
+pattern flowComm(location : DataFlow, p : DataFlowEntity, p2 : DataFlowEntity,
+							t : ThreatType) {
+	DataFlow(location);DataFlowEntity(p);DataFlowEntity(p2);
+	
+	find threatApplicable(location,t,"DataFlow");
+	find communication(p,location,p2);
+} 
+
+pattern processToProcessComm(location : Process, p2 : Process, df : DataFlow,
+							t : ThreatType) {
+	Process(location);	Process(p2);	DataFlow(df);
+	
+	find threatApplicable(location,t,"ProcessToProcess");
+	find communication(location,df,p2);
+} 
+or {
+	// add inverse direction
+	Process(location);	Process(p2);	DataFlow(df);
+	
+	find threatApplicable(location,t,"ProcessToProcess*");
+	
+	find communication(p2,df,location);
+}
+
+pattern processToExternalEntityComm(location : Process, p2 : ExternalEntity, df : DataFlow,
+									t : ThreatType) {
+	Process(location); ExternalEntity(p2); DataFlow(df);
+	
+	find threatApplicable(location,t,"ProcessToExternalEntity");
+	
+	find communication(location,df,p2);
+} 
+or {
+	// add inverse direction
+	Process(location); ExternalEntity(p2); DataFlow(df);
+	
+	find threatApplicable(location,t,"ExternalEntityToProcess*");
+	
+	find communication(p2,df,location);
+}
+
+pattern processToDataStoreComm(location : Process, p2 : DataStore, df : DataFlow,
+								t : ThreatType) {
+	Process(location); DataStore(p2); DataFlow(df);
+	
+	find threatApplicable(location,t,"ProcessToDataStore");
+	
+	find communication(location,df,p2);
+} 
+or {
+	// add inverse direction
+	Process(location); DataStore(p2); DataFlow(df);
+	
+	find threatApplicable(location,t,"DataStoreToProcess*");
+
+	find communication(p2,df,location);
+}
+
+pattern dataStoreToProcessComm(location : DataStore, p2 : Process, df : DataFlow,
+								t : ThreatType) {
+	DataStore(location); Process(p2); DataFlow(df);
+
+	find threatApplicable(location,t,"DataStoreToProcess");
+
+	find communication(location,df,p2);
+} 
+or {
+	// add inverse direction
+	DataStore(location); Process(p2); DataFlow(df);
+	
+	find threatApplicable(location,t,"ProcessToDataStore*");
+
+	find communication(p2,df,location);
+}
+
+pattern dataStoreToDataStoreComm(location : DataStore, p2 : DataStore, df : DataFlow,
+								t : ThreatType) {
+	DataStore(location); DataStore(p2); DataFlow(df);
+
+	find threatApplicable(location,t,"DataStoreToDataStore");
+
+	find communication(location,df,p2);
+} 
+or {
+	// add inverse direction
+	DataStore(location); DataStore(p2); DataFlow(df);
+	
+	find threatApplicable(location,t,"DataStoreToDataStore*");
+
+	find communication(p2,df,location);
+}
+
+pattern dataStoreToExternalEntityComm(location : DataStore, p2 : ExternalEntity, df : DataFlow,
+										t : ThreatType) {
+	DataStore(location); ExternalEntity(p2); DataFlow(df);
+	
+	find threatApplicable(location,t,"DataStoreToExternalEntity");
+
+	find communication(location,df,p2);
+} 
+or {
+	// add inverse direction
+	DataStore(location); ExternalEntity(p2); DataFlow(df);
+	
+	find threatApplicable(location,t,"ExternalEntityToDataStore*");
+	
+	find communication(p2,df,location);
+}
+
+pattern externalEntityToProcessComm(location : ExternalEntity, p2 : Process, df : DataFlow,
+									t : ThreatType) {
+	ExternalEntity(location); Process(p2); DataFlow(df);
+	
+	find threatApplicable(location,t,"ExternalEntityToProcess");
+	
+	find communication(location,df,p2);
+} 
+or {
+	// add inverse direction
+	ExternalEntity(location); Process(p2); DataFlow(df);
+	
+	find threatApplicable(location,t,"ProcessToExternalEntity*");
+
+	find communication(p2,df,location);
+}
+
+pattern externalEntityToDataStoreComm(location : ExternalEntity, p2 : DataStore, df : DataFlow,
+										t : ThreatType) {
+	ExternalEntity(location); DataStore(p2); DataFlow(df);
+	
+	find threatApplicable(location,t,"ExternalEntityToDataStore");
+	
+	find communication(location,df,p2);
+} 
+or {
+	// add inverse direction
+	ExternalEntity(location); DataStore(p2); DataFlow(df);
+	
+	find threatApplicable(location,t,"DataStoreToExternalEntity*");
+
+	find communication(p2,df,location);
+}
+
+pattern externalEntityToExternalEntityComm(location : ExternalEntity, p2 : ExternalEntity, df : DataFlow,
+										t : ThreatType) {
+	ExternalEntity(location); ExternalEntity(p2); DataFlow(df);
+	
+	find threatApplicable(location,t,"ExternalEntityToExternalEntity");
+	
+	find communication(location,df,p2);
+} 
+or {
+	// add inverse direction
+	ExternalEntity(location); ExternalEntity(p2); DataFlow(df);
+	
+	find threatApplicable(location,t,"ExternalEntityToExternalEntity*");
+
+	find communication(p2,df,location);
+}
+
+
+///////////////////// Pattern variants which require crossing the trust boundary /////////////////////
+//
+// The *Through* pattern variants (contrary to the *to* variants) require the flow to cross a trust
+// boundary.
+//
+///////////////////// ////////////////////////////////////////////////////////// /////////////////////
+pattern flowThroughComm(location : DataFlow, p : DataFlowEntity, p2 : DataFlowEntity,
+							t : ThreatType) {
+	DataFlow(location);DataFlowEntity(p);DataFlowEntity(p2);
+	
+	find threatApplicable(location,t,"DataFlowThrough");
+	find communication(p,location,p2);
+	find flowContainerDiff(p,p2);
+} 
+pattern processThroughProcessComm(location : Process, p2 : Process, df : DataFlow,
+							t : ThreatType) {
+	Process(location);	Process(p2);	DataFlow(df);
+	
+	find threatApplicable(location,t,"ProcessThroughProcess");
+	find communication(location,df,p2);
+	find flowContainerDiff(location,p2);
+} 
+or {
+	// add inverse direction
+	Process(location);	Process(p2);	DataFlow(df);
+	
+	find threatApplicable(location,t,"ProcessThroughProcess*");
+	
+	find communication(p2,df,location);
+	find flowContainerDiff(location,p2);
+}
+
+pattern processThroughExternalEntityComm(location : Process, p2 : ExternalEntity, df : DataFlow,
+									t : ThreatType) {
+	Process(location); ExternalEntity(p2); DataFlow(df);
+	
+	find threatApplicable(location,t,"ProcessThroughExternalEntity");
+	
+	find communication(location,df,p2);
+	find flowContainerDiff(location,p2);
+} 
+or {
+	// add inverse direction
+	Process(location); ExternalEntity(p2); DataFlow(df);
+	
+	find threatApplicable(location,t,"ExternalEntityThroughProcess*");
+	
+	find communication(p2,df,location);
+	find flowContainerDiff(location,p2);
+}
+
+pattern processThroughDataStoreComm(location : Process, p2 : DataStore, df : DataFlow,
+								t : ThreatType) {
+	Process(location); DataStore(p2); DataFlow(df);
+	
+	find threatApplicable(location,t,"ProcessThroughDataStore");
+	
+	find communication(location,df,p2);
+	find flowContainerDiff(location,p2);
+} 
+or {
+	// add inverse direction
+	Process(location); DataStore(p2); DataFlow(df);
+	
+	find threatApplicable(location,t,"DataStoreThroughProcess*");
+
+	find communication(p2,df,location);
+	find flowContainerDiff(location,p2);
+}
+
+pattern dataStoreThroughProcessComm(location : DataStore, p2 : Process, df : DataFlow,
+								t : ThreatType) {
+	DataStore(location); Process(p2); DataFlow(df);
+
+	find threatApplicable(location,t,"DataStoreThroughProcess");
+
+	find communication(location,df,p2);
+	find flowContainerDiff(location,p2);
+} 
+or {
+	// add inverse direction
+	DataStore(location); Process(p2); DataFlow(df);
+	
+	find threatApplicable(location,t,"ProcessThroughDataStore*");
+
+	find communication(p2,df,location);
+	find flowContainerDiff(location,p2);
+}
+
+pattern dataStoreThroughDataStoreComm(location : DataStore, p2 : DataStore, df : DataFlow,
+								t : ThreatType) {
+	DataStore(location); DataStore(p2); DataFlow(df);
+
+	find threatApplicable(location,t,"DataStoreThroughDataStore");
+
+	find communication(location,df,p2);
+	find flowContainerDiff(location,p2);
+} 
+or {
+	// add inverse direction
+	DataStore(location); DataStore(p2); DataFlow(df);
+	
+	find threatApplicable(location,t,"DataStoreThroughDataStore*");
+
+	find communication(p2,df,location);
+	find flowContainerDiff(location,p2);
+}
+
+pattern dataStoreThroughExternalEntityComm(location : DataStore, p2 : ExternalEntity, df : DataFlow,
+										t : ThreatType) {
+	DataStore(location); ExternalEntity(p2); DataFlow(df);
+	
+	find threatApplicable(location,t,"DataStoreThroughExternalEntity");
+
+	find communication(location,df,p2);
+	find flowContainerDiff(location,p2);
+} 
+or {
+	// add inverse direction
+	DataStore(location); ExternalEntity(p2); DataFlow(df);
+	
+	find threatApplicable(location,t,"ExternalEntityThroughDataStore*");
+	
+	find communication(p2,df,location);
+	find flowContainerDiff(location,p2);
+}
+
+pattern externalEntityThroughProcessComm(location : ExternalEntity, p2 : Process, df : DataFlow,
+									t : ThreatType) { //, mitigationStatus : EString) {
+	ExternalEntity(location); Process(p2); DataFlow(df);
+	
+	find threatApplicable(location,t,"ExternalEntityThroughProcess");
+	
+	find communication(location,df,p2);
+	find flowContainerDiff(location,p2);
+} 
+or {
+	// add inverse direction
+	ExternalEntity(location); Process(p2); DataFlow(df);
+	
+	find threatApplicable(location,t,"ProcessThroughExternalEntity*");
+
+	find communication(p2,df,location);
+	find flowContainerDiff(location,p2);
+}
+
+pattern externalEntityThroughDataStoreComm(location : ExternalEntity, p2 : DataStore, df : DataFlow,
+										t : ThreatType) {
+	ExternalEntity(location); DataStore(p2); DataFlow(df);
+	
+	find threatApplicable(location,t,"ExternalEntityThroughDataStore");
+	
+	find communication(location,df,p2);
+	find flowContainerDiff(location,p2);
+} 
+or {
+	// add inverse direction
+	ExternalEntity(location); DataStore(p2); DataFlow(df);
+	
+	find threatApplicable(location,t,"DataStoreThroughExternalEntity*");
+
+	find communication(p2,df,location);
+	find flowContainerDiff(location,p2);
+}
+
+pattern externalEntityThroughExternalEntityComm(location : ExternalEntity, p2 : ExternalEntity, df : DataFlow,
+										t : ThreatType) {
+	ExternalEntity(location); ExternalEntity(p2); DataFlow(df);
+	
+	find threatApplicable(location,t,"ExternalEntityThroughExternalEntity");
+	
+	find communication(location,df,p2);
+	find flowContainerDiff(location,p2);
+} 
+or {
+	// add inverse direction
+	ExternalEntity(location); ExternalEntity(p2); DataFlow(df);
+	
+	find threatApplicable(location,t,"ExternalEntityThroughExternalEntity*");
+
+	find communication(p2,df,location);
+	find flowContainerDiff(location,p2);
+}
+///////////////////// Pattern variants which require crossing the trust boundary and place certain restrictions on the flow/////////////////////
+//
+// The *Through* pattern variants (contrary to the *to* variants) require the flow to cross a trust
+// boundary.
+// In addition, the fow has to be between certain types of elements
+//
+///////////////////// ////////////////////////////////////////////////////////// /////////////////////
+pattern flowThroughElementComm(location : DataFlow, p : DataFlowEntity, p2 : DataFlowEntity,
+							t : ThreatType) {
+	Process(p);
+	Process(p2);
+	find threatApplicable(location,t,"ProcessTo*Process");
+	find communication(p,location,p2);
+	find flowContainerDiff(p,p2);
+} or {
+	Process(p);
+	DataStore(p2);
+	find threatApplicable(location,t,"ProcessTo*DataStore");
+	find communication(p,location,p2);
+	find flowContainerDiff(p,p2);
+} or {
+	ExternalEntity(p);
+	Process(p2);
+	find threatApplicable(location,t,"ExternalEntityTo*Process");
+	find communication(p,location,p2);
+	find flowContainerDiff(p,p2);
+}
+
+
+
+//////////////////////// ThreatType finding helper patterns ///////////////
+//
+// find all applicable threats
+private pattern threatApplicable(location : DFDElement, t : ThreatType, pattrn : EString) {
+	ThreatType(t);
+	ThreatType.enabled(t,true);
+	find threatPattern(t,pattrn);
+	// there is no parent disalbing the threat
+	neg find threatTypeParentDisabled(t);
+	// there is no parent disabling the pattern
+	neg find threatPatternDisabled(t,pattrn);
+	// there is no spec disabling the threat
+	neg find threatSpecDisable(t);
+	// there is no spec disabling the pattern
+	neg find threatSpecPatternDisable(t,pattrn);
+	// there is no spec disabling the element type
+	neg find threatSpecTypeDisable(t,location);
+}
+
+
+//
+// check if the pattern applies to the threat
+private pattern threatPattern( t : ThreatType, pattrn : EString) {
+	find threatTypeParent(parent,t);
+	AbstractThreatType.enabled(parent,true);
+	AbstractThreatType.patterns(parent, Map); 
+    EStringToEBooleanMap.key(Map, pattrn);
+    EStringToEBooleanMap.value(Map, true);
+}
+
+private pattern threatTypeParentDisabled( t : ThreatType) {
+	find threatTypeParent(parent,t);
+	AbstractThreatType.enabled(parent,false);
+}
+
+
+// check if an enabled parent specifically disables the pattern
+private pattern threatPatternDisabled( t : ThreatType, pattrn : EString) {
+	find threatTypeParent(parent,t);
+	AbstractThreatType.enabled(parent,true);
+	AbstractThreatType.patterns(parent, Map); 
+    EStringToEBooleanMap.key(Map, pattrn);
+    EStringToEBooleanMap.value(Map, false);
+}
+
+private pattern threatTypeParent(parent : AbstractThreatType, type : AbstractThreatType) {
+	find threatTypeAncestor+(parent,type);
+}
+
+pattern threatTypeAncestor(parent : AbstractThreatType, type : AbstractThreatType) {
+	CompositeThreatType.subThreatTypes(parent,type);
+} or {
+	ThreatType(parent);
+	type == parent;
+}
+
+//
+// match threat types with disabled communication pattern spec
+private pattern threatSpecPatternDisable(t : ThreatType, pattrn : EString) {
+	// used to check for searching if the pattern is disabled
+	find threatTypeParent(parent,t);
+	ThreatSpecification(ts);
+	ThreatSpecification.threat(ts,parent);
+	ThreatSpecification.patterns(ts,Map);
+	EStringToEBooleanMap.key(Map, pattrn);
+    EStringToEBooleanMap.value(Map, false);
+}
+//
+// match threattypes disabled by a threatspec
+private pattern threatSpecDisable(t:ThreatType) {
+	find threatTypeParent(parent,t);
+	ThreatSpecification(ts);
+	ThreatSpecification.threat(ts,parent);
+	ThreatSpecification.enabled(ts,false);
+}
+//
+// match elements and threattypes disabled by threatspec
+private pattern threatSpecTypeDisable(type:ThreatType, t : DFDElement) {
+	Process(t);
+	find threatTypeParent(parent,type);
+	ThreatSpecification(ts);
+	ThreatSpecification.threat(ts,parent);
+	ThreatSpecification.types(ts, Map);
+	EStringToEBooleanMap.key(Map, "Process");
+    EStringToEBooleanMap.value(Map, false);
+} or {
+	DataStore(t);
+	find threatTypeParent(parent,type);
+	ThreatSpecification(ts);
+	ThreatSpecification.threat(ts,parent);
+	ThreatSpecification.types(ts, Map);
+	EStringToEBooleanMap.key(Map, "DataStore");
+    EStringToEBooleanMap.value(Map, false);
+} or {
+	ExternalEntity(t);
+	find threatTypeParent(parent,type);
+	ThreatSpecification(ts);
+	ThreatSpecification.threat(ts,parent);
+	ThreatSpecification.types(ts, Map);
+	EStringToEBooleanMap.key(Map, "ExternalEntity");
+    EStringToEBooleanMap.value(Map, false);
+} or {
+	DataFlow(t);
+	find threatTypeParent(parent,type);
+	ThreatSpecification(ts);
+	ThreatSpecification.threat(ts,parent);
+	ThreatSpecification.types(ts,Map);
+	EStringToEBooleanMap.key(Map, "DataFlow");
+	EStringToEBooleanMap.value(Map, false);
+}
+
+///////////////////  supporting patterns ////////////////////
+pattern flowContainerDiff(sender: DataFlowEntity, recipient : DataFlowEntity) {
+	DataFlowEntity(sender); DataFlowEntity(recipient);
+	find communication(sender, _df, recipient);
+	
+	TrustBoundaryContainer(contain);
+	find contains(contain,sender);
+	neg find contains(contain,recipient);
+} or {
+	DataFlowEntity(sender); DataFlowEntity(recipient);
+	find communication(sender, _df2, recipient);
+
+	TrustBoundaryContainer(contain);
+	find contains(contain,recipient);
+	neg find contains(contain,sender);
+} 
+or {
+	DataFlowEntity(sender); DataFlowEntity(recipient);
+	find communication(recipient, _df, sender);
+	
+	TrustBoundaryContainer(contain);
+	find contains(contain,sender);
+	neg find contains(contain,recipient);
+} or {
+	DataFlowEntity(sender); DataFlowEntity(recipient);
+	find communication(recipient, _df2, sender);
+
+	TrustBoundaryContainer(contain);
+	find contains(contain,recipient);
+	neg find contains(contain,sender);
+}
+
+private pattern contains(outer : DFDContainer, inner : DFDContainer) {
+	DFDContainer(outer);
+	find containment+(outer,inner);
+}
+
+private pattern containment(outer : DFDContainer, inner : DFDContainer) {
+	DFDContainer.containedElements(outer, inner);
+} or {
+	DFDElement(inner);
+	outer == inner;
+}
+
+private pattern communication(
+	sender : DataFlowEntity, 
+	flow: DataFlow, 
+	recipient : DataFlowEntity
+) {
+	SenderSpecifiable.sender(sndSpec, sender);
+	find sendSpecReachable+(sndSpec, flow);
+	RecipientSpecifiable.recipient(rcvSpec, recipient);
+	find receiveSpecReachable+(rcvSpec, flow);
+}
+
+
+private pattern sendSpecReachable(spec: SenderSpecifiable, next: SenderSpecifiable) {
+	SenderSpecification(spec);
+	SenderSpecification.specifiesSenderOf(spec, next);
+} or {
+	DataFlow(spec);
+	spec == next;
+}
+
+private pattern receiveSpecReachable(spec: RecipientSpecifiable, next: RecipientSpecifiable) {
+	RecipientSpecification(spec);
+	RecipientSpecification.specifiesRecipientOf(spec, next);
+} or {
+	DataFlow(spec);
+	spec == next;
+}

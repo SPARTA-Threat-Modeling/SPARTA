@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+
+<!--
+-->
+
+<plugin>
+
+
+
+   <extension point="org.eclipse.ui.newWizards">
+      <!-- @generated spartamodel -->
+      <category
+            id="org.eclipse.emf.ecore.Wizard.category.ID"
+            name="%_UI_Wizard_category"/>
+      <wizard
+            id="be.kuleuven.cs.distrinet.sparta.spartamodel.presentation.SpartaModelModelWizardID"
+            name="%_UI_SpartaModelModelWizard_label"
+            class="be.kuleuven.cs.distrinet.sparta.spartamodel.presentation.SpartaModelModelWizard"
+            category="org.eclipse.emf.ecore.Wizard.category.ID"
+            icon="icons/full/obj16/SpartaModelModelFile.gif">
+         <description>%_UI_SpartaModelModelWizard_description</description>
+         <selection class="org.eclipse.core.resources.IResource"/>
+      </wizard>
+   </extension>
+
+   <extension point="org.eclipse.ui.editors">
+      <!-- @generated spartamodel -->
+      <editor
+            id="be.kuleuven.cs.distrinet.sparta.spartamodel.presentation.SpartaModelEditorID"
+            name="%_UI_SpartaModelEditor_label"
+            icon="icons/full/obj16/SpartaModelModelFile.gif"
+            extensions="sparta,spartamodel"
+            class="be.kuleuven.cs.distrinet.sparta.spartamodel.presentation.SpartaModelEditor"
+            contributorClass="be.kuleuven.cs.distrinet.sparta.spartamodel.presentation.SpartaModelActionBarContributor">
+      </editor>
+   </extension>
+</plugin>

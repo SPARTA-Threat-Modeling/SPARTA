@@ -1,0 +1,112 @@
+%\begin{tikzpicture}[node distance=2cm]
+%\node (source) [process, align=center] {Process};
+%\node (dest) [external, align=center, right of=source, , xshift=2cm] {DataStore};
+%
+%\draw[call] (source) -- node[pos=0.9,above] {I} node[pos=0.1,above] {D} (dest);
+%%\draw [arrow]{TestS} (source) -- (dest);
+%\end{tikzpicture}
+
+%\makeatletter
+%\newsavebox{\measure@tikzpicture}
+%\NewEnviron{scaletikzpicturetowidth}[1]%
+%  {\def\tikz@width{#1}%
+%   \def\tikzscale{1}%
+%   \begin{lrbox}{\measure@tikzpicture}%
+%     \BODY
+%   \end{lrbox}%
+%    \pgfmathparse{#1/\wd\measure@tikzpicture}%
+%    \edef\tikzscale{\pgfmathresult}%
+%    \BODY
+%  }
+%\makeatother
+
+\newcommand{\dFlow}[6]{% source type, dest type, call/return, source threat, dest threat, DF
+%\begin{center}
+%\begin{scaletikzpicturetowidth}{\linewidth}%
+\resizebox{\linewidth}{!}{
+\begin{tikzpicture}[->]%[scale=0.5\linewidth]
+\node (source) [#1, align=center];
+\node (dest) [#2, align=center, right of=source, , xshift=1cm];
+\draw[#3] (source) -- node[pos=0.1,above] {#4} node[pos=0.5,below] {#6} node[pos=0.9,above] {#5} (dest);
+\end{tikzpicture}
+}
+}
+
+\newcommand{\dtFlow}[7]{% source type, dest type, call/return, source threat, dest threat, DF threat, DF
+%\begin{center}
+%\begin{scaletikzpicturetowidth}{\linewidth}%
+\resizebox{\linewidth}{!}{
+\begin{tikzpicture}%[scale=0.5\linewidth]
+\node (source) [#1, align=center];
+\node (dest) [#2, align=center, right of=source, , xshift=1cm];
+\draw[#3] (source) -- node[pos=0.1,above] {#4} node[pos=0.5,above] {#6} node[pos=0.5,below] {#7} node[pos=0.9,above] {#5} (dest);
+\end{tikzpicture}
+}
+}
+
+\newcommand{\Flow}[5]{% source type, dest type, call/return, source threat, dest threat
+%\begin{center}
+%\begin{scaletikzpicturetowidth}{\linewidth}%
+\resizebox{\linewidth}{!}{
+\begin{tikzpicture}[->]%[scale=0.5\linewidth]
+\node (source) [#1, align=center];
+\node (dest) [#2, align=center, right of=source, , xshift=1cm];
+\draw[#3] (source) -- node[pos=0.1,above] {#4} node[pos=0.9,above] {#5} (dest);
+\end{tikzpicture}
+}
+}
+
+\newcommand{\pFlow}[5]{% source type, dest type, call/return, source threat, dest threat
+%\begin{center}
+%\begin{scaletikzpicturetowidth}{\linewidth}%
+\resizebox{\linewidth}{!}{
+\begin{tikzpicture}%[scale=0.5\linewidth]
+\node (source) [#1, align=center];
+\node (dest) [#2, align=center, right of=source, , xshift=1cm];
+\draw[#3] (source) -- node[pos=0.1,above] {#4} node[pos=0.9,above] {#5} node[pos=0.5,below] {prev} (dest);
+\end{tikzpicture}
+}
+}
+
+\newcommand{\dftFlow}[4]{% source type, dest type, call/return, flow threat
+%\begin{center}
+%\begin{scaletikzpicturetowidth}{\linewidth}%
+\resizebox{\linewidth}{!}{
+\begin{tikzpicture}%[scale=0.5\linewidth]
+\node (source) [#1, align=center];
+\node (dest) [#2, align=center, right of=source, , xshift=1cm];
+\draw[#3] (source) -- node[pos=0.5,below] {#4} (dest);
+\end{tikzpicture}
+}
+}
+
+\newcommand{\cFlow}[5]{% source type, dest type, call/return, source threat, dest threat
+\begin{tikzpicture}[anchor=center]
+\node (source) [#1, align=center];
+\node (dest) [#2, align=center, right of=source, , xshift=1cm];
+\draw[#3] (source) -- node[pos=0.1,above] {#4} node[pos=0.9,above] {#5} (dest);
+\end{tikzpicture}
+}
+
+\newcommand{\invisFlow}[0]{ %placeholder for tikz matrix
+\begin{tikzpicture}[anchor=center]
+\node (source) [node contents = {Web\\App}, draw=none, align=center];
+\node (dest) [node contents = {Web\\App}, draw=none, align=center, right of=source, , xshift=1cm];
+\draw[C] (source) -- (dest);
+\end{tikzpicture}
+}
+
+% flow without source
+\newcommand{\fws}[4]{% dest type, call/return, flow name, threat
+%\begin{center}
+%\begin{scaletikzpicturetowidth}{\linewidth}%
+\resizebox{\linewidth}{!}{
+\begin{tikzpicture}%[scale=0.5\linewidth]
+\node (source) [none];
+\node (dest) [#1, align=center, right of=source, , xshift=.5cm];
+\draw[#2] (source) -- node[pos=0.5,below] {#3} node[pos=0.9,above] {#4} (dest);
+\end{tikzpicture}
+}
+}
+
+

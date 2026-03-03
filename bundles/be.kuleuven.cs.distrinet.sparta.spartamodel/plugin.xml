@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+
+<!--
+-->
+
+<plugin>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <!-- @generated securitydfd -->
+      <package
+            uri="http://distrinet.cs.kuleuven.be/spartamodel"
+            class="be.kuleuven.cs.distrinet.sparta.spartamodel.SpartaModelPackage"
+            genModel="model/spartamodel.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <!-- @generated securitydfd -->
+      <parser
+            type="sparta"
+            class="be.kuleuven.cs.distrinet.sparta.spartamodel.util.SpartaModelResourceFactoryImpl"/>
+      <parser
+            type="securitydfd"
+            class="be.kuleuven.cs.distrinet.sparta.spartamodel.util.SpartaModelResourceFactoryImpl"/>
+   </extension>
+
+</plugin>

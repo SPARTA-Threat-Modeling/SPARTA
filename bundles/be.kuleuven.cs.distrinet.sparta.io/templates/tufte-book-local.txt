@@ -1,0 +1,303 @@
+\usepackage[sfdefault]{FiraSans} %
+\usepackage{tikz}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\setkeys{Gin}{width=\linewidth,totalheight=\textheight,keepaspectratio}
+\graphicspath{{graphics/}}
+\usepackage{fancyvrb}
+\fvset{fontsize=\normalsize}
+\newcommand{\hangp}[1]{\makebox[0pt][r]{(}#1\makebox[0pt][l]{)}} %
+\newcommand{\hangstar}{\makebox[0pt][l]{*}}
+\usepackage{xspace}
+\newcommand{\monthyear}{%
+  \ifcase\month\or January\or February\or March\or April\or May\or June\or July\or August\or September\or October\or November\or December\fi\space\number\year %
+}
+\newcommand{\blankpage}{\newpage\hbox{}\thispagestyle{empty}\newpage}
+\setcounter{secnumdepth}{3}
+
+\usepackage{tikz}
+\usetikzlibrary{calc}
+\usepackage{mdframed}
+\usepackage[inline]{enumitem}
+\usepackage{multirow}
+\usepackage{adjustbox}
+\usepackage[nameinlink]{cleveref}
+\usepackage[]{pdfprivacy}
+
+\usepackage{ifxetex}
+\ifxetex
+  \newcommand{\textls}[2][5]{%
+    \begingroup\addfontfeatures{LetterSpace=#1}#2\endgroup
+  }
+  \renewcommand{\allcapsspacing}[1]{\textls[15]{#1}}
+  \renewcommand{\smallcapsspacing}[1]{\textls[10]{#1}}
+  \renewcommand{\allcaps}[1]{\textls[15]{\MakeTextUppercase{#1}}}
+  \renewcommand{\smallcaps}[1]{\smallcapsspacing{\scshape\MakeTextLowercase{#1}}}
+  \renewcommand{\textsc}[1]{\smallcapsspacing{\textsmallcaps{#1}}}
+  \usepackage{fontspec}
+\fi
+
+\crefname{threat}{threat}{threats}
+
+\input{tikz/styles.tex}
+\input{tikz/flow_template.tex}
+\input{tikz/dfdstyle.tex}
+
+
+\makeatletter
+%
+%
+%
+%
+%
+%
+%
+
+\titleformat{\chapter}%
+  [block]%
+  {\relax\ifthenelse{\NOT\boolean{@tufte@symmetric}}{\begin{fullwidth}}{}}%
+  {\itshape\huge\thechapter}%
+  {1em}%
+  {\huge\sffamily\itshape}%
+  [\ifthenelse{\NOT\boolean{@tufte@symmetric}}{\end{fullwidth}}{}]%
+
+\titleformat{\section}%
+  [hang]%
+  {\sffamily\Large\itshape}%
+  {\thesection}%
+  {1em}%
+  {}%
+  []%
+
+\titleformat{\subsection}%
+  [hang]%
+  {\sffamily\large\itshape}%
+  {\thesubsection}%
+  {1em}%
+  {}%
+  []%
+
+\titleformat{\paragraph}%
+  [runin]%
+  {\sffamily\itshape}%
+  {\theparagraph}%
+  {1em}%
+  {}%
+  []%
+
+
+\ifthenelse{\boolean{@tufte@toc}}{%
+  \titlecontents{part}%
+    [0em] %
+    {\vspace{1.5\baselineskip}\begin{fullwidth}\LARGE\sffamily\itshape} %
+    {\contentslabel{2em}} %
+    {} %
+    {\sffamily\upshape\qquad\thecontentspage} %
+    [\end{fullwidth}] %
+  \titlecontents{chapter}%
+    [0em] %
+    {\vspace{1.5\baselineskip}\begin{fullwidth}\LARGE\sffamily\itshape} %
+    {\hspace*{0em}\contentslabel{2em}} %
+    {\hspace*{0em}} %
+    {\sffamily\upshape\qquad\thecontentspage} %
+    [\end{fullwidth}] %
+  \titlecontents{section}%
+    [0em] %
+    {\vspace{0\baselineskip}\begin{fullwidth}\Large\sffamily\itshape} %
+    {\hspace*{2em}\contentslabel{2em}} %
+    {\hspace*{2em}} %
+    {\sffamily\upshape\qquad\thecontentspage} %
+    [\end{fullwidth}] %
+  \titlecontents{subsection}%
+    [0em] %
+    {\vspace{0\baselineskip}\begin{fullwidth}\large\sffamily\itshape} %
+    {\hspace*{4em}\contentslabel{4em}} %
+    {\hspace*{4em}} %
+    {\sffamily\upshape\qquad\thecontentspage} %
+    [\end{fullwidth}] %
+  \titlecontents{paragraph}%
+    [0em] %
+    {\vspace{0\baselineskip}\begin{fullwidth}\normalsize\sffamily\itshape} %
+    {\hspace*{6em}\contentslabel{2em}} %
+    {\hspace*{6em}} %
+    {\sffamily\upshape\qquad\thecontentspage} %
+    [\end{fullwidth}] %
+}{}
+
+%
+%
+
+\renewcommand{\maketitlepage}[0]{%
+  \cleardoublepage%
+  {%
+  %
+  %
+%
+  \sffamily%
+  \begin{fullwidth}%
+  %
+  %
+  %
+  \vspace{4.25pc}%
+  \hphantom{}\\
+  \fontsize{50}{60}\selectfont\par\noindent{\allcaps{~}}%
+  \vspace{.5pc}%
+  \fontsize{28}{34}\selectfont\par\noindent{\raggedright\allcaps{\thanklesstitle}}%
+  \vfill%
+  \newsavebox\mybox
+\sbox{\mybox}{\fontsize{12}{14}\selectfont\par\noindent\allcaps{\thanklesspublisher}}
+  \noindent\includegraphics[width=.975\wd\mybox]{./SPARTA.png}\\%
+  \fontsize{12}{14}\selectfont\par\noindent\allcaps{\thanklesspublisher}%
+  \end{fullwidth}%
+  }
+  \thispagestyle{empty}%
+  \clearpage%
+}
+
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+
+
+\newcommand{\dfd}{\textsc{dfd}}
+\newcommand{\Dfd}{\textsc{Dfd}}
+\newcommand{\tc}[1]{\texttt{#1}}
+
+\makeatother
+
+\makeatletter
+%
+\renewcommand{\@tufte@reset@par}{%
+  %
+  %
+  %
+  %
+  \setlength{\RaggedRightParindent}{0pt}%
+  \setlength{\JustifyingParindent}{0pt}%
+  \setlength{\parindent}{0pt}%
+  \setlength{\parskip}{\baselineskip}%
+}
+\@tufte@reset@par
+
+%
+\renewcommand{\@tufte@margin@par}{%
+  \setlength{\RaggedRightParindent}{0.5pc}%
+  \setlength{\JustifyingParindent}{0.5pc}%
+  \setlength{\parindent}{0.5pc}%
+  \setlength{\parskip}{0pt}%
+}
+\makeatother
+
+
+
+\newcommand{\fullwidthnote}[3][RoyalBlue]{
+\begin{fullwidth}
+    \begin{mdframed}[frametitle={#2},topline=false,bottomline=false,rightline=false,linecolor=#1,linewidth=2pt,frametitlefont={\color{#1}\bfseries},frametitlebackgroundcolor=#1!3!white,backgroundcolor=#1!5!white]\raggedright{}
+#3
+    \end{mdframed}
+\end{fullwidth}
+}
+
+
+
+
+
+%
+
+%
+%
+
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%

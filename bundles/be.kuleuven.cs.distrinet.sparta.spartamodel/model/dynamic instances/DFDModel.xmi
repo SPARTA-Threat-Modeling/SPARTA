@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<securitydfd:DFDModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:securitydfd="http://security.distrinet.cs.kuleuven.be/securitydfd">
+  <containedElements xsi:type="securitydfd:ExternalEntity" name="anExternalEntity" send="//@containedElements.2 //@containedElements.3 //@containedElements.4" receive="//@containedElements.9 //@containedElements.5/@containedElements.12"/>
+  <containedElements xsi:type="securitydfd:Process" name="anOutsideProcess" send="//@containedElements.7 //@containedElements.9" receive="//@containedElements.2 //@containedElements.8"/>
+  <containedElements xsi:type="securitydfd:DataFlow" name="accessOutsideProcess" sender="//@containedElements.0" recipient="//@containedElements.1"/>
+  <containedElements xsi:type="securitydfd:DataFlow" name="accesscontainedProcess" sender="//@containedElements.0" recipient="//@containedElements.5/@containedElements.0"/>
+  <containedElements xsi:type="securitydfd:DataFlow" name="AccessCrossingMultipleBoundaries" sender="//@containedElements.0" recipient="//@containedElements.5/@containedElements.6/@containedElements.4/@containedElements.0"/>
+  <containedElements xsi:type="securitydfd:TrustBoundaryContainer" name="OutsideTrustBoundary">
+    <containedElements xsi:type="securitydfd:Process" name="aContainedProcess" send="//@containedElements.5/@containedElements.2 //@containedElements.5/@containedElements.3 //@containedElements.5/@containedElements.4 //@containedElements.5/@containedElements.8 //@containedElements.5/@containedElements.12" receive="//@containedElements.3 //@containedElements.5/@containedElements.9 //@containedElements.5/@containedElements.13 //@containedElements.5/@containedElements.6/@containedElements.5"/>
+    <containedElements xsi:type="securitydfd:DataStore" name="aContainedDataStore" send="//@containedElements.5/@containedElements.13" receive="//@containedElements.5/@containedElements.2"/>
+    <containedElements xsi:type="securitydfd:DataFlow" name="containedProcessToDataStore" sender="//@containedElements.5/@containedElements.0" recipient="//@containedElements.5/@containedElements.1"/>
+    <containedElements xsi:type="securitydfd:DataFlow" name="containedProcesstoSub" sender="//@containedElements.5/@containedElements.0" recipient="//@containedElements.5/@containedElements.5/@containedElements.0"/>
+    <containedElements xsi:type="securitydfd:DataFlow" name="containedToAnotherSub" sender="//@containedElements.5/@containedElements.0" recipient="//@containedElements.5/@containedElements.6/@containedElements.0"/>
+    <containedElements xsi:type="securitydfd:TrustBoundaryContainer" name="SubContainer">
+      <containedElements xsi:type="securitydfd:Process" name="SubProcess" send="//@containedElements.5/@containedElements.5/@containedElements.2" receive="//@containedElements.5/@containedElements.3 //@containedElements.5/@containedElements.5/@containedElements.3"/>
+      <containedElements xsi:type="securitydfd:DataStore" name="SubDataStore" send="//@containedElements.5/@containedElements.5/@containedElements.3" receive="//@containedElements.5/@containedElements.5/@containedElements.2"/>
+      <containedElements xsi:type="securitydfd:DataFlow" name="subProcesstoSubData" sender="//@containedElements.5/@containedElements.5/@containedElements.0" recipient="//@containedElements.5/@containedElements.5/@containedElements.1"/>
+      <containedElements xsi:type="securitydfd:DataFlow" name="Flow 19" sender="//@containedElements.5/@containedElements.5/@containedElements.1" recipient="//@containedElements.5/@containedElements.5/@containedElements.0"/>
+    </containedElements>
+    <containedElements xsi:type="securitydfd:TrustBoundaryContainer" name="AnotherSubContainer">
+      <containedElements xsi:type="securitydfd:Process" name="AnotherSubProcess" send="//@containedElements.5/@containedElements.6/@containedElements.3 //@containedElements.5/@containedElements.6/@containedElements.2 //@containedElements.5/@containedElements.6/@containedElements.5" receive="//@containedElements.5/@containedElements.4 //@containedElements.5/@containedElements.6/@containedElements.6"/>
+      <containedElements xsi:type="securitydfd:DataStore" name="AnotherSubDataStore" send="//@containedElements.5/@containedElements.6/@containedElements.6" receive="//@containedElements.5/@containedElements.6/@containedElements.2"/>
+      <containedElements xsi:type="securitydfd:DataFlow" name="AnotherSubProcToAnotherSubDS" sender="//@containedElements.5/@containedElements.6/@containedElements.0" recipient="//@containedElements.5/@containedElements.6/@containedElements.1"/>
+      <containedElements xsi:type="securitydfd:DataFlow" name="SubToSubSub" sender="//@containedElements.5/@containedElements.6/@containedElements.0" recipient="//@containedElements.5/@containedElements.6/@containedElements.4/@containedElements.0"/>
+      <containedElements xsi:type="securitydfd:TrustBoundaryContainer" name="aNestedSubContainer">
+        <containedElements xsi:type="securitydfd:Process" name="subsubprocess" send="//@containedElements.5/@containedElements.6/@containedElements.4/@containedElements.2" receive="//@containedElements.4 //@containedElements.5/@containedElements.6/@containedElements.3 //@containedElements.5/@containedElements.6/@containedElements.4/@containedElements.3"/>
+        <containedElements xsi:type="securitydfd:DataStore" name="subsubData" send="//@containedElements.5/@containedElements.6/@containedElements.4/@containedElements.3" receive="//@containedElements.5/@containedElements.6/@containedElements.4/@containedElements.2"/>
+        <containedElements xsi:type="securitydfd:DataFlow" name="subsubprocTosubsubdata" sender="//@containedElements.5/@containedElements.6/@containedElements.4/@containedElements.0" recipient="//@containedElements.5/@containedElements.6/@containedElements.4/@containedElements.1"/>
+        <containedElements xsi:type="securitydfd:DataFlow" name="Flow 23" sender="//@containedElements.5/@containedElements.6/@containedElements.4/@containedElements.1" recipient="//@containedElements.5/@containedElements.6/@containedElements.4/@containedElements.0"/>
+      </containedElements>
+      <containedElements xsi:type="securitydfd:DataFlow" name="Flow 21" sender="//@containedElements.5/@containedElements.6/@containedElements.0" recipient="//@containedElements.5/@containedElements.0"/>
+      <containedElements xsi:type="securitydfd:DataFlow" name="Flow 22" sender="//@containedElements.5/@containedElements.6/@containedElements.1" recipient="//@containedElements.5/@containedElements.6/@containedElements.0"/>
+    </containedElements>
+    <containedElements xsi:type="securitydfd:Process" name="anotherContainedProcess" send="//@containedElements.5/@containedElements.9 //@containedElements.5/@containedElements.11" receive="//@containedElements.5/@containedElements.8 //@containedElements.5/@containedElements.14"/>
+    <containedElements xsi:type="securitydfd:DataFlow" name="containedToContained" sender="//@containedElements.5/@containedElements.0" recipient="//@containedElements.5/@containedElements.7"/>
+    <containedElements xsi:type="securitydfd:DataFlow" name="invContainedToContained" sender="//@containedElements.5/@containedElements.7" recipient="//@containedElements.5/@containedElements.0"/>
+    <containedElements xsi:type="securitydfd:DataStore" name="anotherContainedDataStore" send="//@containedElements.5/@containedElements.14" receive="//@containedElements.5/@containedElements.11"/>
+    <containedElements xsi:type="securitydfd:DataFlow" name="aFlow" sender="//@containedElements.5/@containedElements.7" recipient="//@containedElements.5/@containedElements.10"/>
+    <containedElements xsi:type="securitydfd:DataFlow" name="Flow 17" sender="//@containedElements.5/@containedElements.0" recipient="//@containedElements.0"/>
+    <containedElements xsi:type="securitydfd:DataFlow" name="Flow 18" sender="//@containedElements.5/@containedElements.1" recipient="//@containedElements.5/@containedElements.0"/>
+    <containedElements xsi:type="securitydfd:DataFlow" name="Flow 20" sender="//@containedElements.5/@containedElements.10" recipient="//@containedElements.5/@containedElements.7"/>
+  </containedElements>
+  <containedElements xsi:type="securitydfd:Process" name="Process 7" send="//@containedElements.8" receive="//@containedElements.7"/>
+  <containedElements xsi:type="securitydfd:DataFlow" name="Flow 14" sender="//@containedElements.1" recipient="//@containedElements.6"/>
+  <containedElements xsi:type="securitydfd:DataFlow" name="Flow 15" sender="//@containedElements.6" recipient="//@containedElements.1"/>
+  <containedElements xsi:type="securitydfd:DataFlow" name="Flow 16" sender="//@containedElements.1" recipient="//@containedElements.0"/>
+</securitydfd:DFDModel>

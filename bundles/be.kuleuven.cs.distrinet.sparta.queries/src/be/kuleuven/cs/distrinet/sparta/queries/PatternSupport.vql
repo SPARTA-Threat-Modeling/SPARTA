@@ -1,0 +1,40 @@
+package be.kuleuven.cs.distrinet.sparta.queries
+
+import "http://distrinet.cs.kuleuven.be/spartamodel"
+import "http://www.eclipse.org/emf/2002/Ecore"
+
+pattern IsThreatTypeCatalog(catalog : ThreatTypeCatalog) {
+	ThreatTypeCatalog(catalog);
+}
+
+pattern ThreatTypeCatalogThreatTypes(catalog : ThreatTypeCatalog, threatType:ThreatType) {
+	ThreatTypeCatalog(catalog);
+	ThreatTypeCatalog.threat(catalog,threatType);
+} or {
+	ThreatTypeCatalog(catalog);
+	ThreatTypeCatalog.threat(catalog,tt);
+	find ThreatTypeContains(tt,threatType);
+} 
+or {
+	ThreatTypeCatalog(catalog);
+	ThreatTypeCatalog.threattypegroup(catalog,tt);
+	find ThreatTypeContains(tt,threatType);
+} 
+pattern ThreatTypeContains(parent : CompositeThreatType, child : AbstractThreatType) {
+	CompositeThreatType.subThreatTypes+(parent,child);
+}
+
+pattern ThreatTypeCatalogThreatTypesWithNonEmptyPatterns(catalog : ThreatTypeCatalog, threatType:ThreatType) {
+	find ThreatTypeCatalogThreatTypes(catalog, threatType);
+	ThreatType.threatpattern(threatType,tpattern);
+	ThreatPattern.patterns(tpattern,tpatterntext);
+	tpatterntext != "";
+}
+
+pattern ThreatTypeTopLevel(tt : AbstractThreatType, top : AbstractThreatType) {
+	find threatTypeAncestor+(top,tt);
+	neg find threatTypeAncestor(_,top);
+} or {
+	neg find threatTypeAncestor(_,tt);
+	top == tt;
+}

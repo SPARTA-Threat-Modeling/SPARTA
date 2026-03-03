@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature url="features/be.kuleuven.cs.distrinet.sparta.feature_2026.0.0.jar" id="be.kuleuven.cs.distrinet.sparta.feature" version="2026.0.0">
+      <category name="threatmodeling"/>
+   </feature>
+   <feature id="be.kuleuven.cs.distrinet.sparta.graphicalmodeling.feature">
+      <category name="threatmodeling"/>
+   </feature>
+   <feature id="be.kuleuven.cs.distrinet.sparta.modeling.feature">
+      <category name="threatmodeling"/>
+   </feature>
+   <feature id="be.kuleuven.cs.distrinet.sparta.threatanalysis.feature">
+      <category name="threatmodeling"/>
+   </feature>
+   <category-def name="threatmodeling" label="Threat Modeling"/>
+</site>

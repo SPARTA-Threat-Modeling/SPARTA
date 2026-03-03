@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin>
+  <extension point="org.eclipse.sirius.componentization">
+    <component class="be.kuleuven.cs.distrinet.sparta.design.Activator"
+               id="be.kuleuven.cs.distrinet.security.secdfd.design"
+	       name="secdfd">
+    </component>
+  </extension>
+</plugin>

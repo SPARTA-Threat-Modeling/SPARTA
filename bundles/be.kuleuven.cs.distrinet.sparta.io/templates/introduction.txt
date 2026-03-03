@@ -1,0 +1,8 @@
+\chapter{Introduction}
+
+TODO: provide a short description of the threat model. 
+
+\Cref{sec:model} depicts the data flow diagram and provides an overview of the entities in the system.
+\Cref{sec:goals} describes the relevant security goals for the system.
+\Cref{sec:threats} lists all threats, including, for each threat, a risk estimate, short description, and potential cause-effect relationships with other threats.
+

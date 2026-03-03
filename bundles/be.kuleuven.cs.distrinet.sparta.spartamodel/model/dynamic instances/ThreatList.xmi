@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<securitydfd:DFDModel
+    xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:securitydfd="http://security.distrinet.cs.kuleuven.be/securitydfd"
+    xsi:schemaLocation="http://security.distrinet.cs.kuleuven.be/securitydfd ../securitydfd.ecore"
+    name="ThreatModel">
+  <containedElements
+      xsi:type="securitydfd:Threat"
+      name="Spoofing"
+      threatensFlow="true"
+      threatensProcess="true"
+      threatensDataStore="true"
+      threatensExternalEntity="true"/>
+  <containedElements
+      xsi:type="securitydfd:Threat"
+      name="Tampering"/>
+  <containedElements
+      xsi:type="securitydfd:Threat"
+      name="Repudiation"/>
+  <containedElements
+      xsi:type="securitydfd:Threat"
+      name="Information Disclosure"/>
+  <containedElements
+      xsi:type="securitydfd:Threat"
+      name="Denial of Service"/>
+  <containedElements
+      xsi:type="securitydfd:Threat"
+      name="Elevation of Privilege"/>
+</securitydfd:DFDModel>

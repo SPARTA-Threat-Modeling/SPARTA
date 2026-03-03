@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?pde version="3.8"?>
+<target name="Running Platform">
+	<locations>
+		<!-- <location path="${eclipse_home}" type="Profile"/> -->
+		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
+			<repository location="https://download.eclipse.org/releases/2025-06"/>
+			<unit id="org.eclipse.emf.sdk.feature.group" version="2.42.0.v20250415-0852"/>
+			<unit id="org.eclipse.sdk.feature.group" version="4.36.0.v20250528-2229"/>
+			<!-- <unit id="org.eclipse.acceleo.feature.group" version="3.7.17.202408201303"/> -->
+		</location>
+		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
+			<repository location="https://download.eclipse.org/tools/orbit/simrel/orbit-aggregation/2025-06/"/>
+			<unit id="org.apache.commons.math3" version="0.0.0"/>
+			<unit id="org.apache.commons.commons-io" version="0.0.0"/>
+			<unit id="org.apache.commons.commons-codec" version="0.0.0"/>
+			<unit id="org.apache.poi" version="0.0.0"/>
+			<unit id="org.apache.poi.ooxml" version="0.0.0"/>
+			<unit id="com.fasterxml.jackson.core.jackson-annotations" version="0.0.0"/>
+			<unit id="com.fasterxml.jackson.core.jackson-core" version="0.0.0"/>
+			<unit id="com.fasterxml.jackson.core.jackson-databind" version="0.0.0"/>
+			<unit id="com.google.inject" version="0.0.0"/>
+			<unit id="org.yaml.snakeyaml" version="0.0.0"/>
+		</location>
+		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
+			<repository location="https://download.eclipse.org/technology/m2e/releases/latest/"/>
+			<unit id="org.eclipse.m2e.sdk.feature.feature.group" version="0.0.0"/>
+		</location>
+		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
+			<repository location="https://download.eclipse.org/sirius/updates/releases/7.4.11/2023-03"/>
+			<unit id="org.eclipse.sirius.aql.feature.group" version="0.0.0"/>
+			<unit id="org.eclipse.sirius.model.feature.feature.group" version="0.0.0"/>
+			<unit id="org.eclipse.sirius.properties.feature.feature.group" version="0.0.0"/>
+			<unit id="org.eclipse.sirius.runtime.feature.group" version="0.0.0"/>
+			<unit id="org.eclipse.sirius.runtime.ide.ui.feature.group" version="0.0.0"/>
+			<unit id="org.eclipse.sirius.specifier.ide.ui.acceleo.feature.group" version="0.0.0"/>
+			<unit id="org.eclipse.sirius.specifier.ide.ui.aql.feature.group" version="0.0.0"/>
+			<unit id="org.eclipse.sirius.specifier.ide.ui.feature.group" version="0.0.0"/>
+			<unit id="org.eclipse.sirius.specifier.properties.feature.feature.group" version="0.0.0"/>
+		</location>
+		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
+			<repository location="https://download.eclipse.org/ecoretools/updates/releases/3.5.2/2023-06"/>
+			<unit id="org.eclipse.emf.ecoretools" version="0.0.0"/>
+			<unit id="org.eclipse.emf.ecoretools.design.feature.group" version="0.0.0"/>
+		</location>
+		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
+			<repository location="https://download.eclipse.org/viatra/updates/release/2.9.1"/>
+			<unit id="org.eclipse.viatra.addon.databinding.runtime.feature.feature.group" version="0.0.0"/>
+			<unit id="org.eclipse.viatra.query.sdk.feature.feature.group" version="0.0.0"/>
+		</location>
+	</locations>
+	<environment>
+		<arch>x86_64</arch>
+		<os>win32</os>
+		<ws>win32</ws>
+		<nl>en_US</nl>
+	</environment>
+</target>

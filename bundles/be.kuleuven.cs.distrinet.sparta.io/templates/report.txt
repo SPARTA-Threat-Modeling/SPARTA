@@ -1,0 +1,56 @@
+\documentclass[a4paper,openany,nobib]{tufte-book}
+
+
+
+
+
+
+\title{Threat Analysis Report}
+\author{Author Name}
+\publisher{SPARTA Threat Modeling Tool}
+
+
+
+
+
+\begin{document}
+
+\frontmatter{}
+
+\maketitle 
+
+\newpage{}
+\begin{fullwidth}
+
+%
+~\vfill
+\thispagestyle{empty}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{\baselineskip}
+%
+
+\par\smallcaps{\url{https://sparta.distrinet-research.be/}}
+
+%
+
+\par\textit{Version 1, \monthyear}
+
+\end{fullwidth}
+
+%
+\tableofcontents{}
+
+\cleardoublepage{}
+
+\input{introduction}
+
+\mainmatter{}
+
+\input{description}
+
+\input{threatcatalog}
+
+\backmatter{}
+
+
+\end{document}

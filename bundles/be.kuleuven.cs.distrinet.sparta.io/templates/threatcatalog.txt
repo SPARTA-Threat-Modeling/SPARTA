@@ -1,0 +1,5 @@
+%%% WARNING %%%
+%%% This file was automatically generated
+%%% and will be overwritten next time.
+
+\chapter{Threat catalog}\label{sec:catalog}

@@ -1,0 +1,32 @@
+package be.kuleuven.cs.distrinet.sparta.queries
+
+import "http://distrinet.cs.kuleuven.be/spartamodel"
+import "http://www.eclipse.org/emf/2002/Ecore"
+
+
+pattern dataSubjects(ds : DataSubjectType) {
+	DataSubjectType(ds);
+}
+
+pattern dataTypes(dt : DataType) {
+	DataType(dt);
+}
+
+pattern personalDataTypes(dt : PersonalDataType) {
+	PersonalDataType(dt);
+}
+
+pattern dataTypeAssignments(dfdel : DFDElement, dt : PersonalDataType) {
+	DFDElement(dfdel);
+	DFDElement.dfdelementannotation(dfdel, dt);
+	PersonalDataType(dt);
+} or {
+	DFDElement(dfdel);
+	DFDElement.dfdelementannotation(dfdel, annot);
+	DataSet(annot);
+	DataSet.datatype(annot,dt);
+}
+
+pattern dfdElement(dfdel : DFDElement) {
+	DFDElement(dfdel);
+}

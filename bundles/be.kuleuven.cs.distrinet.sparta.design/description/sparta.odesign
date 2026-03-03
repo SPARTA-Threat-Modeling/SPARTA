@@ -1,0 +1,591 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<description:Group xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:description="http://www.eclipse.org/sirius/description/1.1.0" xmlns:description_1="http://www.eclipse.org/sirius/diagram/description/1.1.0" xmlns:properties="http://www.eclipse.org/sirius/properties/1.0.0" xmlns:style="http://www.eclipse.org/sirius/diagram/description/style/1.1.0" xmlns:tool="http://www.eclipse.org/sirius/diagram/description/tool/1.1.0" xmlns:tool_1="http://www.eclipse.org/sirius/description/tool/1.1.0" xmlns:validation="http://www.eclipse.org/sirius/description/validation/1.1.0" name="secdfd" version="12.0.0.2017041100">
+  <ownedViewpoints name="DataFlowDiagram" modelFileExtension="uml ecore dfd sdfd security xmi xml sparta securitydfd">
+    <validationSet>
+      <ownedRules xsi:type="validation:SemanticValidationRule" name="DisconnectedElement" level="ERROR" message="aql:self.name.toUpperFirst()+' is disconnected.'" targetClass="spartamodel::DataFlowEntity">
+        <audits auditExpression="aql:not (self.send->isEmpty() and self.receive->isEmpty())"/>
+      </ownedRules>
+      <ownedRules xsi:type="validation:SemanticValidationRule" name="SendOnly" level="WARNING" message="aql:self.name + ' only sends but doesn\'t receive any data.'" targetClass="spartamodel::DataFlowEntity">
+        <audits auditExpression="aql:not (self.send->notEmpty() and self.receive->isEmpty())"/>
+      </ownedRules>
+      <ownedRules xsi:type="validation:SemanticValidationRule" name="Data sink" level="WARNING" message="aql:self.name.toUpperFirst() + ' is a data sink. Who uses this data?'" targetClass="spartamodel::DataFlowEntity">
+        <audits auditExpression="aql:not (self.send->isEmpty() and self.receive->notEmpty())"/>
+      </ownedRules>
+      <ownedRules xsi:type="validation:SemanticValidationRule" name="DataStoreToDataStore" level="ERROR" message="aql:self.sender.name.toUpperFirst() + ' cannot directly move data to ' + self.recipient.name.toUpperFirst()" targetClass="spartamodel::DataFlow">
+        <audits auditExpression="aql: not (self.sender.oclIsKindOf(spartamodel::DataStore) and self.recipient.oclIsKindOf(spartamodel::DataStore))"/>
+      </ownedRules>
+      <ownedRules xsi:type="validation:SemanticValidationRule" name="Empty Trust Boundary" level="ERROR" message="aql:self.name.toUpperFirst() + ' is empty.'" targetClass="spartamodel::DFDBoundaryElement">
+        <audits auditExpression="aql:not (self.containedElements->isEmpty())"/>
+      </ownedRules>
+      <ownedRules xsi:type="validation:SemanticValidationRule" name="Duplicate Trust Boundary" message="aql:'Duplicate TrustBoundary: '+self.name.toUpperFirst() + ' has no elements inside with the exception of other trust boundaries.'" targetClass="spartamodel::DFDBoundaryElement">
+        <audits auditExpression="aql:not (self.containedElements->filter(spartamodel::DFDBoundaryElement)->notEmpty() and (not self.containedElements->exists(el | el.oclIsKindOf(spartamodel::DataFlowEntity))))"/>
+      </ownedRules>
+      <ownedRules xsi:type="validation:SemanticValidationRule" name="ExternalEntity inside trust boundary" level="WARNING" message="aql:'External entity: ' + self.name.toUpperFirst() + ' is inside the trust boundary.'" targetClass="spartamodel::ExternalEntity">
+        <audits auditExpression="aql:not self.eContainer().oclIsKindOf(spartamodel::DFDBoundaryElement)"/>
+      </ownedRules>
+      <ownedRules xsi:type="validation:SemanticValidationRule" name="DecompositionCompleteness" level="ERROR" message="aql: self.name + '\'s specialization is incomplete.'" targetClass="spartamodel::DataFlowEntity">
+        <audits auditExpression="aql:(self.containedElements->isEmpty() or (self.containedElements->notEmpty() and (self.send->forAll(snd | self.containedElements->filter(spartamodel::SenderSpecification)->exists(spec | spec.specifiesSenderOf = snd)))))"/>
+        <audits auditExpression="aql:(self.containedElements->isEmpty() or (self.containedElements->notEmpty() and (self.receive->forAll(rcv | self.containedElements->filter(spartamodel::RecipientSpecification)->exists(spec | spec.specifiesRecipientOf = rcv)))))"/>
+      </ownedRules>
+      <ownedRules xsi:type="validation:SemanticValidationRule" name="ReceiveFlowWithoutSpecification" level="ERROR" message="aql:self.name + ' lacks specification of receiving entity.'" targetClass="spartamodel::RecipientSpecifiable">
+        <audits auditExpression="aql:self.recipient.containedElements->isEmpty() or self.recipientSpecifiedBy &lt;> null"/>
+      </ownedRules>
+      <ownedRules xsi:type="validation:SemanticValidationRule" name="SendFlowWithoutSpecification" level="ERROR" message="aql:self.name + ' lacks specification of sending entity.'" targetClass="spartamodel::SenderSpecifiable">
+        <audits auditExpression="aql:self.sender.containedElements->isEmpty() or self.senderSpecifiedBy &lt;> null"/>
+      </ownedRules>
+    </validationSet>
+    <ownedRepresentations xsi:type="description_1:DiagramDescription" name="DecompositionDiagram" titleExpression="aql:self.name + ' decomposition diagram'" domainClass="spartamodel.DataFlowEntity" enablePopupBars="true">
+      <metamodel href="../../be.kuleuven.cs.distrinet.sparta.spartamodel/model/spartamodel.ecore#/"/>
+      <validationSet>
+        <ownedRules xsi:type="validation:SemanticValidationRule" name="TrustBoundaryInfo" message="aql:self.name + ' is inside a trustboundary. Refer to the DFD view to see which elements are inside or outside of that trust boundary.'" targetClass="spartamodel::DataFlowEntity">
+          <audits auditExpression="aql: not(self.eContainer().oclIsKindOf(spartamodel::DFDBoundaryElement))"/>
+        </ownedRules>
+      </validationSet>
+      <defaultLayer name="Default">
+        <nodeMappings xsi:type="description_1:NodeMappingImport" name="EExternalEntityNode" semanticCandidatesExpression="aql: (self.send.recipient + self.receive.sender)->reject(el | self.containedElements->includes(el))"/>
+        <nodeMappings xsi:type="description_1:NodeMappingImport" name="EProcessNode" semanticCandidatesExpression="aql: (self.send.recipient + self.receive.sender)->reject(el | self.containedElements->includes(el))"/>
+        <nodeMappings xsi:type="description_1:NodeMappingImport" name="EDataStoreNode" semanticCandidatesExpression="aql: (self.send.recipient + self.receive.sender)->reject(el | self.containedElements->includes(el))" domainClass="spartamodel.DataStore"/>
+        <nodeMappings name="ESolutionNode" domainClass="spartamodel.Solution"/>
+        <edgeMappings name="DataFlowEdge" sourceMapping="//@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DecompositionDiagram']/@defaultLayer/@containerMappings[name='DecomposedEntityNode']/@subNodeMappings[name='DDataStoreNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DecompositionDiagram']/@defaultLayer/@containerMappings[name='DecomposedEntityNode']/@subNodeMappings[name='DExternalEntityNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DecompositionDiagram']/@defaultLayer/@containerMappings[name='DecomposedEntityNode']/@subNodeMappings[name='DProcessNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DecompositionDiagram']/@defaultLayer/@containerMappings[name='DecomposedEntityNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DecompositionDiagram']/@defaultLayer/@nodeMappings[name='EDataStoreNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DecompositionDiagram']/@defaultLayer/@nodeMappings[name='EExternalEntityNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DecompositionDiagram']/@defaultLayer/@nodeMappings[name='EProcessNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DecompositionDiagram']/@defaultLayer/@containerMappings[name='DecomposedEntityNode']/@subContainerMappings[name='DDecomposedEntityNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DecompositionDiagram']/@defaultLayer/@containerMappings[name='DecomposedEntityNode']/@borderedNodeMappings[name='DRecipientSpecification'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DecompositionDiagram']/@defaultLayer/@containerMappings[name='DecomposedEntityNode']/@borderedNodeMappings[name='DSenderSpecification']" targetMapping="//@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DecompositionDiagram']/@defaultLayer/@containerMappings[name='DecomposedEntityNode']/@subNodeMappings[name='DDataStoreNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DecompositionDiagram']/@defaultLayer/@containerMappings[name='DecomposedEntityNode']/@subNodeMappings[name='DExternalEntityNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DecompositionDiagram']/@defaultLayer/@containerMappings[name='DecomposedEntityNode']/@subNodeMappings[name='DProcessNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DecompositionDiagram']/@defaultLayer/@containerMappings[name='DecomposedEntityNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DecompositionDiagram']/@defaultLayer/@nodeMappings[name='EExternalEntityNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DecompositionDiagram']/@defaultLayer/@nodeMappings[name='EDataStoreNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DecompositionDiagram']/@defaultLayer/@nodeMappings[name='EProcessNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DecompositionDiagram']/@defaultLayer/@containerMappings[name='DecomposedEntityNode']/@subContainerMappings[name='DDecomposedEntityNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DecompositionDiagram']/@defaultLayer/@containerMappings[name='DecomposedEntityNode']/@borderedNodeMappings[name='DRecipientSpecification'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DecompositionDiagram']/@defaultLayer/@containerMappings[name='DecomposedEntityNode']/@borderedNodeMappings[name='DSenderSpecification']" targetFinderExpression="aql:if self.recipientSpecifiedBy = null then self.recipient else self.recipientSpecifiedBy endif" sourceFinderExpression="aql:if self.senderSpecifiedBy = null then self.sender else self.senderSpecifiedBy endif" domainClass="spartamodel.DataFlow" useDomainElement="true">
+          <style targetArrow="InputFillClosedArrow" sizeComputationExpression="2" endsCentering="Both">
+            <strokeColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='black']"/>
+            <centerLabelStyleDescription showIcon="false" labelExpression="feature:name">
+              <labelColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='black']"/>
+            </centerLabelStyleDescription>
+          </style>
+        </edgeMappings>
+        <edgeMappings name="RcpSpecToActual" sourceMapping="//@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DecompositionDiagram']/@defaultLayer/@containerMappings[name='DecomposedEntityNode']/@borderedNodeMappings[name='DRecipientSpecification']" targetMapping="//@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DecompositionDiagram']/@defaultLayer/@containerMappings[name='DecomposedEntityNode']/@subNodeMappings[name='DDataStoreNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DecompositionDiagram']/@defaultLayer/@containerMappings[name='DecomposedEntityNode']/@subContainerMappings[name='DDecomposedEntityNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DecompositionDiagram']/@defaultLayer/@containerMappings[name='DecomposedEntityNode']/@subNodeMappings[name='DExternalEntityNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DecompositionDiagram']/@defaultLayer/@containerMappings[name='DecomposedEntityNode']/@subNodeMappings[name='DProcessNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DecompositionDiagram']/@defaultLayer/@containerMappings[name='DecomposedEntityNode']/@borderedNodeMappings[name='DRecipientSpecification']" targetFinderExpression="aql:if self.recipientSpecifiedBy = null then self.recipient else self.recipientSpecifiedBy endif">
+          <style sizeComputationExpression="2">
+            <strokeColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='black']"/>
+            <centerLabelStyleDescription>
+              <labelColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='black']"/>
+            </centerLabelStyleDescription>
+          </style>
+        </edgeMappings>
+        <edgeMappings name="SndSpecToActual" sourceMapping="//@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DecompositionDiagram']/@defaultLayer/@containerMappings[name='DecomposedEntityNode']/@borderedNodeMappings[name='DSenderSpecification']" targetMapping="//@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DecompositionDiagram']/@defaultLayer/@containerMappings[name='DecomposedEntityNode']/@subNodeMappings[name='DDataStoreNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DecompositionDiagram']/@defaultLayer/@containerMappings[name='DecomposedEntityNode']/@subContainerMappings[name='DDecomposedEntityNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DecompositionDiagram']/@defaultLayer/@containerMappings[name='DecomposedEntityNode']/@subNodeMappings[name='DExternalEntityNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DecompositionDiagram']/@defaultLayer/@containerMappings[name='DecomposedEntityNode']/@subNodeMappings[name='DProcessNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DecompositionDiagram']/@defaultLayer/@containerMappings[name='DecomposedEntityNode']/@borderedNodeMappings[name='DSenderSpecification']" targetFinderExpression="aql:if self.senderSpecifiedBy = null then self.sender else self.senderSpecifiedBy endif">
+          <style sourceArrow="InputArrow" targetArrow="NoDecoration" sizeComputationExpression="2">
+            <strokeColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='black']"/>
+            <centerLabelStyleDescription>
+              <labelColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='black']"/>
+            </centerLabelStyleDescription>
+          </style>
+        </edgeMappings>
+        <containerMappings name="DecomposedEntityNode" semanticCandidatesExpression="aql:self" domainClass="spartamodel.DataFlowEntity">
+          <borderedNodeMappings name="DRecipientSpecification" semanticCandidatesExpression="aql:self.containedElements" domainClass="spartamodel.RecipientSpecification">
+            <style xsi:type="style:DotDescription" showIcon="false" labelExpression="aql:''" sizeComputationExpression="2" labelPosition="node" resizeKind="NSEW">
+              <borderColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='black']"/>
+              <labelColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='black']"/>
+              <backgroundColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='light_gray']"/>
+            </style>
+          </borderedNodeMappings>
+          <borderedNodeMappings name="DSenderSpecification" semanticCandidatesExpression="aql:self.containedElements" domainClass="spartamodel.SenderSpecification">
+            <style xsi:type="style:DotDescription" showIcon="false" labelExpression="aql:''" sizeComputationExpression="2" labelPosition="node" resizeKind="NSEW">
+              <borderColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='black']"/>
+              <labelColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='black']"/>
+              <backgroundColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='light_gray']"/>
+            </style>
+          </borderedNodeMappings>
+          <subNodeMappings xsi:type="description_1:NodeMappingImport" name="DExternalEntityNode" semanticCandidatesExpression="feature:containedElements"/>
+          <subNodeMappings xsi:type="description_1:NodeMappingImport" name="DProcessNode" semanticCandidatesExpression="aql:self.containedElements->select(el | el.oclIsKindOf(spartamodel::DataFlowEntity) and el.containedElements->isEmpty())"/>
+          <subNodeMappings xsi:type="description_1:NodeMappingImport" name="DDataStoreNode" semanticCandidatesExpression="feature:containedElements" domainClass="spartamodel.DataStore"/>
+          <subContainerMappings name="DTrustBoundaryContainer" semanticCandidatesExpression="feature:containedElements" domainClass="spartamodel.TrustBoundaryContainer" reusedNodeMappings="//@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DecompositionDiagram']/@defaultLayer/@containerMappings[name='DecomposedEntityNode']/@subNodeMappings[name='DDataStoreNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DecompositionDiagram']/@defaultLayer/@containerMappings[name='DecomposedEntityNode']/@subNodeMappings[name='DExternalEntityNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DecompositionDiagram']/@defaultLayer/@containerMappings[name='DecomposedEntityNode']/@subNodeMappings[name='DProcessNode']" reusedContainerMappings="//@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DecompositionDiagram']/@defaultLayer/@containerMappings[name='DecomposedEntityNode']/@subContainerMappings[name='DTrustBoundaryContainer']">
+            <style xsi:type="style:FlatContainerStyleDescription" borderSizeComputationExpression="2" borderLineStyle="dash" showIcon="false" labelExpression="aql:self.name.toUpper()" roundedCorner="true">
+              <borderColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='red']"/>
+              <labelColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='black']"/>
+              <backgroundColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='white']"/>
+              <foregroundColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='white']"/>
+            </style>
+          </subContainerMappings>
+          <subContainerMappings name="DDecomposedEntityNode" semanticCandidatesExpression="aql:self.containedElements->select(el | el.oclIsKindOf(spartamodel::DataFlowEntity) and el.containedElements->notEmpty())" domainClass="spartamodel.DataFlowEntity" reusedBorderedNodeMappings="//@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DecompositionDiagram']/@defaultLayer/@containerMappings[name='DecomposedEntityNode']/@borderedNodeMappings[name='DRecipientSpecification'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DecompositionDiagram']/@defaultLayer/@containerMappings[name='DecomposedEntityNode']/@borderedNodeMappings[name='DSenderSpecification']" reusedNodeMappings="//@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DecompositionDiagram']/@defaultLayer/@containerMappings[name='DecomposedEntityNode']/@subNodeMappings[name='DDataStoreNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DecompositionDiagram']/@defaultLayer/@containerMappings[name='DecomposedEntityNode']/@subNodeMappings[name='DExternalEntityNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DecompositionDiagram']/@defaultLayer/@containerMappings[name='DecomposedEntityNode']/@subNodeMappings[name='DProcessNode']" reusedContainerMappings="//@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DecompositionDiagram']/@defaultLayer/@containerMappings[name='DecomposedEntityNode']/@subContainerMappings[name='DDecomposedEntityNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DecompositionDiagram']/@defaultLayer/@containerMappings[name='DecomposedEntityNode']/@subContainerMappings[name='DTrustBoundaryContainer']">
+            <style xsi:type="style:FlatContainerStyleDescription" arcWidth="200" arcHeight="200" borderSizeComputationExpression="1" showIcon="false" roundedCorner="true">
+              <borderColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='black']"/>
+              <labelColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='black']"/>
+              <backgroundColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='white']"/>
+              <foregroundColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='light_gray']"/>
+              <labelBorderStyle href="environment:/viewpoint#//@labelBorderStyles/@labelBorderStyleDescriptions.0"/>
+            </style>
+          </subContainerMappings>
+          <style xsi:type="style:FlatContainerStyleDescription" arcWidth="200" arcHeight="200" borderSizeComputationExpression="1" showIcon="false" roundedCorner="true">
+            <borderColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='black']"/>
+            <labelColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='black']"/>
+            <backgroundColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='white']"/>
+            <foregroundColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='light_gray']"/>
+            <labelBorderStyle href="environment:/viewpoint#//@labelBorderStyles/@labelBorderStyleDescriptions.0"/>
+          </style>
+        </containerMappings>
+        <toolSections name="DFD Elements"/>
+      </defaultLayer>
+    </ownedRepresentations>
+    <ownedRepresentations xsi:type="description_1:DiagramDescription" dropDescriptions="//@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@toolSections.0/@ownedTools[name='ChangeContainer']" name="DataFlowDiagram" label="Data Flow Diagram" titleExpression="aql:'new DataFlowDiagram ' + self.name" showOnStartup="true" domainClass="spartamodel.DFDModel" enablePopupBars="true">
+      <metamodel href="../../be.kuleuven.cs.distrinet.sparta.spartamodel/model/spartamodel.ecore#/"/>
+      <validationSet/>
+      <defaultLayer name="Default">
+        <nodeMappings name="ExternalEntityNode" labelDirectEdit="//@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@toolSections.0/@ownedTools[name='Edit%20Name']" semanticCandidatesExpression="aql:self.containedElements->select(el | el.oclIsKindOf(spartamodel::DataFlowEntity) and el.containedElements->isEmpty())" domainClass="spartamodel.ExternalEntity">
+          <style xsi:type="style:SquareDescription" borderSizeComputationExpression="2" showIcon="false" labelPosition="node" resizeKind="NSEW" width="10" height="3">
+            <borderColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='black']"/>
+            <labelFormat>bold</labelFormat>
+            <labelColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='black']"/>
+            <color xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='white']"/>
+          </style>
+        </nodeMappings>
+        <nodeMappings name="ProcessNode" labelDirectEdit="//@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@toolSections.0/@ownedTools[name='Edit%20Name']" semanticCandidatesExpression="aql:self.containedElements->select(el | el.oclIsKindOf(spartamodel::DataFlowEntity) and el.containedElements->isEmpty())" domainClass="spartamodel.Process">
+          <style xsi:type="style:EllipseNodeDescription" borderSizeComputationExpression="1" showIcon="false" labelPosition="node" resizeKind="NSEW" horizontalDiameterComputationExpression="8" verticalDiameterComputationExpression="8">
+            <borderColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='black']"/>
+            <labelColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='black']"/>
+            <color xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='white']"/>
+          </style>
+        </nodeMappings>
+        <nodeMappings name="DataStoreNode" labelDirectEdit="//@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@toolSections.0/@ownedTools[name='Edit%20Name']" semanticCandidatesExpression="aql:self.containedElements->select(el | el.oclIsKindOf(spartamodel::DataFlowEntity) and el.containedElements->isEmpty())" domainClass="spartamodel.DataStore">
+          <style xsi:type="style:WorkspaceImageDescription" showIcon="false" sizeComputationExpression="5" labelPosition="node" resizeKind="NSEW" workspacePath="be.kuleuven.cs.distrinet.sparta.design/images/DS.svg">
+            <borderColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='black']"/>
+            <labelColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='black']"/>
+          </style>
+        </nodeMappings>
+        <edgeMappings name="DataFlowEdge" labelDirectEdit="//@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@toolSections.0/@ownedTools[name='Edit%20Name']" sourceMapping="//@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@nodeMappings[name='DataStoreNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@nodeMappings[name='ExternalEntityNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@nodeMappings[name='ProcessNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@containerMappings[name='DecomposedEntityNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@containerMappings[name='DecomposedEntityNode']/@borderedNodeMappings[name='DRecipientSpecification'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@containerMappings[name='DecomposedEntityNode']/@borderedNodeMappings[name='DSenderSpecification']" targetMapping="//@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@nodeMappings[name='DataStoreNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@nodeMappings[name='ExternalEntityNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@nodeMappings[name='ProcessNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@containerMappings[name='DecomposedEntityNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@containerMappings[name='DecomposedEntityNode']/@borderedNodeMappings[name='DSenderSpecification'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@containerMappings[name='DecomposedEntityNode']/@borderedNodeMappings[name='DRecipientSpecification']" targetFinderExpression="aql:if self.recipientSpecifiedBy = null then self.recipient else self.recipientSpecifiedBy endif" sourceFinderExpression="aql:if self.senderSpecifiedBy = null then self.sender else self.senderSpecifiedBy endif" domainClass="spartamodel.DataFlow" useDomainElement="true" reconnections="//@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@toolSections.0/@ownedTools[name='changeSender'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@toolSections.0/@ownedTools[name='changeRecipient']">
+          <style targetArrow="InputFillClosedArrow" sizeComputationExpression="2" endsCentering="Both">
+            <strokeColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='black']"/>
+            <centerLabelStyleDescription showIcon="false" labelExpression="feature:name">
+              <labelColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='black']"/>
+            </centerLabelStyleDescription>
+          </style>
+          <conditionnalStyles predicateExpression="aql:self.sender.eContainer() &lt;> self.recipient.eContainer()">
+            <style targetArrow="InputFillClosedArrow" sizeComputationExpression="2" endsCentering="Both">
+              <strokeColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='black']"/>
+              <centerLabelStyleDescription showIcon="false" labelExpression="aql:self.name">
+                <labelColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='black']"/>
+              </centerLabelStyleDescription>
+            </style>
+          </conditionnalStyles>
+        </edgeMappings>
+        <edgeMappings name="RcpSpecToActual" sourceMapping="//@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@containerMappings[name='DecomposedEntityNode']/@borderedNodeMappings[name='DRecipientSpecification']" targetMapping="//@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@nodeMappings[name='DataStoreNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@nodeMappings[name='ExternalEntityNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@nodeMappings[name='ProcessNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@containerMappings[name='DecomposedEntityNode']/@borderedNodeMappings[name='DRecipientSpecification']" targetFinderExpression="aql:if self.recipientSpecifiedBy = null then self.recipient else self.recipientSpecifiedBy endif">
+          <style sizeComputationExpression="2">
+            <strokeColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='black']"/>
+            <centerLabelStyleDescription>
+              <labelColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='black']"/>
+            </centerLabelStyleDescription>
+          </style>
+          <conditionnalStyles predicateExpression="aql: self.getDataFlow().sender.eContainer() &lt;> self.getDataFlow().recipient.eContainer()">
+            <style targetArrow="InputFillClosedArrow" sizeComputationExpression="2" endsCentering="Both">
+              <strokeColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='dark_red']"/>
+              <centerLabelStyleDescription showIcon="false" labelExpression="aql:''">
+                <labelColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='black']"/>
+              </centerLabelStyleDescription>
+            </style>
+          </conditionnalStyles>
+        </edgeMappings>
+        <edgeMappings name="SndSpecToActual" sourceMapping="//@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@containerMappings[name='DecomposedEntityNode']/@borderedNodeMappings[name='DSenderSpecification']" targetMapping="//@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@nodeMappings[name='DataStoreNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@containerMappings[name='DecomposedEntityNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@nodeMappings[name='ExternalEntityNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@nodeMappings[name='ProcessNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@containerMappings[name='DecomposedEntityNode']/@borderedNodeMappings[name='DSenderSpecification']" targetFinderExpression="aql:if self.senderSpecifiedBy = null then self.sender else self.senderSpecifiedBy endif">
+          <style sourceArrow="InputArrow" targetArrow="NoDecoration" sizeComputationExpression="2">
+            <strokeColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='black']"/>
+            <centerLabelStyleDescription>
+              <labelColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='black']"/>
+            </centerLabelStyleDescription>
+          </style>
+          <conditionnalStyles predicateExpression="aql: self.getDataFlow().sender.eContainer() &lt;> self.getDataFlow().recipient.eContainer()">
+            <style sourceArrow="InputArrow" targetArrow="NoDecoration" sizeComputationExpression="2" endsCentering="Both">
+              <strokeColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='dark_red']"/>
+              <centerLabelStyleDescription showIcon="false" labelExpression="aql:''">
+                <labelColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='black']"/>
+              </centerLabelStyleDescription>
+            </style>
+          </conditionnalStyles>
+        </edgeMappings>
+        <containerMappings name="TrustBoundaryContainer" labelDirectEdit="//@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@toolSections.0/@ownedTools[name='Edit%20Name']" semanticCandidatesExpression="feature:containedElements" domainClass="spartamodel.TrustBoundaryContainer" dropDescriptions="//@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@toolSections.0/@ownedTools[name='ChangeContainer']" reusedNodeMappings="//@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@nodeMappings[name='DataStoreNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@nodeMappings[name='ExternalEntityNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@nodeMappings[name='ProcessNode']" reusedContainerMappings="//@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@containerMappings[name='TrustBoundaryContainer'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@containerMappings[name='DecomposedEntityNode']">
+          <style xsi:type="style:FlatContainerStyleDescription" borderSizeComputationExpression="2" borderLineStyle="dash" showIcon="false" labelExpression="aql:self.name.toUpper()" tooltipExpression="aql:self.name" roundedCorner="true">
+            <borderColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='red']"/>
+            <labelColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='black']"/>
+            <backgroundColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='white']"/>
+            <foregroundColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='white']"/>
+          </style>
+        </containerMappings>
+        <containerMappings name="DecomposedEntityNode" semanticCandidatesExpression="aql:self.containedElements->select(el | el.oclIsKindOf(spartamodel::DataFlowEntity) and el.containedElements->notEmpty())" domainClass="spartamodel.DataFlowEntity" reusedNodeMappings="//@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@nodeMappings[name='DataStoreNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@nodeMappings[name='ExternalEntityNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@nodeMappings[name='ProcessNode']" reusedContainerMappings="//@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@containerMappings[name='DecomposedEntityNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@containerMappings[name='TrustBoundaryContainer']">
+          <borderedNodeMappings name="DRecipientSpecification" semanticCandidatesExpression="aql:self.containedElements" domainClass="spartamodel.RecipientSpecification">
+            <style xsi:type="style:DotDescription" showIcon="false" labelExpression="aql:''" sizeComputationExpression="2" labelPosition="node" resizeKind="NSEW">
+              <borderColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='black']"/>
+              <labelColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='black']"/>
+              <backgroundColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='light_gray']"/>
+            </style>
+          </borderedNodeMappings>
+          <borderedNodeMappings name="DSenderSpecification" semanticCandidatesExpression="aql:self.containedElements" domainClass="spartamodel.SenderSpecification">
+            <style xsi:type="style:DotDescription" showIcon="false" labelExpression="aql:''" sizeComputationExpression="2" labelPosition="node" resizeKind="NSEW">
+              <borderColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='black']"/>
+              <labelColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='black']"/>
+              <backgroundColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='light_gray']"/>
+            </style>
+          </borderedNodeMappings>
+          <style xsi:type="style:FlatContainerStyleDescription" arcWidth="200" arcHeight="200" borderSizeComputationExpression="1" showIcon="false" roundedCorner="true">
+            <borderColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='black']"/>
+            <labelColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='black']"/>
+            <backgroundColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='white']"/>
+            <foregroundColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='light_gray']"/>
+            <labelBorderStyle href="environment:/viewpoint#//@labelBorderStyles/@labelBorderStyleDescriptions.0"/>
+          </style>
+        </containerMappings>
+        <toolSections name="DFD Elements">
+          <ownedTools xsi:type="tool:NodeCreationDescription" name="createExternalEntity" forceRefresh="true" nodeMappings="//@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@nodeMappings[name='ExternalEntityNode']">
+            <variable name="container"/>
+            <viewVariable name="containerView"/>
+            <initialOperation>
+              <firstModelOperations xsi:type="tool_1:ChangeContext" browseExpression="var:container">
+                <subModelOperations xsi:type="tool_1:CreateInstance" typeName="spartamodel.ExternalEntity" referenceName="containedElements">
+                  <subModelOperations xsi:type="tool_1:If" conditionExpression="aql:container.ancestors()->isEmpty()">
+                    <subModelOperations xsi:type="tool_1:SetValue" featureName="name" valueExpression="aql:'ExternalEntity '+container.eAllContents()->filter(spartamodel::ExternalEntity)->size()"/>
+                  </subModelOperations>
+                  <subModelOperations xsi:type="tool_1:If" conditionExpression="aql:not container.ancestors()->isEmpty()">
+                    <subModelOperations xsi:type="tool_1:SetValue" featureName="name" valueExpression="aql:'ExternalEntity '+container.ancestors()->last().eAllContents()->filter(spartamodel::ExternalEntity)->size()"/>
+                  </subModelOperations>
+                </subModelOperations>
+              </firstModelOperations>
+            </initialOperation>
+          </ownedTools>
+          <ownedTools xsi:type="tool:NodeCreationDescription" name="createProcess" forceRefresh="true" nodeMappings="//@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@nodeMappings[name='ProcessNode']">
+            <variable name="container"/>
+            <viewVariable name="containerView"/>
+            <initialOperation>
+              <firstModelOperations xsi:type="tool_1:ChangeContext" browseExpression="var:container">
+                <subModelOperations xsi:type="tool_1:CreateInstance" typeName="spartamodel.Process" referenceName="containedElements">
+                  <subModelOperations xsi:type="tool_1:If" conditionExpression="aql:container.ancestors()->isEmpty()">
+                    <subModelOperations xsi:type="tool_1:SetValue" featureName="name" valueExpression="aql:'Process '+container.eAllContents()->filter(spartamodel::Process)->size()"/>
+                  </subModelOperations>
+                  <subModelOperations xsi:type="tool_1:If" conditionExpression="aql:not container.ancestors()->isEmpty()">
+                    <subModelOperations xsi:type="tool_1:SetValue" featureName="name" valueExpression="aql:'Process '+container.ancestors()->last().eAllContents()->filter(spartamodel::Process)->size()"/>
+                  </subModelOperations>
+                </subModelOperations>
+              </firstModelOperations>
+            </initialOperation>
+          </ownedTools>
+          <ownedTools xsi:type="tool:NodeCreationDescription" name="createDataStore" forceRefresh="true" nodeMappings="//@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@nodeMappings[name='DataStoreNode']">
+            <variable name="container"/>
+            <viewVariable name="containerView"/>
+            <initialOperation>
+              <firstModelOperations xsi:type="tool_1:ChangeContext" browseExpression="var:container">
+                <subModelOperations xsi:type="tool_1:CreateInstance" typeName="spartamodel.DataStore" referenceName="containedElements">
+                  <subModelOperations xsi:type="tool_1:If" conditionExpression="aql:container.ancestors()->isEmpty()">
+                    <subModelOperations xsi:type="tool_1:SetValue" featureName="name" valueExpression="aql:'DataStore '+container.eAllContents()->filter(spartamodel::DataStore)->size()"/>
+                  </subModelOperations>
+                  <subModelOperations xsi:type="tool_1:If" conditionExpression="aql:not container.ancestors()->isEmpty()">
+                    <subModelOperations xsi:type="tool_1:SetValue" featureName="name" valueExpression="aql:'DataStore '+container.ancestors()->last().eAllContents()->filter(spartamodel::DataStore)->size()"/>
+                  </subModelOperations>
+                </subModelOperations>
+              </firstModelOperations>
+            </initialOperation>
+          </ownedTools>
+          <ownedTools xsi:type="tool:ContainerCreationDescription" name="createTrustBoundary" forceRefresh="true" containerMappings="//@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@containerMappings[name='TrustBoundaryContainer']">
+            <variable name="container"/>
+            <viewVariable name="containerView"/>
+            <initialOperation>
+              <firstModelOperations xsi:type="tool_1:ChangeContext" browseExpression="var:container">
+                <subModelOperations xsi:type="tool_1:CreateInstance" typeName="spartamodel.TrustBoundaryContainer" referenceName="containedElements">
+                  <subModelOperations xsi:type="tool_1:If" conditionExpression="aql:container.ancestors()->isEmpty()">
+                    <subModelOperations xsi:type="tool_1:SetValue" featureName="name" valueExpression="aql:'Container '+container.eAllContents()->filter(spartamodel::TrustBoundaryContainer)->size()"/>
+                  </subModelOperations>
+                  <subModelOperations xsi:type="tool_1:If" conditionExpression="aql:not container.ancestors()->isEmpty()">
+                    <subModelOperations xsi:type="tool_1:SetValue" featureName="name" valueExpression="aql:'Container '+container.ancestors()->last().eAllContents()->filter(spartamodel::TrustBoundaryContainer)->size()"/>
+                  </subModelOperations>
+                </subModelOperations>
+              </firstModelOperations>
+            </initialOperation>
+          </ownedTools>
+          <ownedTools xsi:type="tool:EdgeCreationDescription" name="createDataFlow" forceRefresh="true" edgeMappings="//@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@edgeMappings[name='DataFlowEdge']">
+            <sourceVariable name="source"/>
+            <targetVariable name="target"/>
+            <sourceViewVariable name="sourceView"/>
+            <targetViewVariable name="targetView"/>
+            <initialOperation>
+              <firstModelOperations xsi:type="tool_1:ChangeContext" browseExpression="var:source">
+                <subModelOperations xsi:type="tool_1:Let" variableName="dfd" valueExpression="aql: self.eContainer(spartamodel::DFDModel)">
+                  <subModelOperations xsi:type="tool_1:Let" variableName="maybeCommonParents" valueExpression="aql: dfd.eAllContents()->select( a | (a.eAllContents()->includes(source)) and (a.eAllContents()->includes(target)))">
+                    <subModelOperations xsi:type="tool_1:Let" variableName="commonParents" valueExpression="aql: if maybeCommonParents -> isEmpty() then (dfd) else maybeCommonParents endif in">
+                      <subModelOperations xsi:type="tool_1:Let" variableName="smallestCommonParent" valueExpression="aql: commonParents -> any( b | not commonParents -> exists( c | b.eAllContents() -> includes( c )))">
+                        <subModelOperations xsi:type="tool_1:ChangeContext" browseExpression="var:smallestCommonParent">
+                          <subModelOperations xsi:type="tool_1:CreateInstance" typeName="spartamodel.DataFlow" referenceName="containedElements">
+                            <subModelOperations xsi:type="tool_1:If" conditionExpression="aql:instance.eContainer().ancestors()->isEmpty()">
+                              <subModelOperations xsi:type="tool_1:SetValue" featureName="name" valueExpression="aql:'Flow '+instance.eContainer().eAllContents()->filter(spartamodel::DataFlow)->size()"/>
+                            </subModelOperations>
+                            <subModelOperations xsi:type="tool_1:If" conditionExpression="aql:not instance.eContainer().ancestors()->isEmpty()">
+                              <subModelOperations xsi:type="tool_1:SetValue" featureName="name" valueExpression="aql:'Flow '+instance.eContainer().ancestors()->last().eAllContents()->filter(spartamodel::DataFlow)->size()"/>
+                            </subModelOperations>
+                          </subModelOperations>
+                          <subModelOperations xsi:type="tool_1:ChangeContext" browseExpression="var:instance">
+                            <subModelOperations xsi:type="tool_1:Let" variableName="maybeNewSender" valueExpression="aql: smallestCommonParent.eAllContents() -> filter(spartamodel::DataFlowEntity) -> select(s | s.eAllContents()->includes(source) and not (smallestCommonParent.eAllContents() -> filter(spartamodel::DataFlowEntity) ->exists( s2 | s2.eAllContents()->includes(s))))">
+                              <subModelOperations xsi:type="tool_1:Let" variableName="newSender" valueExpression="aql: if maybeNewSender -> isEmpty() then source else maybeNewSender->at(1) endif">
+                                <subModelOperations xsi:type="tool_1:Let" variableName="maybeNewRecipient" valueExpression="aql: smallestCommonParent.eAllContents() -> filter(spartamodel::DataFlowEntity) -> select(s | s.eAllContents()->includes(target) and not (smallestCommonParent.eAllContents() -> filter(spartamodel::DataFlowEntity) ->exists( s2 | s2.eAllContents()->includes(s))))">
+                                  <subModelOperations xsi:type="tool_1:Let" variableName="newRecipient" valueExpression="aql: if maybeNewRecipient -> isEmpty() then target else maybeNewRecipient->at(1) endif">
+                                    <subModelOperations xsi:type="tool_1:SetValue" featureName="sender" valueExpression="var:newSender"/>
+                                    <subModelOperations xsi:type="tool_1:SetValue" featureName="recipient" valueExpression="var:newRecipient"/>
+                                    <subModelOperations xsi:type="tool_1:If" conditionExpression="aql: newRecipient != target">
+                                      <subModelOperations xsi:type="tool_1:Let" variableName="newSpecElements" valueExpression="aql: (newRecipient.eAllContents() -> select( a | (a.eAllContents() -> includes(target)) or (a = target) ) )">
+                                        <subModelOperations xsi:type="tool_1:For" expression="aql: newSpecElements" iteratorName="newSpecElement">
+                                          <subModelOperations xsi:type="tool_1:ChangeContext" browseExpression="aql: newSpecElement.eContainer()">
+                                            <subModelOperations xsi:type="tool_1:CreateInstance" typeName="spartamodel::RecipientSpecification" referenceName="containedElements" variableName="newSpec">
+                                              <subModelOperations xsi:type="tool_1:ChangeContext" browseExpression="var:newSpec">
+                                                <subModelOperations xsi:type="tool_1:SetValue" featureName="specifiesRecipientOf" valueExpression="aql: if self.eContainer() = newRecipient then instance else self.eContainer().receive -> any( x | x.getDataFlow() = instance) endif"/>
+                                                <subModelOperations xsi:type="tool_1:SetValue" featureName="recipient" valueExpression="var:newSpecElement"/>
+                                                <subModelOperations xsi:type="tool_1:SetValue" featureName="name" valueExpression="aql: 'Recipient specification for ' + instance.name"/>
+                                              </subModelOperations>
+                                            </subModelOperations>
+                                          </subModelOperations>
+                                        </subModelOperations>
+                                      </subModelOperations>
+                                    </subModelOperations>
+                                    <subModelOperations xsi:type="tool_1:If" conditionExpression="aql: newSender != source">
+                                      <subModelOperations xsi:type="tool_1:Let" variableName="newSpecElements" valueExpression="aql: (newSender.eAllContents() -> select( a | (a.eAllContents() -> includes(source)) or (a = source) ) )">
+                                        <subModelOperations xsi:type="tool_1:For" expression="aql: newSpecElements" iteratorName="newSpecElement">
+                                          <subModelOperations xsi:type="tool_1:ChangeContext" browseExpression="aql: newSpecElement.eContainer()">
+                                            <subModelOperations xsi:type="tool_1:CreateInstance" typeName="spartamodel::SenderSpecification" referenceName="containedElements" variableName="newSpec">
+                                              <subModelOperations xsi:type="tool_1:ChangeContext" browseExpression="var:newSpec">
+                                                <subModelOperations xsi:type="tool_1:SetValue" featureName="specifiesSenderOf" valueExpression="aql: if self.eContainer() = newSender then instance else self.eContainer().send -> any( x | x.getDataFlow() = instance) endif"/>
+                                                <subModelOperations xsi:type="tool_1:SetValue" featureName="sender" valueExpression="var:newSpecElement"/>
+                                                <subModelOperations xsi:type="tool_1:SetValue" featureName="name" valueExpression="aql: 'Sender specification for ' + instance.name"/>
+                                              </subModelOperations>
+                                            </subModelOperations>
+                                          </subModelOperations>
+                                        </subModelOperations>
+                                      </subModelOperations>
+                                    </subModelOperations>
+                                  </subModelOperations>
+                                </subModelOperations>
+                              </subModelOperations>
+                            </subModelOperations>
+                          </subModelOperations>
+                        </subModelOperations>
+                      </subModelOperations>
+                    </subModelOperations>
+                  </subModelOperations>
+                </subModelOperations>
+              </firstModelOperations>
+            </initialOperation>
+          </ownedTools>
+          <ownedTools xsi:type="tool:DirectEditLabel" name="Edit Name">
+            <mask mask="{0}"/>
+            <initialOperation>
+              <firstModelOperations xsi:type="tool_1:SetValue" featureName="name" valueExpression="var:arg0"/>
+            </initialOperation>
+          </ownedTools>
+          <ownedTools xsi:type="tool:ContainerDropDescription" name="ChangeContainer" mappings="//@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@nodeMappings[name='DataStoreNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@nodeMappings[name='ExternalEntityNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@nodeMappings[name='ProcessNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@containerMappings[name='TrustBoundaryContainer']">
+            <oldContainer name="oldSemanticContainer"/>
+            <newContainer name="newSemanticContainer"/>
+            <element name="element"/>
+            <newViewContainer name="newContainerView"/>
+            <initialOperation>
+              <firstModelOperations xsi:type="tool_1:ChangeContext" browseExpression="var:newSemanticContainer">
+                <subModelOperations xsi:type="tool_1:SetValue" featureName="containedElements" valueExpression="var:element"/>
+              </firstModelOperations>
+            </initialOperation>
+          </ownedTools>
+          <ownedTools xsi:type="tool:ReconnectEdgeDescription" name="changeSender" reconnectionKind="RECONNECT_SOURCE">
+            <source name="source"/>
+            <target name="target"/>
+            <sourceView name="sourceView"/>
+            <targetView name="targetView"/>
+            <element name="element"/>
+            <initialOperation>
+              <firstModelOperations xsi:type="tool_1:ChangeContext" browseExpression="var:element">
+                <subModelOperations xsi:type="tool_1:Let" variableName="dfd" valueExpression="aql: self.eContainer(spartamodel::DFDModel)">
+                  <subModelOperations xsi:type="tool_1:Let" variableName="maybeCommonParents" valueExpression="aql: dfd.eAllContents()->select( a | (a.eAllContents()->includes(target)) and (a.eAllContents()->includes(element.recipient)))">
+                    <subModelOperations xsi:type="tool_1:Let" variableName="commonParents" valueExpression="aql: if maybeCommonParents -> isEmpty() then (dfd) else maybeCommonParents endif in">
+                      <subModelOperations xsi:type="tool_1:Let" variableName="smallestCommonParent" valueExpression="aql: commonParents -> any( b | not commonParents -> exists( c | b.eAllContents() -> includes( c )))">
+                        <subModelOperations xsi:type="tool_1:Let" variableName="maybeNewSender" valueExpression="aql: smallestCommonParent.eAllContents() -> filter(spartamodel::DataFlowEntity) -> select(s | s.eAllContents()->includes(target) and not (smallestCommonParent.eAllContents() -> filter(spartamodel::DataFlowEntity) ->exists( s2 | s2.eAllContents()->includes(s))))">
+                          <subModelOperations xsi:type="tool_1:Let" variableName="newSender" valueExpression="aql: if maybeNewSender -> isEmpty() then target else maybeNewSender->at(1) endif">
+                            <subModelOperations xsi:type="tool_1:SetValue" featureName="sender" valueExpression="var:newSender"/>
+                            <subModelOperations xsi:type="tool_1:For" expression="aql: dfd.eAllContents()-> select(spec | spec.getDataFlow() = element and spec.oclIsTypeOf(spartamodel::SenderSpecification))" iteratorName="oldSendSpec">
+                              <subModelOperations xsi:type="tool_1:ChangeContext" browseExpression="oldSendSpec">
+                                <subModelOperations xsi:type="tool_1:Unset" featureName="specifiesSenderOf"/>
+                                <subModelOperations xsi:type="tool_1:Unset" featureName="sender"/>
+                                <subModelOperations xsi:type="tool_1:RemoveElement"/>
+                              </subModelOperations>
+                            </subModelOperations>
+                            <subModelOperations xsi:type="tool_1:If" conditionExpression="aql: newSender != target">
+                              <subModelOperations xsi:type="tool_1:Let" variableName="newSpecElements" valueExpression="aql: (newSender.eAllContents() -> select( a | (a.eAllContents() -> includes(target)) or (a = target) ) )">
+                                <subModelOperations xsi:type="tool_1:For" expression="aql: newSpecElements" iteratorName="newSpecElement">
+                                  <subModelOperations xsi:type="tool_1:ChangeContext" browseExpression="aql: newSpecElement.eContainer()">
+                                    <subModelOperations xsi:type="tool_1:CreateInstance" typeName="spartamodel::SenderSpecification" referenceName="containedElements" variableName="newSpec">
+                                      <subModelOperations xsi:type="tool_1:ChangeContext" browseExpression="var:newSpec">
+                                        <subModelOperations xsi:type="tool_1:SetValue" featureName="specifiesSenderOf" valueExpression="aql: if self.eContainer() = newSender then element else self.eContainer().send -> any( x | x.getDataFlow() = element) endif"/>
+                                        <subModelOperations xsi:type="tool_1:SetValue" featureName="sender" valueExpression="var:newSpecElement"/>
+                                        <subModelOperations xsi:type="tool_1:SetValue" featureName="name" valueExpression="aql: 'Sender specification for ' + element.name"/>
+                                      </subModelOperations>
+                                    </subModelOperations>
+                                  </subModelOperations>
+                                </subModelOperations>
+                              </subModelOperations>
+                            </subModelOperations>
+                          </subModelOperations>
+                        </subModelOperations>
+                      </subModelOperations>
+                    </subModelOperations>
+                  </subModelOperations>
+                </subModelOperations>
+              </firstModelOperations>
+            </initialOperation>
+            <edgeView name="edgeView"/>
+          </ownedTools>
+          <ownedTools xsi:type="tool:ReconnectEdgeDescription" name="changeRecipient">
+            <source name="source"/>
+            <target name="target"/>
+            <sourceView name="sourceView"/>
+            <targetView name="targetView"/>
+            <element name="element"/>
+            <initialOperation>
+              <firstModelOperations xsi:type="tool_1:ChangeContext" browseExpression="var:element">
+                <subModelOperations xsi:type="tool_1:Let" variableName="dfd" valueExpression="aql: self.eContainer(spartamodel::DFDModel)">
+                  <subModelOperations xsi:type="tool_1:Let" variableName="maybeCommonParents" valueExpression="aql: dfd.eAllContents()->select( a | (a.eAllContents()->includes(target)) and (a.eAllContents()->includes(element.sender)))">
+                    <subModelOperations xsi:type="tool_1:Let" variableName="commonParents" valueExpression="aql: if maybeCommonParents -> isEmpty() then (dfd) else maybeCommonParents endif in">
+                      <subModelOperations xsi:type="tool_1:Let" variableName="smallestCommonParent" valueExpression="aql: commonParents -> any( b | not commonParents -> exists( c | b.eAllContents() -> includes( c )))">
+                        <subModelOperations xsi:type="tool_1:Let" variableName="maybeNewRecipient" valueExpression="aql: smallestCommonParent.eAllContents() -> filter(spartamodel::DataFlowEntity) -> select(s | s.eAllContents()->includes(target) and not (smallestCommonParent.eAllContents() -> filter(spartamodel::DataFlowEntity) ->exists( s2 | s2.eAllContents()->includes(s))))">
+                          <subModelOperations xsi:type="tool_1:Let" variableName="newRecipient" valueExpression="aql: if maybeNewRecipient -> isEmpty() then target else maybeNewRecipient->at(1) endif">
+                            <subModelOperations xsi:type="tool_1:SetValue" featureName="recipient" valueExpression="var:newRecipient"/>
+                            <subModelOperations xsi:type="tool_1:For" expression="aql: dfd.eAllContents()-> select(spec | spec.getDataFlow() = element and spec.oclIsTypeOf(spartamodel::RecipientSpecification))" iteratorName="oldRecipientSpec">
+                              <subModelOperations xsi:type="tool_1:ChangeContext" browseExpression="oldRecipientSpec">
+                                <subModelOperations xsi:type="tool_1:Unset" featureName="specifiesRecipientOf"/>
+                                <subModelOperations xsi:type="tool_1:Unset" featureName="recipient"/>
+                                <subModelOperations xsi:type="tool_1:RemoveElement"/>
+                              </subModelOperations>
+                            </subModelOperations>
+                            <subModelOperations xsi:type="tool_1:If" conditionExpression="aql: newRecipient != target">
+                              <subModelOperations xsi:type="tool_1:Let" variableName="newSpecElements" valueExpression="aql: (newRecipient.eAllContents() -> select( a | (a.eAllContents() -> includes(target)) or (a = target) ) )">
+                                <subModelOperations xsi:type="tool_1:For" expression="aql: newSpecElements" iteratorName="newSpecElement">
+                                  <subModelOperations xsi:type="tool_1:ChangeContext" browseExpression="aql: newSpecElement.eContainer()">
+                                    <subModelOperations xsi:type="tool_1:CreateInstance" typeName="spartamodel::RecipientSpecification" referenceName="containedElements" variableName="newSpec">
+                                      <subModelOperations xsi:type="tool_1:ChangeContext" browseExpression="var:newSpec">
+                                        <subModelOperations xsi:type="tool_1:SetValue" featureName="specifiesRecipientOf" valueExpression="aql: if self.eContainer() = newRecipient then element else self.eContainer().receive -> any( x | x.getDataFlow() = element) endif"/>
+                                        <subModelOperations xsi:type="tool_1:SetValue" featureName="recipient" valueExpression="var:newSpecElement"/>
+                                        <subModelOperations xsi:type="tool_1:SetValue" featureName="name" valueExpression="aql: 'Recipient specification for ' + element.name"/>
+                                      </subModelOperations>
+                                    </subModelOperations>
+                                  </subModelOperations>
+                                </subModelOperations>
+                              </subModelOperations>
+                            </subModelOperations>
+                          </subModelOperations>
+                        </subModelOperations>
+                      </subModelOperations>
+                    </subModelOperations>
+                  </subModelOperations>
+                </subModelOperations>
+              </firstModelOperations>
+            </initialOperation>
+            <edgeView name="edgeView"/>
+          </ownedTools>
+        </toolSections>
+      </defaultLayer>
+      <additionalLayers name="SecurityView" activeByDefault="true">
+        <edgeMappings name="RoleBindingBindsTo" sourceMapping="//@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@additionalLayers[name='SecurityView']/@containerMappings[name='SolutionNode']/@borderedNodeMappings[name='RoleBindingBorder']" targetMapping="//@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@edgeMappings[name='DataFlowEdge'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@nodeMappings[name='DataStoreNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@nodeMappings[name='ExternalEntityNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@nodeMappings[name='ProcessNode']" targetFinderExpression="aql:self.bindsTo">
+          <style sizeComputationExpression="2">
+            <strokeColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='gray']"/>
+            <centerLabelStyleDescription>
+              <labelColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='black']"/>
+            </centerLabelStyleDescription>
+          </style>
+        </edgeMappings>
+        <containerMappings name="SolutionNode" label="SolutionNode" labelDirectEdit="//@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@toolSections.0/@ownedTools[name='Edit%20Name']" semanticCandidatesExpression="aql:self.containedElements" domainClass="spartamodel.Solution">
+          <borderedNodeMappings name="RoleBindingBorder" semanticCandidatesExpression="aql:self.eAllContents()" domainClass="spartamodel.RoleBinding">
+            <style xsi:type="style:SquareDescription" showIcon="false" labelPosition="node" resizeKind="NSEW" width="5">
+              <borderColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='black']"/>
+              <labelColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='black']"/>
+              <color xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='gray']"/>
+            </style>
+            <conditionnalStyles predicateExpression="aql:self.bindsTo == null">
+              <style xsi:type="style:SquareDescription" labelSize="12" showIcon="false" tooltipExpression="aql:'unassigned role: ' + self.name" labelPosition="node" resizeKind="NSEW">
+                <borderColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='black']"/>
+                <labelColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='black']"/>
+                <color xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='light_orange']"/>
+              </style>
+            </conditionnalStyles>
+          </borderedNodeMappings>
+          <style xsi:type="style:FlatContainerStyleDescription" borderSizeComputationExpression="1" showIcon="false" labelAlignment="LEFT">
+            <borderColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='black']"/>
+            <labelColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='black']"/>
+            <backgroundColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='white']"/>
+            <foregroundColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='light_gray']"/>
+          </style>
+        </containerMappings>
+        <toolSections name="Security Tools">
+          <ownedTools xsi:type="tool:ContainerCreationDescription" name="createSolution" containerMappings="//@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@additionalLayers[name='SecurityView']/@containerMappings[name='SolutionNode']">
+            <variable name="container"/>
+            <viewVariable name="containerView"/>
+            <initialOperation>
+              <firstModelOperations xsi:type="tool_1:ChangeContext" browseExpression="var:container">
+                <subModelOperations xsi:type="tool_1:CreateInstance" typeName="spartamodel.Solution" referenceName="containedElements">
+                  <subModelOperations xsi:type="tool_1:SetValue" featureName="name" valueExpression="aql:container.name"/>
+                </subModelOperations>
+              </firstModelOperations>
+            </initialOperation>
+          </ownedTools>
+          <ownedTools xsi:type="tool:EdgeCreationDescription" name="Assign Role" precondition="aql:preSource.binds.bindingTypes->select(t | preTarget.oclIsKindOf(t))->notEmpty()" forceRefresh="true" edgeMappings="//@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@additionalLayers[name='SecurityView']/@edgeMappings[name='RoleBindingBindsTo']">
+            <sourceVariable name="source"/>
+            <targetVariable name="target"/>
+            <sourceViewVariable name="sourceView"/>
+            <targetViewVariable name="targetView"/>
+            <initialOperation>
+              <firstModelOperations xsi:type="tool_1:SetValue" featureName="bindsTo" valueExpression="var:target"/>
+            </initialOperation>
+          </ownedTools>
+          <ownedTools xsi:type="tool:NodeCreationDescription" name="createRole" nodeMappings="//@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@additionalLayers[name='SecurityView']/@containerMappings[name='SolutionNode']/@borderedNodeMappings[name='RoleBindingBorder']">
+            <variable name="container"/>
+            <viewVariable name="containerView"/>
+            <initialOperation>
+              <firstModelOperations xsi:type="tool_1:ChangeContext" browseExpression="var:container">
+                <subModelOperations xsi:type="tool_1:CreateInstance" typeName="spartamodel.RoleBinding" referenceName="rolebinding"/>
+              </firstModelOperations>
+            </initialOperation>
+          </ownedTools>
+          <ownedTools xsi:type="tool:ContainerCreationDescription" name="Apply Solution" containerMappings="//@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@additionalLayers[name='SecurityView']/@containerMappings[name='SolutionNode']">
+            <variable name="container"/>
+            <viewVariable name="containerView"/>
+            <initialOperation>
+              <firstModelOperations xsi:type="tool_1:ChangeContext" browseExpression="var:container">
+                <subModelOperations xsi:type="tool_1:CreateInstance" typeName="spartamodel.Solution" referenceName="containedElements">
+                  <subModelOperations xsi:type="properties:DialogModelOperation" titleExpression="Select solution to apply">
+                    <buttons labelExpression="Cancel" closeDialogOnClick="true" rollbackChangesOnClose="true">
+                      <initialOperation/>
+                    </buttons>
+                    <buttons labelExpression="OK" default="true" closeDialogOnClick="true">
+                      <initialOperation>
+                        <firstModelOperations xsi:type="tool_1:SetValue" featureName="name" valueExpression="aql:instance.securitypattern.name">
+                          <subModelOperations xsi:type="tool_1:SetValue" featureName="description" valueExpression="aql:instance.securitypattern.description">
+                            <subModelOperations xsi:type="tool_1:For" expression="aql:instance.securitypattern.roles">
+                              <subModelOperations xsi:type="tool_1:ChangeContext" browseExpression="aql:instance">
+                                <subModelOperations xsi:type="tool_1:CreateInstance" typeName="spartamodel.RoleBinding" referenceName="rolebinding" variableName="roleinstance">
+                                  <subModelOperations xsi:type="tool_1:SetValue" featureName="name" valueExpression="aql:i.name">
+                                    <subModelOperations xsi:type="tool_1:SetValue" featureName="description" valueExpression="aql:i.description">
+                                      <subModelOperations xsi:type="tool_1:SetValue" featureName="binds" valueExpression="aql:i"/>
+                                    </subModelOperations>
+                                  </subModelOperations>
+                                </subModelOperations>
+                              </subModelOperations>
+                            </subModelOperations>
+                          </subModelOperations>
+                        </firstModelOperations>
+                      </initialOperation>
+                    </buttons>
+                    <page name="SolutionSelections" label="Select solution to apply" labelExpression="Select solution to apply" groups="//@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@additionalLayers[name='SecurityView']/@toolSections.0/@ownedTools[name='Apply%20Solution']/@initialOperation/@firstModelOperations/@subModelOperations.0/@subModelOperations.0/@groups.0"/>
+                    <groups name="Default Group" labelExpression="Available Solutions">
+                      <controls xsi:type="properties:SelectDescription" name="SelectSolution" labelExpression="Solution" valueExpression="aql:instance.securitypattern" candidatesExpression="aql:self.ancestors()->last().oclAsType(spartamodel::DFDModel).eAllContents()->filter(spartamodel::SolutionType)->concat(self.ancestors()->last().oclAsType(spartamodel::DFDModel).resource->filter(spartamodel::SolutionTypeCatalog).eAllContents()->filter(spartamodel::SolutionType))" candidateDisplayExpression="aql:candidate.name">
+                        <initialOperation>
+                          <firstModelOperations xsi:type="tool_1:SetValue" featureName="securitypattern" valueExpression="aql:newValue"/>
+                        </initialOperation>
+                      </controls>
+                      <controls xsi:type="properties:LabelDescription" name="SolutionName" labelExpression="aql:'Name'" helpExpression="aql:instance.securitypattern.description" valueExpression="aql:instance.securitypattern.name"/>
+                      <controls xsi:type="properties:LabelDescription" name="RoleCount" labelExpression="aql:'Number of Roles'" helpExpression="aql:'' + instance.securitypattern.roles.name->sep(', ')" valueExpression="aql:instance.securitypattern.roles->size()"/>
+                    </groups>
+                  </subModelOperations>
+                </subModelOperations>
+              </firstModelOperations>
+            </initialOperation>
+          </ownedTools>
+        </toolSections>
+        <decorationDescriptionsSet/>
+      </additionalLayers>
+      <additionalLayers name="MarkTBFlows" label="Mark Flows Crossing TrustBoundary" activeByDefault="true">
+        <customization>
+          <vsmElementCustomizations xsi:type="description:VSMElementCustomization">
+            <featureCustomizations xsi:type="description:EAttributeCustomization" appliedOn="//@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@edgeMappings[name='DataFlowEdge']/@conditionnalStyles.0/@style/@centerLabelStyleDescription" attributeName="labelExpression" value="aql:self.name + '(!)'"/>
+            <featureCustomizations xsi:type="description:EReferenceCustomization" appliedOn="//@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@edgeMappings[name='DataFlowEdge']/@conditionnalStyles.0/@style" referenceName="strokeColor">
+              <value href="environment:/viewpoint#//@systemColors/@entries[name='dark_red']"/>
+            </featureCustomizations>
+          </vsmElementCustomizations>
+        </customization>
+      </additionalLayers>
+    </ownedRepresentations>
+  </ownedViewpoints>
+</description:Group>

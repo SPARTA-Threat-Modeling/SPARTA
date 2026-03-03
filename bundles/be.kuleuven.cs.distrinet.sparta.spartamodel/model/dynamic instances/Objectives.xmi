@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<securitydfd:DFDModel
+    xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:securitydfd="http://security.distrinet.cs.kuleuven.be/securitydfd"
+    xsi:schemaLocation="http://security.distrinet.cs.kuleuven.be/securitydfd ../securitydfd.ecore"
+    name="SecurityObjectives">
+  <containedElements
+      xsi:type="securitydfd:SecurityObjective"
+      name="Authentication">
+    <counters
+        href="ThreatList.xmi#//@containedElements.0"/>
+  </containedElements>
+  <containedElements
+      xsi:type="securitydfd:SecurityObjective"
+      name="Authorization">
+    <counters
+        href="ThreatList.xmi#//@containedElements.5"/>
+  </containedElements>
+  <containedElements
+      xsi:type="securitydfd:SecurityObjective"
+      name="Confidentiality">
+    <securitysubobjective
+        name="Data Transmission Confidentiality">
+      <counters
+          href="ThreatList.xmi#//@containedElements.3"/>
+    </securitysubobjective>
+  </containedElements>
+  <containedElements
+      xsi:type="securitydfd:SecurityObjective"
+      name="Integrity">
+    <securitysubobjective
+        name="Data Transmission Integrity"/>
+  </containedElements>
+</securitydfd:DFDModel>

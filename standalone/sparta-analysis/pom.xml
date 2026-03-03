@@ -1,0 +1,68 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>be.kuleuven.cs.distrinet.sparta</groupId>
+		<artifactId>standalone</artifactId>
+		<version>2026.0.0</version>
+		<relativePath>..</relativePath>
+	</parent>
+	<artifactId>sparta-analysis</artifactId>
+	<name>sparta-analysis</name>
+	<description>sparta-analysis</description>
+	<packaging>jar</packaging>
+
+	<dependencies>
+		<dependency>
+			<groupId>be.kuleuven.cs.distrinet.sparta</groupId>
+			<artifactId>sparta-model</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>be.kuleuven.cs.distrinet.sparta</groupId>
+			<artifactId>be.kuleuven.cs.distrinet.sparta.threatanalysis</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>be.kuleuven.cs.distrinet.sparta</groupId>
+			<artifactId>sparta-core</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+	</dependencies>
+
+	<build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>3.3.0</version>
+        <executions>
+          <execution>
+            <id>copy</id>
+            <phase>package</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <artifactItems>
+            <artifactItem>
+              <groupId>be.kuleuven.cs.distrinet.sparta</groupId>
+              <artifactId>be.kuleuven.cs.distrinet.sparta.threatanalysis</artifactId>
+              <type>jar</type>
+              <overWrite>true</overWrite>
+              <outputDirectory>${project.build.directory}</outputDirectory>
+<!--               <destFileName>optional-new-name.jar</destFileName> -->
+            </artifactItem>
+          </artifactItems>
+          <outputDirectory>${project.build.directory}/wars</outputDirectory>
+          <overWriteReleases>false</overWriteReleases>
+          <overWriteSnapshots>true</overWriteSnapshots>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>

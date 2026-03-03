@@ -1,0 +1,136 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>be.kuleuven.cs.distrinet.sparta.queries</artifactId>
+  <packaging>eclipse-plugin</packaging>
+  <parent>
+  	<groupId>be.kuleuven.cs.distrinet.sparta</groupId>
+  	<artifactId>be.kuleuven.cs.distrinet.sparta.bundles</artifactId>
+  	<version>2026.0.0</version>
+  </parent>
+
+
+  <dependencies>
+    <dependency>
+      <groupId>org.eclipse.viatra</groupId>
+      <artifactId>viatra-query-runtime</artifactId>
+      <version>${viatra.version}</version>
+    </dependency>
+    
+
+
+    <!-- requires many more dependencies - only use if required -->
+    <!-- <dependency>
+      <groupId>org.eclipse.viatra</groupId>
+      <artifactId>viatra-query-language</artifactId>
+      <version>${viatra.version}</version>
+    </dependency> -->
+  </dependencies>
+
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>viatra</id>
+      <url>https://repo.eclipse.org/content/groups/viatra/</url>
+    </pluginRepository>
+  </pluginRepositories>
+
+  <build>
+  <plugins>
+  <!-- Using maven-clean-plugin to remove previously generated code -->
+  <plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-clean-plugin</artifactId>
+    <version>2.5</version>
+    <executions>
+      <execution>
+        <phase>clean</phase>
+        <goals>
+          <goal>clean</goal>
+        </goals>
+        <configuration>
+          <filesets>
+            <fileset>
+              <!-- Generated code folder -->
+              <directory>src-gen</directory>
+              <includes>
+                <include>**/*</include>
+              </includes>
+            </fileset>
+          </filesets>
+        </configuration>
+      </execution>
+    </executions>
+  </plugin>
+  <!-- Setting up generator -->
+  <plugin>
+    <groupId>org.eclipse.viatra</groupId>
+    <artifactId>viatra-maven-plugin</artifactId>
+    <version>${viatra.version}</version>
+    <!-- Binding execution to the code generation lifecycle phase -->
+    <executions>
+      <execution>
+        <goals>
+          <goal>generate</goal>
+        </goals>
+      </execution>
+    </executions>
+    <configuration>
+      <!-- Output directory - required -->
+      <outputDirectory>src-gen</outputDirectory>
+      <metamodels>
+        <metamodel>
+          <!-- Java class for the EMF EPackage - use this if generated EMF code is in the classpath -->
+          <packageClass>be.kuleuven.cs.distrinet.sparta.spartamodel.SpartaModelPackage</packageClass>
+          <!-- genmodel file used for generating the EMF model classes - use this if EMF model is in the same project -->
+          <!-- <genmodelUri>../school/model/school.genmodel</genmodelUri> -->
+        </metamodel>
+      </metamodels>
+      <!-- Since 1.5, you can use the project dependencies instead of specific Maven dependencies - optional -->
+      <useProjectDependencies>true</useProjectDependencies>
+    </configuration>
+    <dependencies>
+      <!-- Dependency required for the school project (that contains the generated EPackage), unless you set useProjectDependencies -->
+      <!-- <dependency>
+        <groupId>org.eclipse.viatra.query</groupId>
+        <artifactId>school</artifactId>
+        <version>1.2.0</version>
+      </dependency> -->
+    </dependencies>
+  </plugin>
+  </plugins>
+
+  <pluginManagement>
+  	<plugins>
+  		<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+  		<plugin>
+  			<groupId>org.eclipse.m2e</groupId>
+  			<artifactId>lifecycle-mapping</artifactId>
+  			<version>1.0.0</version>
+  			<configuration>
+  				<lifecycleMappingMetadata>
+  					<pluginExecutions>
+  						<pluginExecution>
+  							<pluginExecutionFilter>
+  								<groupId>org.eclipse.viatra</groupId>
+  								<artifactId>
+  									viatra-maven-plugin
+  								</artifactId>
+  								<versionRange>[2.3.2,)</versionRange>
+  								<goals>
+  									<goal>generate</goal>
+  								</goals>
+  							</pluginExecutionFilter>
+  							<action>
+  								<ignore></ignore>
+  							</action>
+  						</pluginExecution>
+  					</pluginExecutions>
+  				</lifecycleMappingMetadata>
+  			</configuration>
+  		</plugin>
+  	</plugins>
+  </pluginManagement>
+  </build>
+
+
+</project>

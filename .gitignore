@@ -1,0 +1,13 @@
+*.class
+.location
+.markers
+.metadata
+com.incquerylabs.cps.queries
+be.kuleuvenb.cs.distrinet.securitydfd.queries/src-gen
+be.kuleuven.cs.distrinet.security.securitydfd.queries/src-gen
+runtime-eclipse
+*._trace
+standalone/standalone-dependencies/target/
+target/
+standalone/*/bin/
+*.xml.versionsBackup

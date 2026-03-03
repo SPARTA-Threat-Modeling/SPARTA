@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension
+         point="org.eclipse.ui.views">
+      <category
+            name="ThreatAnalysis"
+            id="be.kuleuven.cs.distrinet.sparta.analysis.analysisview">
+      </category>
+      <view
+            name="ThreatAnalysis"
+            inject="true"
+            icon="icons/analyse.png"
+            category="be.kuleuven.cs.distrinet.sparta.analysis.analysisview"
+            class="be.kuleuven.cs.distrinet.sparta.analysis.views.ThreatAnalysis"
+            id="be.kuleuven.cs.distrinet.sparta.analysis.views.ThreatAnalysis">
+      </view>
+      <view
+            name="PatternSupport"
+            inject="true"
+            icon="icons/analyse.png"
+            category="be.kuleuven.cs.distrinet.sparta.analysis.patternview"
+            class="be.kuleuven.cs.distrinet.sparta.analysis.views.PatternSupport"
+            id="be.kuleuven.cs.distrinet.sparta.analysis.views.PatternSupport">
+      </view>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension
+            targetID="org.eclipse.jdt.ui.JavaPerspective">
+         <view
+               ratio="0.5"
+               relative="org.eclipse.ui.editorss"
+               relationship="right"
+               id="be.kuleuven.cs.distrinet.sparta.analysis.views.ThreatAnalysis">
+         </view>
+      </perspectiveExtension>
+   </extension>
+   <extension
+         point="org.eclipse.help.contexts">
+      <contexts
+            file="contexts.xml">
+      </contexts>
+   </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            id="be.kuleuven.cs.distrinet.sparta.analysis.loadmodel"
+            name="Load and Analyze Model">
+      </command>
+      <command
+            id="be.kuleuven.cs.distrinet.sparta.analysis.clearengine"
+            name="Clear Engine">
+      </command>
+      <command
+            id="be.kuleuven.cs.distrinet.sparta.analysis.csvexport"
+            name="CSV Export">
+      </command>
+      <command
+            id="be.kuleuven.cs.distrinet.sparta.analysis.reportExport"
+            name="Report Export">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.handlers">
+      <handler
+            class="be.kuleuven.cs.distrinet.sparta.analysis.handlers.LoadHandler"
+            commandId="be.kuleuven.cs.distrinet.sparta.analysis.loadmodel">
+      </handler>
+      <handler
+            class="be.kuleuven.cs.distrinet.sparta.analysis.handlers.ClearHandler"
+            commandId="be.kuleuven.cs.distrinet.sparta.analysis.clearengine">
+      </handler>
+      <handler
+            class="be.kuleuven.cs.distrinet.sparta.analysis.handlers.CSVExportHandler"
+            commandId="be.kuleuven.cs.distrinet.sparta.analysis.csvexport">
+      </handler>
+      <handler
+            class="be.kuleuven.cs.distrinet.sparta.analysis.handlers.ReportExportHandler"
+            commandId="be.kuleuven.cs.distrinet.sparta.analysis.reportExport">
+      </handler>
+   </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            allPopups="false"
+            locationURI="toolbar:be.kuleuven.cs.distrinet.sparta.analysis.views.ThreatAnalysis">
+         <command
+               commandId="be.kuleuven.cs.distrinet.sparta.analysis.loadmodel"
+               icon="icons/analyse.png"
+               label="Load Model"
+               style="push">
+         </command>
+         <command
+               commandId="be.kuleuven.cs.distrinet.sparta.analysis.clearengine"
+               icon="icons/clear.png"
+               label="Clear engine"
+               style="push">
+         </command>
+         <command
+               commandId="be.kuleuven.cs.distrinet.sparta.analysis.csvexport"
+               icon="icons/export.png"
+               label="Export threats"
+               style="push">
+         </command>
+         <command
+               commandId="be.kuleuven.cs.distrinet.sparta.analysis.reportExport"
+               icon="icons/report.png"
+               label="Export report"
+               style="push">
+         </command>
+      </menuContribution>
+   </extension>
+
+</plugin>

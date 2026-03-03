@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" modelDirectory="/be.kuleuven.cs.distrinet.sparta.spartamodel/src"
+    editDirectory="/be.kuleuven.cs.distrinet.sparta.spartamodel.edit/src" editorDirectory="/be.kuleuven.cs.distrinet.sparta.spartamodel.editor/src"
+    modelPluginID="be.kuleuven.cs.distrinet.sparta.spartamodel" modelName="Sparta"
+    editPluginClass="be.kuleuven.cs.distrinet.sparta.spartamodel.provider.SpartaModelEditPlugin"
+    editorPluginClass="be.kuleuven.cs.distrinet.sparta.spartamodel.presentation.SpartaModelEditorPlugin"
+    rootExtendsClass="org.eclipse.emf.ecore.impl.MinimalEObjectImpl$Container" testSuiteClass="be.kuleuven.cs.distrinet.sparta.spartamodel.tests.SpartaModelAllTests"
+    importerID="org.eclipse.emf.importer.ecore" complianceLevel="8.0" copyrightFields="false"
+    editPluginID="be.kuleuven.cs.distrinet.sparta.spartamodel.edit" editorPluginID="be.kuleuven.cs.distrinet.sparta.spartamodel.editor"
+    operationReflection="true" importOrganizing="true">
+  <foreignModel>spartamodel.ecore</foreignModel>
+  <genPackages prefix="SpartaModel" basePackage="be.kuleuven.cs.distrinet.sparta"
+      resource="XMI" disposableProviderFactory="true" extensibleProviderFactory="true"
+      childCreationExtenders="true" fileExtensions="sparta,spartamodel" ecorePackage="spartamodel.ecore#/"
+      publicationLocation="" documentation="The spartamodel package contains all the meta-model classes for creating DFDModels, Security and Privacy solution catalogs, and threat type catalogs.">
+    <genClasses ecoreClass="spartamodel.ecore#//DataFlow">
+      <genOperations ecoreOperation="spartamodel.ecore#//DataFlow/getDataFlow" body="return this;"/>
+    </genClasses>
+    <genClasses image="false" ecoreClass="spartamodel.ecore#//DataFlowEntity">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference spartamodel.ecore#//DataFlowEntity/send"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference spartamodel.ecore#//DataFlowEntity/receive"/>
+    </genClasses>
+    <genClasses ecoreClass="spartamodel.ecore#//ExternalEntity"/>
+    <genClasses ecoreClass="spartamodel.ecore#//Process"/>
+    <genClasses ecoreClass="spartamodel.ecore#//DataStore"/>
+    <genClasses ecoreClass="spartamodel.ecore#//DFDModel">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference spartamodel.ecore#//DFDModel/containedElements"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference spartamodel.ecore#//DFDModel/resource"/>
+    </genClasses>
+    <genClasses image="false" ecoreClass="spartamodel.ecore#//DFDElement">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference spartamodel.ecore#//DFDElement/securityannotation"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference spartamodel.ecore#//DFDElement/dfdelementannotation"/>
+    </genClasses>
+    <genClasses image="false" ecoreClass="spartamodel.ecore#//SecurityElement"/>
+    <genClasses image="false" ecoreClass="spartamodel.ecore#//DFDBoundaryElement">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference spartamodel.ecore#//DFDBoundaryElement/crossingFlows"/>
+    </genClasses>
+    <genClasses ecoreClass="spartamodel.ecore#//TrustBoundaryContainer"/>
+    <genClasses image="false" ecoreClass="spartamodel.ecore#//SenderSpecifiable">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference spartamodel.ecore#//SenderSpecifiable/senderSpecifiedBy"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference spartamodel.ecore#//SenderSpecifiable/sender"/>
+    </genClasses>
+    <genClasses image="false" ecoreClass="spartamodel.ecore#//RecipientSpecifiable">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference spartamodel.ecore#//RecipientSpecifiable/recipientSpecifiedBy"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference spartamodel.ecore#//RecipientSpecifiable/recipient"/>
+    </genClasses>
+    <genClasses ecoreClass="spartamodel.ecore#//SenderSpecification">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference spartamodel.ecore#//SenderSpecification/specifiesSenderOf"/>
+      <genOperations ecoreOperation="spartamodel.ecore#//SenderSpecification/getDataFlow"
+          body="return this.specifiesSenderOf.getDataFlow();"/>
+    </genClasses>
+    <genClasses ecoreClass="spartamodel.ecore#//RecipientSpecification">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference spartamodel.ecore#//RecipientSpecification/specifiesRecipientOf"/>
+      <genOperations ecoreOperation="spartamodel.ecore#//RecipientSpecification/getDataFlow"
+          body="return this.specifiesRecipientOf.getDataFlow();"/>
+    </genClasses>
+    <genClasses image="false" ecoreClass="spartamodel.ecore#//FlowElement">
+      <genOperations ecoreOperation="spartamodel.ecore#//FlowElement/getDataFlow"/>
+    </genClasses>
+    <genClasses image="false" ecoreClass="spartamodel.ecore#//DFDContainer">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference spartamodel.ecore#//DFDContainer/containedElements"/>
+    </genClasses>
+    <genClasses image="false" ecoreClass="spartamodel.ecore#//SecurityAnnotation"/>
+    <genClasses image="false" ecoreClass="spartamodel.ecore#//SolutionType">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference spartamodel.ecore#//SolutionType/roles"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference spartamodel.ecore#//SolutionType/countermeasure"/>
+    </genClasses>
+    <genClasses image="false" ecoreClass="spartamodel.ecore#//Role">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference spartamodel.ecore#//Role/subjected"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute spartamodel.ecore#//Role/bindingTypes"/>
+    </genClasses>
+    <genClasses image="false" ecoreClass="spartamodel.ecore#//AbstractThreatType">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute spartamodel.ecore#//AbstractThreatType/enabled"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference spartamodel.ecore#//AbstractThreatType/patterns"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute spartamodel.ecore#//AbstractThreatType/title"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute spartamodel.ecore#//AbstractThreatType/additionalInfo"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute spartamodel.ecore#//AbstractThreatType/comments"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference spartamodel.ecore#//AbstractThreatType/characteristic"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference spartamodel.ecore#//AbstractThreatType/superThreatType"/>
+    </genClasses>
+    <genClasses image="false" ecoreClass="spartamodel.ecore#//CounterMeasure">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference spartamodel.ecore#//CounterMeasure/mitigates"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference spartamodel.ecore#//CounterMeasure/securitysubobjective"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference spartamodel.ecore#//CounterMeasure/scope"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference spartamodel.ecore#//CounterMeasure/subject"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference spartamodel.ecore#//CounterMeasure/difficulty"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute spartamodel.ecore#//CounterMeasure/mitigatedThreatTypeID"/>
+    </genClasses>
+    <genClasses ecoreClass="spartamodel.ecore#//RoleBinding">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference spartamodel.ecore#//RoleBinding/binds"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference spartamodel.ecore#//RoleBinding/bindsTo"/>
+    </genClasses>
+    <genClasses ecoreClass="spartamodel.ecore#//Solution">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference spartamodel.ecore#//Solution/securitypattern"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference spartamodel.ecore#//Solution/rolebinding"/>
+    </genClasses>
+    <genClasses image="false" ecoreClass="spartamodel.ecore#//SpartaResource">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference spartamodel.ecore#//SpartaResource/securityannotation"/>
+    </genClasses>
+    <genClasses ecoreClass="spartamodel.ecore#//ThreatTypeCatalog">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference spartamodel.ecore#//ThreatTypeCatalog/threat"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference spartamodel.ecore#//ThreatTypeCatalog/threattypegroup"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference spartamodel.ecore#//ThreatTypeCatalog/conditionlist"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute spartamodel.ecore#//ThreatTypeCatalog/imports"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute spartamodel.ecore#//ThreatTypeCatalog/helperPatterns"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute spartamodel.ecore#//ThreatTypeCatalog/package"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference spartamodel.ecore#//ThreatTypeCatalog/patternDependencies"/>
+    </genClasses>
+    <genClasses ecoreClass="spartamodel.ecore#//SolutionTypeCatalog">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference spartamodel.ecore#//SolutionTypeCatalog/solutionTypes"/>
+    </genClasses>
+    <genClasses ecoreClass="spartamodel.ecore#//EStringToEBooleanMap">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute spartamodel.ecore#//EStringToEBooleanMap/key"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute spartamodel.ecore#//EStringToEBooleanMap/value"/>
+    </genClasses>
+    <genClasses ecoreClass="spartamodel.ecore#//ThreatSpecification">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference spartamodel.ecore#//ThreatSpecification/threat"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute spartamodel.ecore#//ThreatSpecification/enabled"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference spartamodel.ecore#//ThreatSpecification/types"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference spartamodel.ecore#//ThreatSpecification/patterns"/>
+    </genClasses>
+    <genClasses ecoreClass="spartamodel.ecore#//ThreatSpecificationCatalog">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference spartamodel.ecore#//ThreatSpecificationCatalog/threatspecifications"/>
+    </genClasses>
+    <genClasses image="false" ecoreClass="spartamodel.ecore#//Asset">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference spartamodel.ecore#//Asset/lossMagnitude"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference spartamodel.ecore#//Asset/estimates"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference spartamodel.ecore#//Asset/bound"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference spartamodel.ecore#//Asset/lossMagnitudeByID"/>
+      <genOperations ecoreOperation="spartamodel.ecore#//Asset/getEstimate" body="Estimate e = null; if (tt.getId() != null || tt.getId() != &quot;&quot;) { e = this.getLossMagnitudeByID().get(tt.getId()); } if (e == null) { e = this.getLossMagnitude().get(tt); } if (e == null) { AbstractThreatType parent = tt.getSuperThreatType(); while ( parent != null &amp;&amp; e == null) { if (parent.getId() != null) { e = this.getLossMagnitudeByID().get(parent.getId()); } if (e == null) { e = this.getLossMagnitude().get(parent); } parent = parent.getSuperThreatType(); } } if (e == null) { if (this.getEstimates().size() >= 1) { e = this.getEstimates().get(0); } } return e;">
+        <genParameters ecoreParameter="spartamodel.ecore#//Asset/getEstimate/tt"/>
+      </genOperations>
+    </genClasses>
+    <genClasses image="false" ecoreClass="spartamodel.ecore#//CompositeThreatType">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference spartamodel.ecore#//CompositeThreatType/subThreatTypes"/>
+    </genClasses>
+    <genClasses ecoreClass="spartamodel.ecore#//ThreatType">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference spartamodel.ecore#//ThreatType/condition"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference spartamodel.ecore#//ThreatType/threatpattern"/>
+      <genOperations ecoreOperation="spartamodel.ecore#//ThreatType/toString" body="return getName();"/>
+      <genOperations ecoreOperation="spartamodel.ecore#//ThreatType/getThreatTypeAncestor"
+          body="AbstractThreatType parent = this; while ( parent.getSuperThreatType() != null ) { parent = parent.getSuperThreatType(); } return parent;"/>
+    </genClasses>
+    <genClasses ecoreClass="spartamodel.ecore#//Estimate">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute spartamodel.ecore#//Estimate/minimum"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute spartamodel.ecore#//Estimate/probable"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute spartamodel.ecore#//Estimate/maximum"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute spartamodel.ecore#//Estimate/confidence"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute spartamodel.ecore#//Estimate/name"/>
+      <genOperations ecoreOperation="spartamodel.ecore#//Estimate/getEstimateName"
+          body="return &quot;&quot; + minimum + &quot;-*&quot; + probable + &quot;*-&quot; + maximum + &quot;-(&quot;  + confidence + &quot;)&quot; + &quot; - (&quot;  + name + &quot;)&quot;;"/>
+    </genClasses>
+    <genClasses ecoreClass="spartamodel.ecore#//ThreatTypeToEstimateMap">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference spartamodel.ecore#//ThreatTypeToEstimateMap/key"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference spartamodel.ecore#//ThreatTypeToEstimateMap/value"/>
+    </genClasses>
+    <genClasses ecoreClass="spartamodel.ecore#//EStringToEStringMap">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute spartamodel.ecore#//EStringToEStringMap/key"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute spartamodel.ecore#//EStringToEStringMap/value"/>
+    </genClasses>
+    <genClasses image="false" ecoreClass="spartamodel.ecore#//ModelElement">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute spartamodel.ecore#//ModelElement/name"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute spartamodel.ecore#//ModelElement/description"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference spartamodel.ecore#//ModelElement/annotations"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute spartamodel.ecore#//ModelElement/id"/>
+    </genClasses>
+    <genClasses ecoreClass="spartamodel.ecore#//OrCompositeThreatType"/>
+    <genClasses ecoreClass="spartamodel.ecore#//AndCompositeThreatType"/>
+    <genClasses ecoreClass="spartamodel.ecore#//ThreatTypeGroup"/>
+    <genClasses image="false" ecoreClass="spartamodel.ecore#//AbstractCondition">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute spartamodel.ecore#//AbstractCondition/title"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute spartamodel.ecore#//AbstractCondition/additionalInfo"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute spartamodel.ecore#//AbstractCondition/comments"/>
+    </genClasses>
+    <genClasses image="false" ecoreClass="spartamodel.ecore#//CompositeCondition"/>
+    <genClasses ecoreClass="spartamodel.ecore#//Condition"/>
+    <genClasses ecoreClass="spartamodel.ecore#//AndCompositeCondition"/>
+    <genClasses ecoreClass="spartamodel.ecore#//OrCompositeCondition"/>
+    <genClasses ecoreClass="spartamodel.ecore#//NotCompositeCondition"/>
+    <genClasses image="false" ecoreClass="spartamodel.ecore#//SingleCompositeCondition">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference spartamodel.ecore#//SingleCompositeCondition/subcondition"/>
+    </genClasses>
+    <genClasses image="false" ecoreClass="spartamodel.ecore#//MultipleCompositeCondition">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference spartamodel.ecore#//MultipleCompositeCondition/subcondition"/>
+    </genClasses>
+    <genClasses ecoreClass="spartamodel.ecore#//ConditionList">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference spartamodel.ecore#//ConditionList/abstractcondition"/>
+    </genClasses>
+    <genClasses ecoreClass="spartamodel.ecore#//AImportedCondition"/>
+    <genClasses ecoreClass="spartamodel.ecore#//ImportedThreatCondition">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference spartamodel.ecore#//ImportedThreatCondition/threattype"/>
+    </genClasses>
+    <genClasses ecoreClass="spartamodel.ecore#//ImportedCondition">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference spartamodel.ecore#//ImportedCondition/condition"/>
+    </genClasses>
+    <genClasses image="false" ecoreClass="spartamodel.ecore#//DFDElementAnnotation">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference spartamodel.ecore#//DFDElementAnnotation/dfdelement"/>
+    </genClasses>
+    <genClasses ecoreClass="spartamodel.ecore#//AttackerModel">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference spartamodel.ecore#//AttackerModel/attackerProfiles"/>
+    </genClasses>
+    <genClasses ecoreClass="spartamodel.ecore#//AttackerProfile">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference spartamodel.ecore#//AttackerProfile/threatCapability"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference spartamodel.ecore#//AttackerProfile/probabilityOfAction"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference spartamodel.ecore#//AttackerProfile/contactFrequency"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference spartamodel.ecore#//AttackerProfile/insider"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute spartamodel.ecore#//AttackerProfile/enabled"/>
+    </genClasses>
+    <genClasses image="false" ecoreClass="spartamodel.ecore#//ICharacteristic"/>
+    <genClasses ecoreClass="spartamodel.ecore#//DataModel">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference spartamodel.ecore#//DataModel/dataModelElements"/>
+    </genClasses>
+    <genClasses ecoreClass="spartamodel.ecore#//DataType">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute spartamodel.ecore#//DataType/sensitive"/>
+    </genClasses>
+    <genClasses ecoreClass="spartamodel.ecore#//TransformedData">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference spartamodel.ecore#//TransformedData/decKey"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference spartamodel.ecore#//TransformedData/encKey"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference spartamodel.ecore#//TransformedData/datatype"/>
+    </genClasses>
+    <genClasses image="false" ecoreClass="spartamodel.ecore#//DataModelElement"/>
+    <genClasses ecoreClass="spartamodel.ecore#//DataSubjectType">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference spartamodel.ecore#//DataSubjectType/personaldatatype"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference spartamodel.ecore#//DataSubjectType/sensitivity"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference spartamodel.ecore#//DataSubjectType/nbrOfSubjects"/>
+    </genClasses>
+    <genClasses ecoreClass="spartamodel.ecore#//PersonalDataType">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference spartamodel.ecore#//PersonalDataType/sensitivity"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference spartamodel.ecore#//PersonalDataType/nbrOfRecords"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference spartamodel.ecore#//PersonalDataType/retention"/>
+    </genClasses>
+    <genClasses ecoreClass="spartamodel.ecore#//DataSet">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference spartamodel.ecore#//DataSet/datatype"/>
+    </genClasses>
+    <genClasses image="false" ecoreClass="spartamodel.ecore#//IModelElementAnnotation">
+      <genOperations ecoreOperation="spartamodel.ecore#//IModelElementAnnotation/getAnnotation"/>
+    </genClasses>
+    <genClasses ecoreClass="spartamodel.ecore#//KVModelElementAnnotation">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute spartamodel.ecore#//KVModelElementAnnotation/key"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute spartamodel.ecore#//KVModelElementAnnotation/value"/>
+      <genOperations ecoreOperation="spartamodel.ecore#//KVModelElementAnnotation/getAnnotation"
+          body="return this.key + &quot;:&quot; + this.value;"/>
+    </genClasses>
+    <genClasses ecoreClass="spartamodel.ecore#//ModelElementAnnotation">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute spartamodel.ecore#//ModelElementAnnotation/value"/>
+      <genOperations ecoreOperation="spartamodel.ecore#//ModelElementAnnotation/getAnnotation"
+          body="return this.value;"/>
+    </genClasses>
+    <genClasses ecoreClass="spartamodel.ecore#//ThreatPattern">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute spartamodel.ecore#//ThreatPattern/longDescription"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute spartamodel.ecore#//ThreatPattern/patterns"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference spartamodel.ecore#//ThreatPattern/mapping"/>
+    </genClasses>
+    <genClasses ecoreClass="spartamodel.ecore#//ThreatTypeIDToEstimateMap">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference spartamodel.ecore#//ThreatTypeIDToEstimateMap/value"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute spartamodel.ecore#//ThreatTypeIDToEstimateMap/key"/>
+    </genClasses>
+  </genPackages>
+</genmodel:GenModel>

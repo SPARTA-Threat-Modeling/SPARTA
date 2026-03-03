@@ -1,0 +1,27 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: SPARTA IO
+Bundle-SymbolicName: be.kuleuven.cs.distrinet.sparta.io
+Bundle-Version: 2026.0.0
+Bundle-Vendor: DistriNet
+Automatic-Module-Name: be.kuleuven.cs.distrinet.sparta.core
+Bundle-RequiredExecutionEnvironment: JavaSE-11
+Require-Bundle: be.kuleuven.cs.distrinet.sparta.threatanalysis,
+ be.kuleuven.cs.distrinet.sparta.core,
+ com.fasterxml.jackson.core.jackson-databind,
+ com.fasterxml.jackson.core.jackson-core;bundle-version="2.10.3",
+ be.kuleuven.cs.distrinet.sparta.spartamodel,
+ org.apache.poi,
+ org.apache.poi.ooxml,
+ com.fasterxml.jackson.core.jackson-annotations,
+ org.apache.commons.commons-codec,
+ org.apache.commons.commons-io,
+ org.yaml.snakeyaml,
+ org.eclipse.core.runtime;bundle-version="3.32.0",
+ org.eclipse.sirius.diagram,
+ org.eclipse.sirius.diagram.ui,
+ org.eclipse.sirius.common.ui
+Export-Package: be.kuleuven.cs.distrinet.sparta.io,
+ be.kuleuven.cs.distrinet.sparta.io.convert,
+ be.kuleuven.cs.distrinet.sparta.io.json,
+ be.kuleuven.cs.distrinet.sparta.io.util

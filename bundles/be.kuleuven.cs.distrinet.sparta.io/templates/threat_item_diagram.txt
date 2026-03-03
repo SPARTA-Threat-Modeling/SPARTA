@@ -1,0 +1,7 @@
+\begin{center}
+\begin{tikzpicture}
+\node[$$SENDERTYPE$$] (source) [align=center] {$$SENDERNAME$$};
+\node[$$RECIPIENTTYPE$$] (dest) [align=center, right of=source, xshift=4cm] {$$RECIPIENTNAME$$};
+\draw[arrow,$$FLOWHIGHLIGHT$$] (source) -- node[pos=0.5,above,text width=2.5cm,text centered,font = {\footnotesize}] {$$FLOWNAME$$} (dest);
+\end{tikzpicture}
+\end{center}

@@ -1,0 +1,12 @@
+\subsection{$$NAME$$}\label{$$LABEL$$}
+
+$$DIAGRAM$$
+
+\begin{description}
+\item[Type] $$TYPE$$
+\item[Summary] $$DESCRIPTION$$
+\item[DFD Elements] $$ELEMENTS$$
+\item[Affected element] $$AFFECTED$$
+\item[Risk] $$RISK$$
+\end{description}
+	

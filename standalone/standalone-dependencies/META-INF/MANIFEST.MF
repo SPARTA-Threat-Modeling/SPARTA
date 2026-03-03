@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Ignored
+Bundle-SymbolicName: standalone-dependencies
+Bundle-Version: 2025.0.1.qualifier
+Require-Bundle: org.eclipse.emf.ecore,
+ org.eclipse.emf,
+ org.eclipse.emf.common,
+ org.eclipse.emf.ecore.xmi,
+ be.kuleuven.cs.distrinet.sparta.spartamodel,
+ be.kuleuven.cs.distrinet.sparta.queries;bundle-version="1.0.0",
+ org.eclipse.emf.codegen.ecore
+Bundle-Vendor: Ignored
+Automatic-Module-Name: standalone.dependencies
+Bundle-RequiredExecutionEnvironment: JavaSE-11

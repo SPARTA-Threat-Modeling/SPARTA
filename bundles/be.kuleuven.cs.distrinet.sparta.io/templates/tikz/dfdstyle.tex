@@ -1,0 +1,38 @@
+\usetikzlibrary{fit,matrix,calc,backgrounds}
+
+\makeatletter
+\pgfdeclareshape{datastore}{
+  \inheritsavedanchors[from=rectangle]
+  \inheritanchorborder[from=rectangle]
+  \inheritanchor[from=rectangle]{center}
+  \inheritanchor[from=rectangle]{base}
+  \inheritanchor[from=rectangle]{north}
+  \inheritanchor[from=rectangle]{north east}
+  \inheritanchor[from=rectangle]{east}
+  \inheritanchor[from=rectangle]{south east}
+  \inheritanchor[from=rectangle]{south}
+  \inheritanchor[from=rectangle]{south west}
+  \inheritanchor[from=rectangle]{west}
+  \inheritanchor[from=rectangle]{north west}
+  \backgroundpath{
+    \southwest \pgf@xa=\pgf@x \pgf@ya=\pgf@y % chktex 1
+    \northeast \pgf@xb=\pgf@x \pgf@yb=\pgf@y % chktex 1
+    \pgfpathmoveto{\pgfpoint{\pgf@xa}{\pgf@ya}}
+    \pgfpathlineto{\pgfpoint{\pgf@xb}{\pgf@ya}}
+    \pgfpathmoveto{\pgfpoint{\pgf@xa}{\pgf@yb}}
+    \pgfpathlineto{\pgfpoint{\pgf@xb}{\pgf@yb}}
+ }
+}
+\makeatother
+
+
+\tikzset{
+	dfdbase/.style={draw,very thick,align=center,font=\ttfamily\footnotesize},
+	process/.style={dfdbase,circle, minimum width=1.25cm},
+	datastore/.style={dfdbase,shape=datastore,inner sep=.1cm,minimum width=2cm},
+	externalentity/.style={dfdbase,inner sep=.1cm,minimum width=2cm},
+	to/.style={->,>=stealth',shorten >=1pt,very thick,font=\sffamily\footnotesize},
+	trustboundary/.style={dfdbase,line width=2pt,rectangle,color=red,dashed},
+	trustboundaryline/.style={dfdbase,line width=2pt,color=red,dashed},
+	dflabel/.style={font=\ttfamily\footnotesize}
+}

@@ -1,0 +1,58 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>be.kuleuven.cs.distrinet.sparta.bundles</artifactId>
+  <packaging>pom</packaging>
+  <parent>
+  	<groupId>be.kuleuven.cs.distrinet.sparta</groupId>
+  	<artifactId>be.kuleuven.cs.distrinet.sparta.root</artifactId>
+  	<version>2026.0.0</version>
+  </parent>
+  <modules>
+  	<module>be.kuleuven.cs.distrinet.sparta.spartamodel</module>
+  	<module>be.kuleuven.cs.distrinet.sparta.spartamodel.edit</module>
+  	<module>be.kuleuven.cs.distrinet.sparta.spartamodel.editor</module>
+  	<module>be.kuleuven.cs.distrinet.sparta.spartamodel.tests</module>
+  	<module>be.kuleuven.cs.distrinet.sparta.design</module>
+  	<module>be.kuleuven.cs.distrinet.sparta.rcp</module>
+
+  	<module>be.kuleuven.cs.distrinet.sparta.queries</module>
+
+  	<module>be.kuleuven.cs.distrinet.sparta.analysis</module>
+  	<module>be.kuleuven.cs.distrinet.sparta.core</module>
+  	<module>be.kuleuven.cs.distrinet.sparta.io</module>
+  	<module>be.kuleuven.cs.distrinet.sparta.threatanalysis</module>
+  </modules>
+
+  <build>
+    <sourceDirectory>src</sourceDirectory>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.8.0</version>
+        <configuration>
+          <source>11</source>
+          <target>11</target>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <profiles>
+  	<profile>
+  		<id>sign</id>
+  		<build>
+  		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jarsigner-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.eclipse.cbi.maven.plugins</groupId>
+				<artifactId>eclipse-jarsigner-plugin</artifactId>
+			</plugin>
+		</plugins>
+  		</build>
+  	</profile>
+  </profiles>
+
+</project>

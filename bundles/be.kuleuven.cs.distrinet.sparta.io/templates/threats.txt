@@ -1,0 +1,3 @@
+\section{$$TYPE$$}
+
+$$THREAT_ITEMS$$

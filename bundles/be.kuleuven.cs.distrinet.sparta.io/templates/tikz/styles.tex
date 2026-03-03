@@ -1,0 +1,72 @@
+%Process style
+\tikzset{P/.style={draw,thick,circle,inner sep=4pt, node contents = {P}}}
+\tikzset{WebApp/.style={draw,thick,circle, node contents = {Web\\App}}}
+\tikzset{AuthZ/.style={draw,thick,circle,inner sep=1pt, node contents = {AuthZ\\Service}}}
+\tikzset{AuthN/.style={draw,thick,circle,inner sep=1pt, node contents = {AuthN\\Service}}}
+\tikzset{ArchInt/.style={draw,thick,circle,inner sep=0pt, node contents = {Archive\\Interface}}}
+\tikzset{P1/.style={draw,thick,circle, node contents = {P1}}}
+\tikzset{P2/.style={draw,thick,circle, node contents = {P2}}}
+\tikzset{P3/.style={draw,thick,circle, node contents = {P3}}}
+\tikzset{p/.style={draw,thick,circle, node contents = {P}}}
+\tikzset{px/.style={draw,thick,circle, node contents = {X}}}
+
+%External Entity style
+\tikzset{E/.style={draw,thick,rectangle,inner sep=4pt, node contents={E}}}
+\tikzset{User/.style={draw,thick,rectangle, node contents={User}}}
+\tikzset{eID/.style={draw,thick,rectangle, node contents={eID\\service}}}
+\tikzset{E1/.style={draw,thick,rectangle, node contents={E1}}}
+\tikzset{E2/.style={draw,thick,rectangle, node contents={E2}}}
+\tikzset{E3/.style={draw,thick,rectangle, node contents={E3}}}
+\tikzset{E4/.style={draw,thick,rectangle, node contents={E4}}}
+
+%Data Store style
+\makeatletter
+\pgfdeclareshape{datastore}{
+  \inheritsavedanchors[from=rectangle]
+  \inheritanchorborder[from=rectangle]
+  \inheritanchor[from=rectangle]{center}
+  \inheritanchor[from=rectangle]{base}
+  \inheritanchor[from=rectangle]{north}
+  \inheritanchor[from=rectangle]{north east}
+  \inheritanchor[from=rectangle]{east}
+  \inheritanchor[from=rectangle]{south east}
+  \inheritanchor[from=rectangle]{south}
+  \inheritanchor[from=rectangle]{south west}
+  \inheritanchor[from=rectangle]{west}
+  \inheritanchor[from=rectangle]{north west}
+  \backgroundpath{
+    %  store lower right in xa/ya and upper right in xb/yb
+    \southwest \pgf@xa=\pgf@x \pgf@ya=\pgf@y
+    \northeast \pgf@xb=\pgf@x \pgf@yb=\pgf@y
+    \pgfpathmoveto{\pgfpoint{\pgf@xa}{\pgf@ya}}
+    \pgfpathlineto{\pgfpoint{\pgf@xb}{\pgf@ya}}
+    \pgfpathmoveto{\pgfpoint{\pgf@xa}{\pgf@yb}}
+    \pgfpathlineto{\pgfpoint{\pgf@xb}{\pgf@yb}}
+ }
+}
+\makeatother
+
+\tikzset{D/.style={-,draw,very thick,shape=datastore,inner sep=.2cm, node contents = {Data\\Store}}}
+\tikzset{ACP/.style={-,draw,very thick,shape=datastore,inner sep=.1cm, node contents = {Access\\Control\\Policies}}}
+\tikzset{ConsentDB/.style={-,draw,very thick,shape=datastore,inner sep=.1cm, node contents = {Consent\\Forms}}}
+\tikzset{UserDB/.style={-,draw,very thick,shape=datastore,inner sep=.1cm, node contents = {User\\Credentials}}}
+\tikzset{DS1/.style={-,draw,very thick,shape=datastore,inner sep=.2cm, node contents = {DS1}}}
+\tikzset{DS2/.style={-,draw,very thick,shape=datastore,inner sep=.2cm, node contents = {DS2}}}
+\tikzset{DS3/.style={-,draw,very thick,shape=datastore,inner sep=.2cm, node contents = {DS3}}}
+
+%Any DFD element
+\tikzset{A/.style={ node contents = {Any}}}
+\tikzset{X/.style={ node contents = {\ \ X\ \ }}}
+\tikzset{Y/.style={ node contents = {\ \ Y\ \ }}}
+\tikzset{Z/.style={ node contents = {\ \ Z\ \ }}}
+\tikzset{none/.style={ node contents = {\phantom{P}}, draw=none, align=center}}
+
+%Call flow style
+\tikzset{C/.style={->,shorten >=1pt,semithick,font=\sffamily\large}}
+
+%Return flow style
+\tikzset{R/.style={->,dashed,shorten >=1pt,semithick,font=\sffamily\large}}
+
+\tikzstyle{arrow} = [thick,->,>=stealth]
+
+\tikzset{cause/.style={->,semithick, sloped, anchor=center, above}}
