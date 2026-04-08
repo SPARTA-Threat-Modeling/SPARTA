@@ -30,7 +30,7 @@
   <pluginRepositories>
     <pluginRepository>
       <id>viatra</id>
-      <url>https://repo.eclipse.org/content/groups/viatra/</url>
+      <url>https://repo.eclipse.org/content/groups/viatra2/</url>
     </pluginRepository>
   </pluginRepositories>
 
