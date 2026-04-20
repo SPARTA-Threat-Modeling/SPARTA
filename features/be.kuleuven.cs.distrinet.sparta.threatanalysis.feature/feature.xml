@@ -2,7 +2,7 @@
 <feature
       id="be.kuleuven.cs.distrinet.sparta.threatanalysis.feature"
       label="SPARTA Threat Analysis Support"
-      version="2026.0.0"
+      version="2026.1.0"
       provider-name="DistriNet">
 
    <description>

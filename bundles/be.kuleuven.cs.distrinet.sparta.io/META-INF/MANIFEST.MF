@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: SPARTA IO
 Bundle-SymbolicName: be.kuleuven.cs.distrinet.sparta.io
-Bundle-Version: 2026.0.0
+Bundle-Version: 2026.1.0
 Bundle-Vendor: DistriNet
 Automatic-Module-Name: be.kuleuven.cs.distrinet.sparta.core
 Bundle-RequiredExecutionEnvironment: JavaSE-11

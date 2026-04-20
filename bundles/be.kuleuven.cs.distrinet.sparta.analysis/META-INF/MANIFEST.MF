@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: SPARTA Analysis
 Bundle-SymbolicName: be.kuleuven.cs.distrinet.sparta.analysis;singleton:=true
-Bundle-Version: 2026.0.0
+Bundle-Version: 2026.1.0
 Bundle-Activator: be.kuleuven.cs.distrinet.sparta.analysis.Activator
 Bundle-Vendor: DistriNet
 Require-Bundle: org.eclipse.ui,

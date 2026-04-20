@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: SPARTA  Threat Modeling
 Bundle-SymbolicName: be.kuleuven.cs.distrinet.sparta.rcp;singleton:=true
-Bundle-Version: 2026.0.0
+Bundle-Version: 2026.1.0
 Bundle-Activator: be.kuleuven.cs.distrinet.sparta.rcp.Activator
 Bundle-Vendor: DistriNet
 Require-Bundle: jakarta.inject.jakarta.inject-api;bundle-version="0.0.0",

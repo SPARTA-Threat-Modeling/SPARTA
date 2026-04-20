@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature url="features/be.kuleuven.cs.distrinet.sparta.feature_2026.0.0.jar" id="be.kuleuven.cs.distrinet.sparta.feature" version="2026.0.0">
+   <feature url="features/be.kuleuven.cs.distrinet.sparta.feature_2026.1.0.jar" id="be.kuleuven.cs.distrinet.sparta.feature" version="2026.1.0">
       <category name="threatmodeling"/>
    </feature>
    <feature id="be.kuleuven.cs.distrinet.sparta.graphicalmodeling.feature">

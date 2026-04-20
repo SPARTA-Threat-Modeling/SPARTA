@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: SPARTA DFD Queries
 Bundle-SymbolicName: be.kuleuven.cs.distrinet.sparta.queries;singleton:=true
-Bundle-Version: 2026.0.0
+Bundle-Version: 2026.1.0
 Bundle-Vendor: DistriNet
 Export-Package: be.kuleuven.cs.distrinet.sparta.queries
 Require-Bundle: org.eclipse.emf.ecore,
