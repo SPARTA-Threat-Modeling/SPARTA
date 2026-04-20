@@ -143,7 +143,7 @@ public abstract class AssetImpl extends ModelElementImpl implements Asset {
 	@Override
 	public EList<RoleBinding> getBound() {
 		if (bound == null) {
-			bound = new EObjectWithInverseResolvingEList<RoleBinding>(RoleBinding.class, this, SpartaModelPackage.ASSET__BOUND, SpartaModelPackage.ROLE_BINDING__BINDS_TO);
+			bound = new EObjectWithInverseResolvingEList.ManyInverse<RoleBinding>(RoleBinding.class, this, SpartaModelPackage.ASSET__BOUND, SpartaModelPackage.ROLE_BINDING__BINDS_TO);
 		}
 		return bound;
 	}

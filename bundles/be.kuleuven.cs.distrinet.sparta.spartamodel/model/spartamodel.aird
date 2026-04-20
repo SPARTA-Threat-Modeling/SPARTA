@@ -27,7 +27,7 @@
         <description xmi:type="description_1:DiagramDescription" href="platform:/plugin/org.eclipse.emf.ecoretools.design/description/ecore.odesign#//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Entities']"/>
         <target xmi:type="ecore:EPackage" href="spartamodel.ecore#/"/>
       </ownedRepresentationDescriptors>
-      <ownedRepresentationDescriptors xmi:type="viewpoint:DRepresentationDescriptor" uid="_EiWh0HkwEeyGXOKo2CKeIw" name="solutions" repPath="#_EiVTsHkwEeyGXOKo2CKeIw" changeId="1754571280922">
+      <ownedRepresentationDescriptors xmi:type="viewpoint:DRepresentationDescriptor" uid="_EiWh0HkwEeyGXOKo2CKeIw" name="solutions" repPath="#_EiVTsHkwEeyGXOKo2CKeIw" changeId="1776343838459">
         <description xmi:type="description_1:DiagramDescription" href="platform:/plugin/org.eclipse.emf.ecoretools.design/description/ecore.odesign#//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Entities']"/>
         <target xmi:type="ecore:EPackage" href="spartamodel.ecore#/"/>
       </ownedRepresentationDescriptors>
@@ -35,7 +35,7 @@
         <description xmi:type="description_1:DiagramDescription" href="platform:/plugin/org.eclipse.emf.ecoretools.design/description/ecore.odesign#//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Entities']"/>
         <target xmi:type="ecore:EPackage" href="spartamodel.ecore#/"/>
       </ownedRepresentationDescriptors>
-      <ownedRepresentationDescriptors xmi:type="viewpoint:DRepresentationDescriptor" uid="_jzZN0HrbEeyX_4qbKWZyGg" name="attackers" repPath="#_jzJWMHrbEeyX_4qbKWZyGg" changeId="1754573864376">
+      <ownedRepresentationDescriptors xmi:type="viewpoint:DRepresentationDescriptor" uid="_jzZN0HrbEeyX_4qbKWZyGg" name="attackers" repPath="#_jzJWMHrbEeyX_4qbKWZyGg" changeId="1776343719666">
         <description xmi:type="description_1:DiagramDescription" href="platform:/plugin/org.eclipse.emf.ecoretools.design/description/ecore.odesign#//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Entities']"/>
         <target xmi:type="ecore:EPackage" href="spartamodel.ecore#/"/>
       </ownedRepresentationDescriptors>
@@ -7387,21 +7387,21 @@
         <children xmi:type="notation:Node" xmi:id="_TKtSUHkwEeyGXOKo2CKeIw" type="2003" element="_TKkIYHkwEeyGXOKo2CKeIw">
           <children xmi:type="notation:Node" xmi:id="_TKtSU3kwEeyGXOKo2CKeIw" type="5007"/>
           <children xmi:type="notation:Node" xmi:id="_TKtSVHkwEeyGXOKo2CKeIw" type="7004">
+            <children xmi:type="notation:Node" xmi:id="_PDq5_HONEfCzadQ34ll9Jw" type="3010" element="_PDnPlHONEfCzadQ34ll9Jw">
+              <styles xmi:type="notation:FontStyle" xmi:id="_PDq5_XONEfCzadQ34ll9Jw" fontColor="8224125" fontName="Segoe UI" fontHeight="8" italic="true"/>
+              <layoutConstraint xmi:type="notation:Location" xmi:id="_PDq5_nONEfCzadQ34ll9Jw"/>
+            </children>
             <children xmi:type="notation:Node" xmi:id="_TKtSV3kwEeyGXOKo2CKeIw" visible="false" type="3010" element="_TKpA4HkwEeyGXOKo2CKeIw">
               <styles xmi:type="notation:FontStyle" xmi:id="_TKtSWHkwEeyGXOKo2CKeIw" fontName="Segoe UI" fontHeight="8"/>
               <layoutConstraint xmi:type="notation:Location" xmi:id="_TKtSWXkwEeyGXOKo2CKeIw"/>
-            </children>
-            <children xmi:type="notation:Node" xmi:id="_PDq5-XONEfCzadQ34ll9Jw" type="3010" element="_PDnPknONEfCzadQ34ll9Jw">
-              <styles xmi:type="notation:FontStyle" xmi:id="_PDq5-nONEfCzadQ34ll9Jw" fontName="Segoe UI" fontHeight="8"/>
-              <layoutConstraint xmi:type="notation:Location" xmi:id="_PDq5-3ONEfCzadQ34ll9Jw"/>
             </children>
             <children xmi:type="notation:Node" xmi:id="_TKt5YHkwEeyGXOKo2CKeIw" type="3010" element="_TKpA4nkwEeyGXOKo2CKeIw">
               <styles xmi:type="notation:FontStyle" xmi:id="_TKt5YXkwEeyGXOKo2CKeIw" fontName="Segoe UI" fontHeight="8"/>
               <layoutConstraint xmi:type="notation:Location" xmi:id="_TKt5YnkwEeyGXOKo2CKeIw"/>
             </children>
-            <children xmi:type="notation:Node" xmi:id="_PDq5_HONEfCzadQ34ll9Jw" type="3010" element="_PDnPlHONEfCzadQ34ll9Jw">
-              <styles xmi:type="notation:FontStyle" xmi:id="_PDq5_XONEfCzadQ34ll9Jw" fontColor="8224125" fontName="Segoe UI" fontHeight="8" italic="true"/>
-              <layoutConstraint xmi:type="notation:Location" xmi:id="_PDq5_nONEfCzadQ34ll9Jw"/>
+            <children xmi:type="notation:Node" xmi:id="_PDq5-XONEfCzadQ34ll9Jw" type="3010" element="_PDnPknONEfCzadQ34ll9Jw">
+              <styles xmi:type="notation:FontStyle" xmi:id="_PDq5-nONEfCzadQ34ll9Jw" fontName="Segoe UI" fontHeight="8"/>
+              <layoutConstraint xmi:type="notation:Location" xmi:id="_PDq5-3ONEfCzadQ34ll9Jw"/>
             </children>
             <styles xmi:type="notation:SortingStyle" xmi:id="_TKtSVXkwEeyGXOKo2CKeIw"/>
             <styles xmi:type="notation:FilteringStyle" xmi:id="_TKtSVnkwEeyGXOKo2CKeIw"/>
@@ -7771,11 +7771,28 @@
         <description xmi:type="style:FlatContainerStyleDescription" href="platform:/plugin/org.eclipse.emf.ecoretools.design/description/ecore.odesign#//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Entities']/@defaultLayer/@containerMappings[name='EC%20EClass']/@style"/>
       </ownedStyle>
       <actualMapping xmi:type="description_1:ContainerMapping" href="platform:/plugin/org.eclipse.emf.ecoretools.design/description/ecore.odesign#//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Entities']/@defaultLayer/@containerMappings[name='EC%20EClass']"/>
+      <ownedElements xmi:type="diagram:DNodeListElement" uid="_PDnPlHONEfCzadQ34ll9Jw" name=" annotations : IModelElementAnnotation" tooltipText="">
+        <target xmi:type="ecore:EReference" href="spartamodel.ecore#//ModelElement/annotations"/>
+        <semanticElements xmi:type="ecore:EReference" href="spartamodel.ecore#//ModelElement/annotations"/>
+        <ownedStyle xmi:type="diagram:BundledImage" uid="_PDnPlXONEfCzadQ34ll9Jw" labelColor="125,125,125" labelAlignment="LEFT">
+          <labelFormat>italic</labelFormat>
+          <description xmi:type="style:BundledImageDescription" href="platform:/plugin/org.eclipse.emf.ecoretools.design/description/ecore.odesign#//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Entities']/@defaultLayer/@containerMappings[name='EC%20EClass']/@subNodeMappings[name='EC%20EReferenceNode']/@conditionnalStyles.0/@style"/>
+        </ownedStyle>
+        <actualMapping xmi:type="description_1:NodeMapping" href="platform:/plugin/org.eclipse.emf.ecoretools.design/description/ecore.odesign#//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Entities']/@defaultLayer/@containerMappings[name='EC%20EClass']/@subNodeMappings[name='EC%20EReferenceNode']"/>
+      </ownedElements>
       <ownedElements xmi:type="diagram:DNodeListElement" uid="_TKpA4HkwEeyGXOKo2CKeIw" name=" mitigates : AbstractThreatType" visible="false" tooltipText="">
         <target xmi:type="ecore:EReference" href="spartamodel.ecore#//CounterMeasure/mitigates"/>
         <semanticElements xmi:type="ecore:EReference" href="spartamodel.ecore#//CounterMeasure/mitigates"/>
         <graphicalFilters xmi:type="diagram:HideFilter" uid="_jm67kHONEfCzadQ34ll9Jw"/>
         <ownedStyle xmi:type="diagram:BundledImage" uid="_TKpA4XkwEeyGXOKo2CKeIw" labelAlignment="LEFT" color="114,159,207">
+          <description xmi:type="style:BundledImageDescription" href="platform:/plugin/org.eclipse.emf.ecoretools.design/description/ecore.odesign#//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Entities']/@defaultLayer/@containerMappings[name='EC%20EClass']/@subNodeMappings[name='EC%20EReferenceNode']/@style"/>
+        </ownedStyle>
+        <actualMapping xmi:type="description_1:NodeMapping" href="platform:/plugin/org.eclipse.emf.ecoretools.design/description/ecore.odesign#//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Entities']/@defaultLayer/@containerMappings[name='EC%20EClass']/@subNodeMappings[name='EC%20EReferenceNode']"/>
+      </ownedElements>
+      <ownedElements xmi:type="diagram:DNodeListElement" uid="_TKpA4nkwEeyGXOKo2CKeIw" name=" difficulty : Estimate" tooltipText="">
+        <target xmi:type="ecore:EReference" href="spartamodel.ecore#//CounterMeasure/difficulty"/>
+        <semanticElements xmi:type="ecore:EReference" href="spartamodel.ecore#//CounterMeasure/difficulty"/>
+        <ownedStyle xmi:type="diagram:BundledImage" uid="_TKpA43kwEeyGXOKo2CKeIw" labelAlignment="LEFT" color="114,159,207">
           <description xmi:type="style:BundledImageDescription" href="platform:/plugin/org.eclipse.emf.ecoretools.design/description/ecore.odesign#//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Entities']/@defaultLayer/@containerMappings[name='EC%20EClass']/@subNodeMappings[name='EC%20EReferenceNode']/@style"/>
         </ownedStyle>
         <actualMapping xmi:type="description_1:NodeMapping" href="platform:/plugin/org.eclipse.emf.ecoretools.design/description/ecore.odesign#//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Entities']/@defaultLayer/@containerMappings[name='EC%20EClass']/@subNodeMappings[name='EC%20EReferenceNode']"/>
@@ -7787,23 +7804,6 @@
           <description xmi:type="style:BundledImageDescription" href="platform:/plugin/org.eclipse.emf.ecoretools.design/description/ecore.odesign#//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Entities']/@defaultLayer/@containerMappings[name='EC%20EClass']/@subNodeMappings[name='EC%20EAttribute']/@style"/>
         </ownedStyle>
         <actualMapping xmi:type="description_1:NodeMapping" href="platform:/plugin/org.eclipse.emf.ecoretools.design/description/ecore.odesign#//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Entities']/@defaultLayer/@containerMappings[name='EC%20EClass']/@subNodeMappings[name='EC%20EAttribute']"/>
-      </ownedElements>
-      <ownedElements xmi:type="diagram:DNodeListElement" uid="_TKpA4nkwEeyGXOKo2CKeIw" name=" difficulty : Estimate" tooltipText="">
-        <target xmi:type="ecore:EReference" href="spartamodel.ecore#//CounterMeasure/difficulty"/>
-        <semanticElements xmi:type="ecore:EReference" href="spartamodel.ecore#//CounterMeasure/difficulty"/>
-        <ownedStyle xmi:type="diagram:BundledImage" uid="_TKpA43kwEeyGXOKo2CKeIw" labelAlignment="LEFT" color="114,159,207">
-          <description xmi:type="style:BundledImageDescription" href="platform:/plugin/org.eclipse.emf.ecoretools.design/description/ecore.odesign#//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Entities']/@defaultLayer/@containerMappings[name='EC%20EClass']/@subNodeMappings[name='EC%20EReferenceNode']/@style"/>
-        </ownedStyle>
-        <actualMapping xmi:type="description_1:NodeMapping" href="platform:/plugin/org.eclipse.emf.ecoretools.design/description/ecore.odesign#//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Entities']/@defaultLayer/@containerMappings[name='EC%20EClass']/@subNodeMappings[name='EC%20EReferenceNode']"/>
-      </ownedElements>
-      <ownedElements xmi:type="diagram:DNodeListElement" uid="_PDnPlHONEfCzadQ34ll9Jw" name=" annotations : IModelElementAnnotation" tooltipText="">
-        <target xmi:type="ecore:EReference" href="spartamodel.ecore#//ModelElement/annotations"/>
-        <semanticElements xmi:type="ecore:EReference" href="spartamodel.ecore#//ModelElement/annotations"/>
-        <ownedStyle xmi:type="diagram:BundledImage" uid="_PDnPlXONEfCzadQ34ll9Jw" labelColor="125,125,125" labelAlignment="LEFT">
-          <labelFormat>italic</labelFormat>
-          <description xmi:type="style:BundledImageDescription" href="platform:/plugin/org.eclipse.emf.ecoretools.design/description/ecore.odesign#//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Entities']/@defaultLayer/@containerMappings[name='EC%20EClass']/@subNodeMappings[name='EC%20EReferenceNode']/@conditionnalStyles.0/@style"/>
-        </ownedStyle>
-        <actualMapping xmi:type="description_1:NodeMapping" href="platform:/plugin/org.eclipse.emf.ecoretools.design/description/ecore.odesign#//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Entities']/@defaultLayer/@containerMappings[name='EC%20EClass']/@subNodeMappings[name='EC%20EReferenceNode']"/>
       </ownedElements>
     </ownedDiagramElements>
     <ownedDiagramElements xmi:type="diagram:DEdge" uid="_TKq2InkwEeyGXOKo2CKeIw" name="[0..*] countermeasure" sourceNode="_NgPC0HkwEeyGXOKo2CKeIw" targetNode="_TKkIYHkwEeyGXOKo2CKeIw">
@@ -8669,6 +8669,10 @@
         <children xmi:type="notation:Node" xmi:id="_njc_FnrbEeyX_4qbKWZyGg" type="2003" element="_njWRYHrbEeyX_4qbKWZyGg">
           <children xmi:type="notation:Node" xmi:id="_njdmIHrbEeyX_4qbKWZyGg" type="5007"/>
           <children xmi:type="notation:Node" xmi:id="_njdmIXrbEeyX_4qbKWZyGg" type="7004">
+            <children xmi:type="notation:Node" xmi:id="_kOu6wHOTEfCzadQ34ll9Jw" type="3010" element="_kOqCQHOTEfCzadQ34ll9Jw">
+              <styles xmi:type="notation:FontStyle" xmi:id="_kOu6wXOTEfCzadQ34ll9Jw" fontColor="8224125" fontName="Segoe UI" fontHeight="8" italic="true"/>
+              <layoutConstraint xmi:type="notation:Location" xmi:id="_kOu6wnOTEfCzadQ34ll9Jw"/>
+            </children>
             <children xmi:type="notation:Node" xmi:id="_njdmJHrbEeyX_4qbKWZyGg" visible="false" type="3010" element="_njZ7w3rbEeyX_4qbKWZyGg">
               <styles xmi:type="notation:FontStyle" xmi:id="_njdmJXrbEeyX_4qbKWZyGg" fontColor="8224125" fontName="Segoe UI" fontHeight="8" italic="true"/>
               <layoutConstraint xmi:type="notation:Location" xmi:id="_njdmJnrbEeyX_4qbKWZyGg"/>
@@ -8688,10 +8692,6 @@
             <children xmi:type="notation:Node" xmi:id="_njdmKnrbEeyX_4qbKWZyGg" type="3010" element="_njai03rbEeyX_4qbKWZyGg">
               <styles xmi:type="notation:FontStyle" xmi:id="_njdmK3rbEeyX_4qbKWZyGg" fontName="Segoe UI" fontHeight="8"/>
               <layoutConstraint xmi:type="notation:Location" xmi:id="_njdmLHrbEeyX_4qbKWZyGg"/>
-            </children>
-            <children xmi:type="notation:Node" xmi:id="_kOu6wHOTEfCzadQ34ll9Jw" type="3010" element="_kOqCQHOTEfCzadQ34ll9Jw">
-              <styles xmi:type="notation:FontStyle" xmi:id="_kOu6wXOTEfCzadQ34ll9Jw" fontColor="8224125" fontName="Segoe UI" fontHeight="8" italic="true"/>
-              <layoutConstraint xmi:type="notation:Location" xmi:id="_kOu6wnOTEfCzadQ34ll9Jw"/>
             </children>
             <children xmi:type="notation:Node" xmi:id="_njeNMHrbEeyX_4qbKWZyGg" type="3010" element="_njbJ4XrbEeyX_4qbKWZyGg">
               <styles xmi:type="notation:FontStyle" xmi:id="_njeNMXrbEeyX_4qbKWZyGg" fontName="Segoe UI" fontHeight="8"/>
@@ -8832,6 +8832,15 @@
         <description xmi:type="style:FlatContainerStyleDescription" href="platform:/plugin/org.eclipse.emf.ecoretools.design/description/ecore.odesign#//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Entities']/@defaultLayer/@containerMappings[name='EC%20EClass']/@conditionnalStyles.1/@style"/>
       </ownedStyle>
       <actualMapping xmi:type="description_1:ContainerMapping" href="platform:/plugin/org.eclipse.emf.ecoretools.design/description/ecore.odesign#//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Entities']/@defaultLayer/@containerMappings[name='EC%20EClass']"/>
+      <ownedElements xmi:type="diagram:DNodeListElement" uid="_kOqCQHOTEfCzadQ34ll9Jw" name=" annotations : IModelElementAnnotation" tooltipText="">
+        <target xmi:type="ecore:EReference" href="spartamodel.ecore#//ModelElement/annotations"/>
+        <semanticElements xmi:type="ecore:EReference" href="spartamodel.ecore#//ModelElement/annotations"/>
+        <ownedStyle xmi:type="diagram:BundledImage" uid="_kOqCQXOTEfCzadQ34ll9Jw" labelColor="125,125,125" labelAlignment="LEFT">
+          <labelFormat>italic</labelFormat>
+          <description xmi:type="style:BundledImageDescription" href="platform:/plugin/org.eclipse.emf.ecoretools.design/description/ecore.odesign#//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Entities']/@defaultLayer/@containerMappings[name='EC%20EClass']/@subNodeMappings[name='EC%20EReferenceNode']/@conditionnalStyles.0/@style"/>
+        </ownedStyle>
+        <actualMapping xmi:type="description_1:NodeMapping" href="platform:/plugin/org.eclipse.emf.ecoretools.design/description/ecore.odesign#//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Entities']/@defaultLayer/@containerMappings[name='EC%20EClass']/@subNodeMappings[name='EC%20EReferenceNode']"/>
+      </ownedElements>
       <ownedElements xmi:type="diagram:DNodeListElement" uid="_njZ7w3rbEeyX_4qbKWZyGg" name=" lossMagnitude : ThreatTypeToEstimateMap" visible="false" tooltipText="">
         <target xmi:type="ecore:EReference" href="spartamodel.ecore#//Asset/lossMagnitude"/>
         <semanticElements xmi:type="ecore:EReference" href="spartamodel.ecore#//Asset/lossMagnitude"/>
@@ -8860,7 +8869,7 @@
         </ownedStyle>
         <actualMapping xmi:type="description_1:NodeMapping" href="platform:/plugin/org.eclipse.emf.ecoretools.design/description/ecore.odesign#//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Entities']/@defaultLayer/@containerMappings[name='EC%20EClass']/@subNodeMappings[name='EC%20EReferenceNode']"/>
       </ownedElements>
-      <ownedElements xmi:type="diagram:DNodeListElement" uid="_kOqpUnOTEfCzadQ34ll9Jw" name=" lossMagnituteByID : ThreatTypeIDToEstimateMap" tooltipText="">
+      <ownedElements xmi:type="diagram:DNodeListElement" uid="_kOqpUnOTEfCzadQ34ll9Jw" name=" lossMagnitudeByID : ThreatTypeIDToEstimateMap" tooltipText="">
         <target xmi:type="ecore:EReference" href="spartamodel.ecore#//Asset/lossMagnitudeByID"/>
         <semanticElements xmi:type="ecore:EReference" href="spartamodel.ecore#//Asset/lossMagnitudeByID"/>
         <ownedStyle xmi:type="diagram:BundledImage" uid="_kOqpU3OTEfCzadQ34ll9Jw" labelColor="125,125,125" labelAlignment="LEFT">
@@ -8874,15 +8883,6 @@
         <semanticElements xmi:type="ecore:EReference" href="spartamodel.ecore#//DFDElement/securityannotation"/>
         <ownedStyle xmi:type="diagram:BundledImage" uid="_njai1HrbEeyX_4qbKWZyGg" labelAlignment="LEFT" color="114,159,207">
           <description xmi:type="style:BundledImageDescription" href="platform:/plugin/org.eclipse.emf.ecoretools.design/description/ecore.odesign#//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Entities']/@defaultLayer/@containerMappings[name='EC%20EClass']/@subNodeMappings[name='EC%20EReferenceNode']/@style"/>
-        </ownedStyle>
-        <actualMapping xmi:type="description_1:NodeMapping" href="platform:/plugin/org.eclipse.emf.ecoretools.design/description/ecore.odesign#//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Entities']/@defaultLayer/@containerMappings[name='EC%20EClass']/@subNodeMappings[name='EC%20EReferenceNode']"/>
-      </ownedElements>
-      <ownedElements xmi:type="diagram:DNodeListElement" uid="_kOqCQHOTEfCzadQ34ll9Jw" name=" annotations : IModelElementAnnotation" tooltipText="">
-        <target xmi:type="ecore:EReference" href="spartamodel.ecore#//ModelElement/annotations"/>
-        <semanticElements xmi:type="ecore:EReference" href="spartamodel.ecore#//ModelElement/annotations"/>
-        <ownedStyle xmi:type="diagram:BundledImage" uid="_kOqCQXOTEfCzadQ34ll9Jw" labelColor="125,125,125" labelAlignment="LEFT">
-          <labelFormat>italic</labelFormat>
-          <description xmi:type="style:BundledImageDescription" href="platform:/plugin/org.eclipse.emf.ecoretools.design/description/ecore.odesign#//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Entities']/@defaultLayer/@containerMappings[name='EC%20EClass']/@subNodeMappings[name='EC%20EReferenceNode']/@conditionnalStyles.0/@style"/>
         </ownedStyle>
         <actualMapping xmi:type="description_1:NodeMapping" href="platform:/plugin/org.eclipse.emf.ecoretools.design/description/ecore.odesign#//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Entities']/@defaultLayer/@containerMappings[name='EC%20EClass']/@subNodeMappings[name='EC%20EReferenceNode']"/>
       </ownedElements>

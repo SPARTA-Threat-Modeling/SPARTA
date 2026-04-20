@@ -149,7 +149,7 @@ public class RoleBindingItemProvider extends SecurityElementItemProvider {
 	@Override
 	public String getText(Object object) {
 		RoleBinding rb = (RoleBinding)object;
-		return "Binds '" + (rb.getBinds() != null ? rb.getBinds().getName() : "?") + "' role to '" + (rb.getBindsTo() != null ? rb.getBindsTo().getName() : "?") + "' element";
+		return "Binds '" + (rb.getBinds() != null ? rb.getBinds().getName() : "?") + "' role to " + (!rb.getBindsTo().isEmpty() ? ( rb.getBindsTo().size() > 1 ? "multiple assets" : "'" + rb.getBindsTo().get(0).getName() + "'") : "?");
 	}
 	
 

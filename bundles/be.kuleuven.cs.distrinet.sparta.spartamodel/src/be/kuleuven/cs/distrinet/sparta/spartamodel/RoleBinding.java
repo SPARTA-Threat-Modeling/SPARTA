@@ -11,6 +11,8 @@
  */
 package be.kuleuven.cs.distrinet.sparta.spartamodel;
 
+import org.eclipse.emf.common.util.EList;
+
 
 /**
  * <!-- begin-user-doc -->
@@ -57,7 +59,8 @@ public interface RoleBinding extends SecurityElement {
 	void setBinds(Role value);
 
 	/**
-	 * Returns the value of the '<em><b>Binds To</b></em>' reference.
+	 * Returns the value of the '<em><b>Binds To</b></em>' reference list.
+	 * The list contents are of type {@link be.kuleuven.cs.distrinet.sparta.spartamodel.Asset}.
 	 * It is bidirectional and its opposite is '{@link be.kuleuven.cs.distrinet.sparta.spartamodel.Asset#getBound <em>Bound</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <p>
@@ -65,23 +68,12 @@ public interface RoleBinding extends SecurityElement {
 	 * there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Binds To</em>' reference.
-	 * @see #setBindsTo(Asset)
+	 * @return the value of the '<em>Binds To</em>' reference list.
 	 * @see be.kuleuven.cs.distrinet.sparta.spartamodel.SpartaModelPackage#getRoleBinding_BindsTo()
 	 * @see be.kuleuven.cs.distrinet.sparta.spartamodel.Asset#getBound
 	 * @model opposite="bound"
 	 * @generated
 	 */
-	Asset getBindsTo();
-
-	/**
-	 * Sets the value of the '{@link be.kuleuven.cs.distrinet.sparta.spartamodel.RoleBinding#getBindsTo <em>Binds To</em>}' reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Binds To</em>' reference.
-	 * @see #getBindsTo()
-	 * @generated
-	 */
-	void setBindsTo(Asset value);
+	EList<Asset> getBindsTo();
 
 } // RoleBinding

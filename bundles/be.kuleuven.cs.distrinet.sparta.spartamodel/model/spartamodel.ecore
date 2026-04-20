@@ -135,8 +135,8 @@
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="RoleBinding" eSuperTypes="#//SecurityElement">
     <eStructuralFeatures xsi:type="ecore:EReference" name="binds" eType="#//Role"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="bindsTo" eType="#//Asset"
-        eOpposite="#//Asset/bound"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="bindsTo" upperBound="-1"
+        eType="#//Asset" eOpposite="#//Asset/bound"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Solution" eSuperTypes="#//SecurityElement">
     <eStructuralFeatures xsi:type="ecore:EReference" name="securitypattern" eType="#//SolutionType"/>

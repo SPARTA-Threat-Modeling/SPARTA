@@ -15,13 +15,17 @@ import be.kuleuven.cs.distrinet.sparta.spartamodel.Asset;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
 
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
+import org.eclipse.emf.ecore.util.EObjectWithInverseResolvingEList;
+import org.eclipse.emf.ecore.util.InternalEList;
 import be.kuleuven.cs.distrinet.sparta.spartamodel.Role;
 import be.kuleuven.cs.distrinet.sparta.spartamodel.RoleBinding;
 import be.kuleuven.cs.distrinet.sparta.spartamodel.SpartaModelPackage;
+import java.util.Collection;
 
 /**
  * <!-- begin-user-doc -->
@@ -49,14 +53,14 @@ public class RoleBindingImpl extends SecurityElementImpl implements RoleBinding 
 	protected Role binds;
 
 	/**
-	 * The cached value of the '{@link #getBindsTo() <em>Binds To</em>}' reference.
+	 * The cached value of the '{@link #getBindsTo() <em>Binds To</em>}' reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @see #getBindsTo()
 	 * @generated
 	 * @ordered
 	 */
-	protected Asset bindsTo;
+	protected EList<Asset> bindsTo;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -123,14 +127,9 @@ public class RoleBindingImpl extends SecurityElementImpl implements RoleBinding 
 	 * @generated
 	 */
 	@Override
-	public Asset getBindsTo() {
-		if (bindsTo != null && bindsTo.eIsProxy()) {
-			InternalEObject oldBindsTo = (InternalEObject)bindsTo;
-			bindsTo = (Asset)eResolveProxy(oldBindsTo);
-			if (bindsTo != oldBindsTo) {
-				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE, SpartaModelPackage.ROLE_BINDING__BINDS_TO, oldBindsTo, bindsTo));
-			}
+	public EList<Asset> getBindsTo() {
+		if (bindsTo == null) {
+			bindsTo = new EObjectWithInverseResolvingEList.ManyInverse<Asset>(Asset.class, this, SpartaModelPackage.ROLE_BINDING__BINDS_TO, SpartaModelPackage.ASSET__BOUND);
 		}
 		return bindsTo;
 	}
@@ -140,57 +139,12 @@ public class RoleBindingImpl extends SecurityElementImpl implements RoleBinding 
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public Asset basicGetBindsTo() {
-		return bindsTo;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public NotificationChain basicSetBindsTo(Asset newBindsTo, NotificationChain msgs) {
-		Asset oldBindsTo = bindsTo;
-		bindsTo = newBindsTo;
-		if (eNotificationRequired()) {
-			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, SpartaModelPackage.ROLE_BINDING__BINDS_TO, oldBindsTo, newBindsTo);
-			if (msgs == null) msgs = notification; else msgs.add(notification);
-		}
-		return msgs;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public void setBindsTo(Asset newBindsTo) {
-		if (newBindsTo != bindsTo) {
-			NotificationChain msgs = null;
-			if (bindsTo != null)
-				msgs = ((InternalEObject)bindsTo).eInverseRemove(this, SpartaModelPackage.ASSET__BOUND, Asset.class, msgs);
-			if (newBindsTo != null)
-				msgs = ((InternalEObject)newBindsTo).eInverseAdd(this, SpartaModelPackage.ASSET__BOUND, Asset.class, msgs);
-			msgs = basicSetBindsTo(newBindsTo, msgs);
-			if (msgs != null) msgs.dispatch();
-		}
-		else if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, SpartaModelPackage.ROLE_BINDING__BINDS_TO, newBindsTo, newBindsTo));
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public NotificationChain eInverseAdd(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
 			case SpartaModelPackage.ROLE_BINDING__BINDS_TO:
-				if (bindsTo != null)
-					msgs = ((InternalEObject)bindsTo).eInverseRemove(this, SpartaModelPackage.ASSET__BOUND, Asset.class, msgs);
-				return basicSetBindsTo((Asset)otherEnd, msgs);
+				return ((InternalEList<InternalEObject>)(InternalEList<?>)getBindsTo()).basicAdd(otherEnd, msgs);
 		}
 		return super.eInverseAdd(otherEnd, featureID, msgs);
 	}
@@ -204,7 +158,7 @@ public class RoleBindingImpl extends SecurityElementImpl implements RoleBinding 
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
 			case SpartaModelPackage.ROLE_BINDING__BINDS_TO:
-				return basicSetBindsTo(null, msgs);
+				return ((InternalEList<?>)getBindsTo()).basicRemove(otherEnd, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
@@ -221,8 +175,7 @@ public class RoleBindingImpl extends SecurityElementImpl implements RoleBinding 
 				if (resolve) return getBinds();
 				return basicGetBinds();
 			case SpartaModelPackage.ROLE_BINDING__BINDS_TO:
-				if (resolve) return getBindsTo();
-				return basicGetBindsTo();
+				return getBindsTo();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -232,6 +185,7 @@ public class RoleBindingImpl extends SecurityElementImpl implements RoleBinding 
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
@@ -239,7 +193,8 @@ public class RoleBindingImpl extends SecurityElementImpl implements RoleBinding 
 				setBinds((Role)newValue);
 				return;
 			case SpartaModelPackage.ROLE_BINDING__BINDS_TO:
-				setBindsTo((Asset)newValue);
+				getBindsTo().clear();
+				getBindsTo().addAll((Collection<? extends Asset>)newValue);
 				return;
 		}
 		super.eSet(featureID, newValue);
@@ -257,7 +212,7 @@ public class RoleBindingImpl extends SecurityElementImpl implements RoleBinding 
 				setBinds((Role)null);
 				return;
 			case SpartaModelPackage.ROLE_BINDING__BINDS_TO:
-				setBindsTo((Asset)null);
+				getBindsTo().clear();
 				return;
 		}
 		super.eUnset(featureID);
@@ -274,7 +229,7 @@ public class RoleBindingImpl extends SecurityElementImpl implements RoleBinding 
 			case SpartaModelPackage.ROLE_BINDING__BINDS:
 				return binds != null;
 			case SpartaModelPackage.ROLE_BINDING__BINDS_TO:
-				return bindsTo != null;
+				return bindsTo != null && !bindsTo.isEmpty();
 		}
 		return super.eIsSet(featureID);
 	}

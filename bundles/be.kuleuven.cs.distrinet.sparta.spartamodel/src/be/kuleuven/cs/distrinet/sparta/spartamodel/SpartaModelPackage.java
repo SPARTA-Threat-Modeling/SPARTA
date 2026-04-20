@@ -3110,7 +3110,7 @@ public interface SpartaModelPackage extends EPackage {
 	int ROLE_BINDING__BINDS = SECURITY_ELEMENT_FEATURE_COUNT + 0;
 
 	/**
-	 * The feature id for the '<em><b>Binds To</b></em>' reference.
+	 * The feature id for the '<em><b>Binds To</b></em>' reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
@@ -7462,10 +7462,10 @@ public interface SpartaModelPackage extends EPackage {
 	EReference getRoleBinding_Binds();
 
 	/**
-	 * Returns the meta object for the reference '{@link be.kuleuven.cs.distrinet.sparta.spartamodel.RoleBinding#getBindsTo <em>Binds To</em>}'.
+	 * Returns the meta object for the reference list '{@link be.kuleuven.cs.distrinet.sparta.spartamodel.RoleBinding#getBindsTo <em>Binds To</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for the reference '<em>Binds To</em>'.
+	 * @return the meta object for the reference list '<em>Binds To</em>'.
 	 * @see be.kuleuven.cs.distrinet.sparta.spartamodel.RoleBinding#getBindsTo()
 	 * @see #getRoleBinding()
 	 * @generated
@@ -9336,7 +9336,7 @@ public interface SpartaModelPackage extends EPackage {
 		EReference ROLE_BINDING__BINDS = eINSTANCE.getRoleBinding_Binds();
 
 		/**
-		 * The meta object literal for the '<em><b>Binds To</b></em>' reference feature.
+		 * The meta object literal for the '<em><b>Binds To</b></em>' reference list feature.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
 		 * @generated
