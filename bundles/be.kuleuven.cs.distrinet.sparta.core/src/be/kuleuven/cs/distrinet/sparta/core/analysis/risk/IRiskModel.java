@@ -9,6 +9,7 @@
  */
 package be.kuleuven.cs.distrinet.sparta.core.analysis.risk;
 
+import be.kuleuven.cs.distrinet.sparta.core.analysis.RiskAssessmentLoopConfiguration;
 import be.kuleuven.cs.distrinet.sparta.core.model.Threat;
 
 /**
@@ -22,10 +23,13 @@ public interface IRiskModel {
 
 	/**
 	 * Calculate the risk for the provided threat.
-	 * 
-	 * @param threat The threat for which the risk as to be calculated.
+	 *
+	 * @param threat            The threat for which the risk has to be calculated.
+	 * @param loopConfiguration the loop configuration (attacker profiles, data
+	 *                          types, dfd elements) to iterate over, owned by the
+	 *                          analysing {@link be.kuleuven.cs.distrinet.sparta.core.Engine}.
 	 */
-	public void calculateRisk(Threat threat);
+	public void calculateRisk(Threat threat, RiskAssessmentLoopConfiguration loopConfiguration);
 
 	/**
 	 * Get the vulnerability measured between 0 and 1.

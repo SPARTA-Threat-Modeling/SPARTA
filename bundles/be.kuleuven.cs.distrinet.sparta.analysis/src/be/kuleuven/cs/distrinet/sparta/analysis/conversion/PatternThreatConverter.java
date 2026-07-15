@@ -15,21 +15,25 @@ import org.eclipse.viatra.query.runtime.api.IPatternMatch;
 
 import be.kuleuven.cs.distrinet.sparta.analysis.model.ObservablePatternThreat;
 import be.kuleuven.cs.distrinet.sparta.analysis.model.ObservableThreat;
+import be.kuleuven.cs.distrinet.sparta.core.analysis.RiskAssessmentLoopConfiguration;
 import be.kuleuven.cs.distrinet.sparta.core.patterns.ThreatPatternMatchMetadata;
 
 public class PatternThreatConverter extends Converter<IPatternMatch, ObservableThreat> {
 
 	protected DataBindingContext dbc;
 	protected ThreatPatternMatchMetadata metadata;
-	
-	public PatternThreatConverter(DataBindingContext dbc, ThreatPatternMatchMetadata metadata) {
+	protected final RiskAssessmentLoopConfiguration loopConfiguration;
+
+	public PatternThreatConverter(DataBindingContext dbc, ThreatPatternMatchMetadata metadata,
+			RiskAssessmentLoopConfiguration loopConfiguration) {
 		super(IPatternMatch.class, ObservableThreat.class);
 		this.dbc = dbc;
 		this.metadata = metadata;
+		this.loopConfiguration = loopConfiguration;
 	}
 
 	@Override
 	public ObservableThreat convert(IPatternMatch fromObject) {
-		return new ObservablePatternThreat(dbc, fromObject, metadata);
+		return new ObservablePatternThreat(dbc, fromObject, metadata, loopConfiguration);
 	}
 }

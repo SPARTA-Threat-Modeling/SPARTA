@@ -11,29 +11,24 @@ package be.kuleuven.cs.distrinet.sparta.core.model;
 
 import java.util.Comparator;
 
-import org.eclipse.emf.common.util.BasicEList;
-import org.eclipse.emf.common.util.EList;
-
 import be.kuleuven.cs.distrinet.sparta.spartamodel.AttackerProfile;
-import be.kuleuven.cs.distrinet.sparta.spartamodel.DFDElement;
 import be.kuleuven.cs.distrinet.sparta.spartamodel.Estimate;
 import be.kuleuven.cs.distrinet.sparta.spartamodel.impl.AttackerProfileImpl;
 
 /**
  * Custom attacker implementation to use when no attacker profiles are specified in the provided model.
- * 
+ *
+ * <p>Values are stored in the generated EMF features via the inherited setters rather than in
+ * shadow fields, so reflective access ({@code eGet}) and the typed getters stay consistent, and
+ * {@link #getInsider()} returns the model's own (stable) containment list.
+ *
  * @author Laurens
  */
 public class Attacker extends AttackerProfileImpl implements AttackerProfile {
 
-	private String name;
-	private Estimate threatCapability;
-	private Estimate contactFrequency;
-	private Estimate probabilityOfAction;
-	
 	/**
 	 *  Create a new attacker profile.
-	 *  
+	 *
 	 * @param name - the name of the attacker profile.
 	 * @param tcapMin - the minimum threat capability of the attacker.
 	 * @param tcapProb - the most probable threat capability of the attacker.
@@ -51,80 +46,20 @@ public class Attacker extends AttackerProfileImpl implements AttackerProfile {
 	public Attacker(String name, double tcapMin, double tcapProb, double tcapMax, double tcapConf, double cfMin, double cfProb, double cfMax, double cfConf, double paMin, double paProb, double paMax, double paConf) {
 		this(name, new CustomEstimate(tcapMin, tcapProb, tcapMax, tcapConf), new CustomEstimate(cfMin, cfProb, cfMax, cfConf), new CustomEstimate(paMin, paProb, paMax, paConf));
 	}
-	
-	
+
 	/**
 	 * Create a new attacker profile.
-	 * 
+	 *
 	 * @param name - the name of the attacker profile
 	 * @param tcap - an {@link Estimate} specifying the threat capability of the attacker.
-	 * @param cf - an {@link Estimate} specifying the contact frequency of the attacker. 
+	 * @param cf - an {@link Estimate} specifying the contact frequency of the attacker.
 	 * @param pa - an {@link Estimate} specifying the probability of action of the attacker.
 	 */
 	public Attacker(String name, Estimate tcap, Estimate cf, Estimate pa) {
-		this.setName(name);
-		this.threatCapability = tcap;
-		this.contactFrequency = cf;
-		this.probabilityOfAction = pa;
-	}
-	
-
-	
-	/**
-	 * Set the name of the attacker profile.
-	 */
-	public void setName(String name) {
-		this.name = name;
-	}
-	
-	/**
-	 * Get the name of the attacker profile.
-	 */
-	public String getName() {
-		return name;
-	}
-
-	/**
-	 * Get an {@link Estimate} representing the threat capability of the attacker profile.
-	 */
-	public Estimate getThreatCapability() {
-		return threatCapability;
-	}
-
-	
-	/**
-	 * Set the threat capability estimate of the attacker profile.
-	 */
-	public void setThreatCapability(Estimate threatCapability) {
-		this.threatCapability = threatCapability;
-	}
-
-	/**
-	 * Get an {@link Estimate} representing the contact frequency of the attacker profile.
-	 */
-	public Estimate getContactFrequency() {
-		return contactFrequency;
-	}
-
-	/**
-	 * Set the contact frequency estimate of the attacker profile.
-	 */
-	public void setContactFrequency(Estimate contactFrequency) {
-		this.contactFrequency = contactFrequency;
-	}
-
-	/**
-	 * Get an {@link Estimate} representing the probability of action of the attacker profile.
-	 */
-	public Estimate getProbabilityOfAction() {
-		return probabilityOfAction;
-	}
-
-	/**
-	 * Set the probability of action estimate of the attacker profile.
-	 */
-	public void setProbabilityOfAction(Estimate probabilityOfAction) {
-		this.probabilityOfAction = probabilityOfAction;
+		setName(name);
+		setThreatCapability(tcap);
+		setContactFrequency(cf);
+		setProbabilityOfAction(pa);
 	}
 
 	/**
@@ -132,25 +67,7 @@ public class Attacker extends AttackerProfileImpl implements AttackerProfile {
 	 * @return the min-based comparator
 	 */
 	public static Comparator<Attacker> minComparator() {
-		return new Comparator<Attacker>() {
-
-			@Override
-			public int compare(Attacker o1, Attacker o2) {
-				return Double.compare(o1.getThreatCapability().getMinimum(), o2.getThreatCapability().getMinimum());
-			}
-		};
+		return Comparator.comparingDouble(a -> a.getThreatCapability().getMinimum());
 	}
-
-	/**
-	 * Get the list of elements for which this attacker profile is considered to be an insider.
-	 * This list if empty by default in this custom attacker profile implementation.
-	 */
-	@Override
-	public EList<DFDElement> getInsider() {
-		return new BasicEList<DFDElement>();
-	}
-
-
-
 
 }

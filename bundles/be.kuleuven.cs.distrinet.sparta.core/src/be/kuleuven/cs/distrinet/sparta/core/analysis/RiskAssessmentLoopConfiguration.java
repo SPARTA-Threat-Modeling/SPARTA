@@ -39,24 +39,19 @@ import be.kuleuven.cs.distrinet.sparta.spartamodel.PersonalDataType;
  */
 public class RiskAssessmentLoopConfiguration {
 
-	private static final RiskAssessmentLoopConfiguration INSTANCE = new RiskAssessmentLoopConfiguration();
-
 	private Set<AttackerProfile> attackerProfiles;
 	private Set<DataSubjectType> dataSubjects;
 	private Set<PersonalDataType> dataTypes;
 	private Set<DFDElement> dfdElements;
 	private Map<DFDElement, Set<PersonalDataType>> dfdDataTypes;
 
-	private RiskAssessmentLoopConfiguration() {
-	}
-
 	/**
-	 * Get {@link RiskAssessmentLoopConfiguration} instance.
-	 * 
-	 * @return {@link RiskAssessmentLoopConfiguration} instance
+	 * Create a new, empty risk-assessment loop configuration. Each {@link Engine}
+	 * owns its own instance (see {@link Engine#getLoopConfiguration()}) so that
+	 * concurrent or successive analyses on different models no longer share mutable
+	 * loop state through a global singleton.
 	 */
-	public static RiskAssessmentLoopConfiguration getInstance() {
-		return INSTANCE;
+	public RiskAssessmentLoopConfiguration() {
 	}
 
 	/**

@@ -14,26 +14,29 @@ import org.eclipse.core.databinding.conversion.Converter;
 import org.eclipse.viatra.query.runtime.api.IPatternMatch;
 
 import be.kuleuven.cs.distrinet.sparta.analysis.model.ObservableThreat;
+import be.kuleuven.cs.distrinet.sparta.core.analysis.RiskAssessmentLoopConfiguration;
 
 /**
  * Converter class for enabling the automatic conversion of viatra pattern
  * matches to observable threat objects.
- * 
+ *
  * @author Laurens
  *
  */
 public class ThreatConverter extends Converter<IPatternMatch, ObservableThreat> {
 
 	protected DataBindingContext dbc;
+	protected final RiskAssessmentLoopConfiguration loopConfiguration;
 
-	public ThreatConverter(DataBindingContext dbc) {
+	public ThreatConverter(DataBindingContext dbc, RiskAssessmentLoopConfiguration loopConfiguration) {
 		super(IPatternMatch.class, ObservableThreat.class);
 		this.dbc = dbc;
+		this.loopConfiguration = loopConfiguration;
 	}
 
 	@Override
 	public ObservableThreat convert(IPatternMatch fromObject) {
-		return new ObservableThreat(dbc, fromObject);
+		return new ObservableThreat(dbc, fromObject, loopConfiguration);
 	}
 
 }

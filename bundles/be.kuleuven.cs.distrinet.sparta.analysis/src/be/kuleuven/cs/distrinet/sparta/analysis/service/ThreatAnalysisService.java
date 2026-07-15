@@ -152,7 +152,8 @@ public class ThreatAnalysisService implements IPropertyListener {
 			roots.add(resource);
 
 			engine = new Engine(new EMFScope(resource.getResourceSet(), new BaseIndexOptions().withResourceFilterConfiguration(r -> !roots.contains(r))));
-			RiskAssessmentLoopConfiguration.getInstance().setUpLoopParameters(engine);
+			RiskAssessmentLoopConfiguration loopConfiguration = engine.getLoopConfiguration();
+			loopConfiguration.setUpLoopParameters(engine);
 
 			
 			final List<IObservableList<ObservableThreat>> observableLists = new ArrayList<IObservableList<ObservableThreat>>();//= null;
@@ -163,7 +164,7 @@ public class ThreatAnalysisService implements IPropertyListener {
 						.forEach(vqm -> {
 							IObservableList<IPatternMatch> list = ObservablePatternMatchCollectionBuilder.create(vqm).buildList();
 							WritableList<ObservableThreat> obsList = new WritableList<ObservableThreat>();
-							dbc.bindList(obsList, list,null,new UpdateListStrategy(UpdateListStrategy.POLICY_UPDATE).setConverter(new ThreatConverter(dbc)));
+							dbc.bindList(obsList, list,null,new UpdateListStrategy(UpdateListStrategy.POLICY_UPDATE).setConverter(new ThreatConverter(dbc, loopConfiguration)));
 							sourceLists.add(list);
 							targetLists.add(obsList);
 							observableLists.add(obsList);
@@ -178,7 +179,7 @@ public class ThreatAnalysisService implements IPropertyListener {
 					.forEach(vqm -> {
 						IObservableList<IPatternMatch> list = ObservablePatternMatchCollectionBuilder.create(vqm).buildList();
 						WritableList<ObservableThreat> obsList = new WritableList<ObservableThreat>();
-						dbc.bindList(obsList, list,null,new UpdateListStrategy(UpdateListStrategy.POLICY_UPDATE).setConverter(new PatternThreatConverter(dbc,e.getKey())));
+						dbc.bindList(obsList, list,null,new UpdateListStrategy(UpdateListStrategy.POLICY_UPDATE).setConverter(new PatternThreatConverter(dbc,e.getKey(), loopConfiguration)));
 						sourceLists.add(list);
 						targetLists.add(obsList);
 						observableLists.add(obsList);

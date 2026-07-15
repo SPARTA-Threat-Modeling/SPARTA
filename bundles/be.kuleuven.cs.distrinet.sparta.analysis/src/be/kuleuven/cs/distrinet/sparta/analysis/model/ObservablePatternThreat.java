@@ -12,6 +12,7 @@ package be.kuleuven.cs.distrinet.sparta.analysis.model;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.viatra.query.runtime.api.IPatternMatch;
 
+import be.kuleuven.cs.distrinet.sparta.core.analysis.RiskAssessmentLoopConfiguration;
 import be.kuleuven.cs.distrinet.sparta.core.analysis.risk.SpartaRiskModel;
 import be.kuleuven.cs.distrinet.sparta.core.patterns.ThreatPatternConversion;
 import be.kuleuven.cs.distrinet.sparta.core.patterns.ThreatPatternMatchMetadata;
@@ -29,8 +30,9 @@ public class ObservablePatternThreat extends ObservableThreat {
 	private final ThreatPatternMatchMetadata metadata;
 	private final ThreatPatternConversion conversion;
 
-	public ObservablePatternThreat(DataBindingContext dbc, IPatternMatch x, ThreatPatternMatchMetadata meta) {
-		super(x, new SpartaRiskModel());
+	public ObservablePatternThreat(DataBindingContext dbc, IPatternMatch x, ThreatPatternMatchMetadata meta,
+			RiskAssessmentLoopConfiguration loopConfiguration) {
+		super(x, new SpartaRiskModel(), loopConfiguration);
 		this.metadata = meta;
 		this.conversion = new ThreatPatternConversion(meta.getThreatPattern(), x);
 		this.risk.setValue(0d);
@@ -110,15 +112,15 @@ public class ObservablePatternThreat extends ObservableThreat {
 			flowName.setValue("");
 		}
 		try {
-			performRiskCalculation();
+			performRiskCalculation(loopConfiguration);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
 	@Override
-	public void performRiskCalculation() {
-		super.performRiskCalculation();
+	public void performRiskCalculation(RiskAssessmentLoopConfiguration loopConfiguration) {
+		super.performRiskCalculation(loopConfiguration);
 		this.risk.setValue(super.getRisk());
 		this.risk_lower.setValue(super.getRisk_lower());
 		this.risk_upper.setValue(super.getRisk_upper());

@@ -14,6 +14,7 @@ import java.text.NumberFormat;
 
 import org.eclipse.viatra.query.runtime.api.IPatternMatch;
 
+import be.kuleuven.cs.distrinet.sparta.core.analysis.RiskAssessmentLoopConfiguration;
 import be.kuleuven.cs.distrinet.sparta.core.analysis.risk.IRiskModel;
 import be.kuleuven.cs.distrinet.sparta.core.analysis.risk.SpartaRiskModel;
 import be.kuleuven.cs.distrinet.sparta.spartamodel.DFDElement;
@@ -187,11 +188,11 @@ public class Threat implements IThreat, IInteractionThreat {
 	 * 
 	 * Overall formula: LEF x LM
 	 */
-	public void performRiskCalculation() {
+	public void performRiskCalculation(RiskAssessmentLoopConfiguration loopConfiguration) {
 		if (threatenedElement == null)
 			return;
-		
-		riskModel.calculateRisk(this);
+
+		riskModel.calculateRisk(this, loopConfiguration);
 
 	}
 

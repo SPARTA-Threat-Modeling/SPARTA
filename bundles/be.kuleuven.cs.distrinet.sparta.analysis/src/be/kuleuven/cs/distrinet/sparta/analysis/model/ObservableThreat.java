@@ -19,6 +19,7 @@ import org.eclipse.core.databinding.observable.value.WritableValue;
 import org.eclipse.viatra.addon.databinding.runtime.adapter.MatcherProperties;
 import org.eclipse.viatra.query.runtime.api.IPatternMatch;
 
+import be.kuleuven.cs.distrinet.sparta.core.analysis.RiskAssessmentLoopConfiguration;
 import be.kuleuven.cs.distrinet.sparta.core.analysis.risk.IRiskModel;
 import be.kuleuven.cs.distrinet.sparta.core.model.Threat;
 import be.kuleuven.cs.distrinet.sparta.spartamodel.DFDElement;
@@ -51,6 +52,8 @@ public class ObservableThreat extends Threat {
 	protected WritableValue<Double> sle = new WritableValue<Double>();
 	protected WritableValue<Double> tef = new WritableValue<Double>();
 	protected WritableValue<Double> lef = new WritableValue<Double>();
+	/** Loop configuration owned by the analysing engine; used to drive the risk calculation. */
+	protected RiskAssessmentLoopConfiguration loopConfiguration;
 	protected String sender = "";
 	protected String recipient = "";
 
@@ -99,8 +102,9 @@ public class ObservableThreat extends Threat {
 		return nf;
 	}
 
-	public ObservableThreat(DataBindingContext dbc, IPatternMatch x) {
+	public ObservableThreat(DataBindingContext dbc, IPatternMatch x, RiskAssessmentLoopConfiguration loopConfiguration) {
 		super(x);
+		this.loopConfiguration = loopConfiguration;
 		this.risk.setValue(0d);
 		this.potentialRisk.setValue(0d);
 		this.risk_lower.setValue(0d);
@@ -145,8 +149,9 @@ public class ObservableThreat extends Threat {
 		super(fromObject);
 	}
 
-	protected ObservableThreat(IPatternMatch x, IRiskModel riskModel) {
+	protected ObservableThreat(IPatternMatch x, IRiskModel riskModel, RiskAssessmentLoopConfiguration loopConfiguration) {
 		super(x,riskModel);
+		this.loopConfiguration = loopConfiguration;
 	}
 
 	public String getThreat() {
@@ -342,15 +347,15 @@ public class ObservableThreat extends Threat {
 		ctx.bindValue(threatName, getMatchObservable("t"));
 
 		try {
-			performRiskCalculation();
+			performRiskCalculation(loopConfiguration);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
 	@Override
-	public void performRiskCalculation() {
-		super.performRiskCalculation();
+	public void performRiskCalculation(RiskAssessmentLoopConfiguration loopConfiguration) {
+		super.performRiskCalculation(loopConfiguration);
 		this.risk.setValue(super.getRisk());
 		this.risk_lower.setValue(super.getRisk_lower());
 		this.risk_upper.setValue(super.getRisk_upper());

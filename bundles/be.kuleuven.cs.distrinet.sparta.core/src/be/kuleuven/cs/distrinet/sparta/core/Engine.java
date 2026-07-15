@@ -43,9 +43,16 @@ import be.kuleuven.cs.distrinet.sparta.core.patterns.ThreatPatternMatchMetadata;
  * It uses the {@link ViatraQueryEngine} internally to elicit threats in an eclipse emf model.
  * @author Laurens
  */
-public class Engine {
-	
+public class Engine implements AutoCloseable {
+
 	private final AdvancedViatraQueryEngine vqe;
+
+	/**
+	 * The risk-assessment loop configuration owned by this engine. Kept per-engine
+	 * (rather than a global singleton) so that analyses of different models do not
+	 * corrupt each other's loop parameters.
+	 */
+	private final RiskAssessmentLoopConfiguration loopConfiguration = new RiskAssessmentLoopConfiguration();
 
 	
 	/**
@@ -131,8 +138,8 @@ public class Engine {
 		threats.addAll(runAnalysis(getPatternMatchers()));
 
 		// Risk
-		RiskAssessmentLoopConfiguration.getInstance().setUpLoopParameters(this);
-		threats.forEach(Threat::performRiskCalculation);
+		loopConfiguration.setUpLoopParameters(this);
+		threats.forEach(t -> t.performRiskCalculation(loopConfiguration));
 
 		return threats;
 	}
@@ -145,14 +152,14 @@ public class Engine {
 	 * @return The resulting list of {@link Threat}s found in the provided model.
 	 */
 	public List<Threat> runAnalysis(List<Function<ViatraQueryEngine,ViatraQueryMatcher<? extends IPatternMatch>>> matchers) {
-		RiskAssessmentLoopConfiguration.getInstance().setUpLoopParameters(this);
+		loopConfiguration.setUpLoopParameters(this);
 		final ArrayList<Threat> threats = new ArrayList<>();
 		matchers.stream().map(f -> f.apply(vqe))
 		.forEach(vqm -> {
 			vqm.streamAllMatches().map(Threat::new).forEach(threats::add);
 
 		}); 
-		threats.forEach(Threat::performRiskCalculation);
+		threats.forEach(t -> t.performRiskCalculation(loopConfiguration));
 		return threats;
 	}
 	
@@ -188,7 +195,27 @@ public class Engine {
 
 	public void dispose() {
 		vqe.dispose();
-		
+
+	}
+
+	/**
+	 * @return the risk-assessment loop configuration owned by this engine. Callers
+	 *         that drive the risk calculation outside {@link #runAnalysis(ResourceSet)}
+	 *         (e.g. the UI's observable-threat conversion) must populate it via
+	 *         {@link RiskAssessmentLoopConfiguration#setUpLoopParameters(Engine)} and
+	 *         pass it to each threat's {@code performRiskCalculation}.
+	 */
+	public RiskAssessmentLoopConfiguration getLoopConfiguration() {
+		return loopConfiguration;
+	}
+
+	/**
+	 * Dispose the underlying VIATRA query engine. Allows the engine to be used with
+	 * try-with-resources; equivalent to {@link #dispose()}.
+	 */
+	@Override
+	public void close() {
+		dispose();
 	}
 	@Deprecated
 	public ViatraQueryEngine getQueryEngine() {

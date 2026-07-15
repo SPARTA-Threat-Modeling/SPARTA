@@ -58,11 +58,12 @@ public class SpartaRiskModel implements IRiskModel {
 	protected double[] tef;
 	protected double[] lef;
 
-	public void calculateRisk(Threat threat) {
-		calculateRisk(threat, DEFAULT_SAMPLES);
+	@Override
+	public void calculateRisk(Threat threat, RiskAssessmentLoopConfiguration loopConfiguration) {
+		calculateRisk(threat, loopConfiguration, DEFAULT_SAMPLES);
 	}
 
-	public void calculateRisk(Threat threat, int samples) {
+	public void calculateRisk(Threat threat, RiskAssessmentLoopConfiguration ralc, int samples) {
 
 		DFDElement threatenedElement = threat.getThreatenedElement();
 		List<RoleBinding> countermeasureBindings = threatenedElement.getBound();
@@ -76,8 +77,6 @@ public class SpartaRiskModel implements IRiskModel {
 		// build up matrix for the different loops
 
 		// SC (outside this instance), TT (instantiated), AP DST DT
-
-		RiskAssessmentLoopConfiguration ralc = RiskAssessmentLoopConfiguration.getInstance();
 
 		AttackerProfile[] aps = ralc.getAttackerProfiles().toArray(new AttackerProfile[] {});
 		DataSubjectType[] dsts = ralc.getDataSubjectTypes().toArray(new DataSubjectType[] {});
