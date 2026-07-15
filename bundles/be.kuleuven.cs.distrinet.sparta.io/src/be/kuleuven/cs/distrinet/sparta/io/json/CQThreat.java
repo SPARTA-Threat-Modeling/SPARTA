@@ -104,9 +104,13 @@ public class CQThreat {
 		this.description = ThreatTextWriter.fileNameSuggestion(t);
 		this.fingerprint = DigestUtils.md5Hex(ThreatTextWriter.fileNameSuggestion(t));
 		this.severity = Severity.values()[taa.categorize(t, Severity.values().length-1)];
-		URI u = t.getThreatenedElement().eResource().getURI();
+		URI u = (t.getThreatenedElement() != null && t.getThreatenedElement().eResource() != null)
+				? t.getThreatenedElement().eResource().getURI()
+				: null;
 		if (u != null) {
-			String relDir = FilenameUtils.getPath(u.devicePath()).substring(FilenameUtils.getPath(System.getProperty("user.dir")+ "/test.test").length());
+			String fullPath = FilenameUtils.getPath(u.devicePath());
+			String prefix = FilenameUtils.getPath(System.getProperty("user.dir") + "/test.test");
+			String relDir = fullPath.startsWith(prefix) ? fullPath.substring(prefix.length()) : fullPath;
 			if (!"".equals(relDir))
 				relDir += "/";
 			this.location = new Location(relDir + FilenameUtils.getName(u.devicePath()), new Lines(1));

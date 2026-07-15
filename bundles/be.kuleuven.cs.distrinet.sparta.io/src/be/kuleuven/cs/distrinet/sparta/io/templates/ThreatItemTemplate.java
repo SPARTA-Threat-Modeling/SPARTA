@@ -47,13 +47,13 @@ public class ThreatItemTemplate extends Template<Threat> {
 		els.add(x.getDataFlowToName());
 		
 		return getTemplate().replace(NAME, name)
-				.replace(LABEL, x.getThreatenedElementId())
-				.replace(ID, x.getThreatenedElementId())
+				.replace(LABEL, LaTeX.latexEscape(x.getThreatenedElementId()))
+				.replace(ID, LaTeX.latexEscape(x.getThreatenedElementId()))
 				.replace(DIAGRAM, ThreatItemDiagramTemplate.fill(x))
 				.replace(TYPE, LaTeX.latexEscape(x.getThreatTypeName()))
 				.replace(DESCRIPTION, LaTeX.latexEscape(x.getDescription()))
 				.replace(ELEMENTS, els.stream().map(LaTeX::latexEscape).collect(Collectors.joining(", ")))
-				.replace(AFFECTED, x.getThreatenedElementName())
+				.replace(AFFECTED, LaTeX.latexEscape(x.getThreatenedElementName()))
 				.replace(RISK, "" + x.getRisk());
 	}
 	

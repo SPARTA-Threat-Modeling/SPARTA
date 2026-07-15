@@ -101,8 +101,12 @@ public class ThreatXlsxOutputStream extends ThreatOutputStream {
 
 	@Override
 	public void close() throws IOException {
-		wb.write(this);
-		super.close();
+		try {
+			wb.write(this);
+		} finally {
+			wb.close();
+			super.close();
+		}
 	}
 
 	@Override

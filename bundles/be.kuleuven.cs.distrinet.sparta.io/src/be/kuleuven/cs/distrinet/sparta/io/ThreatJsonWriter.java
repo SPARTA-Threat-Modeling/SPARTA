@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.List;
 
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
@@ -31,6 +32,14 @@ import be.kuleuven.cs.distrinet.sparta.core.model.Threat;
  */
 public class ThreatJsonWriter<T extends IThreat> extends Writer {
 
+	/**
+	 * Shared, thread-safe mapper. {@code AUTO_CLOSE_TARGET} is disabled so that
+	 * writing does not close the caller-owned {@link Writer}; closing is left to
+	 * {@link #close()} / the caller's try-with-resources.
+	 */
+	private static final ObjectMapper MAPPER = new ObjectMapper()
+			.disable(JsonGenerator.Feature.AUTO_CLOSE_TARGET);
+
 	protected final Writer writer;
 	private final Class<T> tClass;
 	/**
@@ -47,7 +56,7 @@ public class ThreatJsonWriter<T extends IThreat> extends Writer {
 	/**
 	 * Closes the stream, flushing it first. Once the stream has been closed,
 	 * further write() or flush() invocations will cause an IOException to be
-	 * thrown. Closing a previously closed stream has no effe
+	 * thrown. Closing a previously closed stream has no effect.
 	 */
 	@Override
 	public void close() throws IOException {
@@ -100,8 +109,7 @@ public class ThreatJsonWriter<T extends IThreat> extends Writer {
 	 * @throws IOException If an I/O error occurs.
 	 */
 	public void write(List<T> threats) throws IOException {
-		ObjectMapper om = new ObjectMapper();
-		ObjectWriter ow = om.writerFor(om.getTypeFactory().constructCollectionType(List.class, tClass));
+		ObjectWriter ow = MAPPER.writerFor(MAPPER.getTypeFactory().constructCollectionType(List.class, tClass));
 		ow.writeValue(writer, threats);
 	}
 	
@@ -112,8 +120,8 @@ public class ThreatJsonWriter<T extends IThreat> extends Writer {
 	 * @throws IOException If an I/O error occurs.
 	 */
 	public void writePretty(List<T> threats) throws IOException {
-		ObjectMapper om = new ObjectMapper();
-		ObjectWriter ow = om.writerFor(om.getTypeFactory().constructCollectionType(List.class, tClass)).withDefaultPrettyPrinter();
+		ObjectWriter ow = MAPPER.writerFor(MAPPER.getTypeFactory().constructCollectionType(List.class, tClass))
+				.withDefaultPrettyPrinter();
 		ow.writeValue(writer, threats);
 	}
 

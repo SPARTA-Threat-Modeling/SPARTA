@@ -91,17 +91,22 @@ public class YmlToEmfConverter {
 	 * @throws IOException
 	 */
 	public static void main(String[] args) throws IOException {
+		if (args.length < 1 || args[0] == null || args[0].isEmpty()) {
+			throw new IllegalArgumentException("Usage: YmlToEmfConverter <yaml-file>");
+		}
 		new YmlToEmfConverter(args[0]);
 	}
-	
+
 	public YmlToEmfConverter(String file) throws IOException {
 		Representer representer = new Representer(null);
 		representer.getPropertyUtils().setSkipMissingProperties(true);
 		Yaml yaml = new Yaml(new Constructor(TxtModel.class, null),representer);
 		File yml = new File(new File(System.getProperty("user.dir")),file);
-		TxtModel model = yaml.load(new FileInputStream(yml));
+		TxtModel model;
+		try (FileInputStream in = new FileInputStream(yml)) {
+			model = yaml.load(in);
+		}
 		saveToModel(model);
-		System.out.println(model);
 	}
 	
 	private Map<String, DataFlowEntity> elementMap = new HashMap<>();
@@ -150,7 +155,49 @@ public class YmlToEmfConverter {
 	}
 	
 	private void createDataFlows(List<String> dataflows) {
-		dataflows.stream().map(f -> f.split("->")).forEach(df -> createDataFlow(df[0],df[1]));
+		if (dataflows == null) {
+			return;
+		}
+		for (String f : dataflows) {
+			String[] endpoints = parseDataFlowEndpoints(f);
+			String sender = endpoints[0];
+			String recipient = endpoints[1];
+			if (!elementMap.containsKey(sender)) {
+				throw new IllegalArgumentException("Unknown data-flow sender '" + sender + "' in entry: " + f);
+			}
+			if (!elementMap.containsKey(recipient)) {
+				throw new IllegalArgumentException("Unknown data-flow recipient '" + recipient + "' in entry: " + f);
+			}
+			createDataFlow(sender, recipient);
+		}
+	}
+
+	/**
+	 * Parse a data-flow entry of the form {@code "sender->recipient"} into its two
+	 * endpoints. The entry must contain exactly one {@code "->"} separator and both
+	 * endpoints must be non-blank.
+	 *
+	 * @param entry the raw data-flow entry.
+	 * @return a two-element array {@code [sender, recipient]} (both trimmed).
+	 * @throws IllegalArgumentException if the entry is null, does not contain
+	 *                                  exactly one {@code "->"} separator, or has an
+	 *                                  empty endpoint.
+	 */
+	public static String[] parseDataFlowEndpoints(String entry) {
+		if (entry == null) {
+			throw new IllegalArgumentException("Data-flow entry must not be null");
+		}
+		String[] parts = entry.split("->", -1);
+		if (parts.length != 2) {
+			throw new IllegalArgumentException(
+					"Data-flow entry must contain exactly one '->' separator: " + entry);
+		}
+		String sender = parts[0].trim();
+		String recipient = parts[1].trim();
+		if (sender.isEmpty() || recipient.isEmpty()) {
+			throw new IllegalArgumentException("Data-flow entry has an empty endpoint: " + entry);
+		}
+		return new String[] { sender, recipient };
 	}
 
 	private void addModelElements(DFDModel dfd, Collection<? extends ModelElement> elements) {
@@ -191,7 +238,6 @@ public class YmlToEmfConverter {
 		SpartaModelPackage.eINSTANCE.eClass();
 		URI threatcat = URI.createFileURI(System.getProperty("user.dir") + "/" + "ThreatSpecification.sparta");
 		Resource threatres = resSet.getResource(threatcat, true);
-		threatres.load(null);
 		threatres.getContents().stream().filter(ThreatSpecificationCatalog.class::isInstance).map(ThreatSpecificationCatalog.class::cast).forEach(dfd.getResource()::add);
 
 		resource.getContents().add(dfd);

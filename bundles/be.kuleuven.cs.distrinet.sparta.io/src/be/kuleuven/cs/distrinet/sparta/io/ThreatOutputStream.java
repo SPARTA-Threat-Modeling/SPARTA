@@ -57,15 +57,16 @@ public abstract class ThreatOutputStream extends OutputStream {
 			this.properties.putAll(properties);
 		} else {
 			this.properties.put("Type", Threat::getThreatTypeName);
-			this.properties.put("Name", Threat::getThreatType);
+			this.properties.put("Name", Threat::getThreatName);
 			this.properties.put("Location", Threat::getThreatenedElement);
-			this.properties.put("Data Flow", Threat::getDataFlow);
 			this.properties.put("Flow From", Threat::getDataFlowFrom);
+			this.properties.put("Data Flow", Threat::getDataFlow);
 			this.properties.put("Flow To", Threat::getDataFlowTo);
 			this.properties.put("Vulnerability", Threat::getVulnerability);
 			this.properties.put("Risk", Threat::getRisk);
 			this.properties.put("Risk (lower)", Threat::getRisk_lower);
 			this.properties.put("Risk (upper)", Threat::getRisk_upper);
+			this.properties.put("Risk (potential)", Threat::getPotentialRisk);
 		}
 		for (String key : this.properties.keySet()) {
 			this.properties.compute(key, (k, v) -> {

@@ -11,9 +11,9 @@ package be.kuleuven.cs.distrinet.sparta.io;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.LinkedHashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -79,7 +79,7 @@ public abstract class ThreatWriter extends Writer {
 				return v.andThen(o -> ((o instanceof ModelElement) ? ((ModelElement) o).getName() : o));
 			});
 		}
-		final NumberFormat nf = DecimalFormat.getInstance();
+		final NumberFormat nf = NumberFormat.getInstance(Locale.ROOT);
 		nf.setMaximumFractionDigits(4);
 		for (String key : this.properties.keySet()) {
 			this.properties.compute(key, (k, v) -> {

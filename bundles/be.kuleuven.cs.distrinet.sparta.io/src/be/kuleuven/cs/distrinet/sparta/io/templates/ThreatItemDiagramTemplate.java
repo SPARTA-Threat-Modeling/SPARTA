@@ -65,9 +65,7 @@ public class ThreatItemDiagramTemplate extends Template<Threat> {
 		if (t.getThreatenedElement().equals(e) || t.getThreatenedElement().equals(specificElement)) {
 			node += ", red";
 		}
-		
-		node += "";
-		
+
 		return node;
 	}
 	

@@ -71,7 +71,20 @@ public class ThreatCSVWriter extends ThreatWriter {
 	}
 	
 	private String wrap(String arg) {
-		return "\"" + arg + "\"";
+		return escapeField(arg);
+	}
+
+	/**
+	 * Escape a single CSV field: wrap it in double quotes and double any embedded
+	 * double quote, per RFC&nbsp;4180, so that values containing a quote or the
+	 * {@code ;} delimiter do not break the CSV structure.
+	 *
+	 * @param arg the raw field value (may be {@code null}, treated as empty).
+	 * @return the quoted and escaped field.
+	 */
+	public static String escapeField(String arg) {
+		String value = (arg == null) ? "" : arg;
+		return "\"" + value.replace("\"", "\"\"") + "\"";
 	}
 
 	/**

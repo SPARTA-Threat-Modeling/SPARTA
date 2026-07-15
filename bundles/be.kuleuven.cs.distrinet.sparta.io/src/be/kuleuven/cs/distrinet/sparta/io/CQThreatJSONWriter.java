@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import be.kuleuven.cs.distrinet.sparta.analysis.ThreatAggregationAnalysis;
@@ -33,6 +34,14 @@ import be.kuleuven.cs.distrinet.sparta.io.json.CQThreat;
  */
 public class CQThreatJSONWriter extends Writer {
 
+	/**
+	 * Shared, thread-safe mapper. {@code AUTO_CLOSE_TARGET} is disabled so that
+	 * writing does not close the caller-owned {@link Writer}; closing is left to
+	 * {@link #close()} / the caller's try-with-resources.
+	 */
+	private static final ObjectMapper MAPPER = new ObjectMapper()
+			.disable(JsonGenerator.Feature.AUTO_CLOSE_TARGET);
+
 	protected final Writer writer;
 	/**
 	 * Create a new ThreatWriter to provided support for writing out a default set
@@ -47,7 +56,7 @@ public class CQThreatJSONWriter extends Writer {
 	/**
 	 * Closes the stream, flushing it first. Once the stream has been closed,
 	 * further write() or flush() invocations will cause an IOException to be
-	 * thrown. Closing a previously closed stream has no effe
+	 * thrown. Closing a previously closed stream has no effect.
 	 */
 	@Override
 	public void close() throws IOException {
@@ -107,7 +116,7 @@ public class CQThreatJSONWriter extends Writer {
 		{
 			toExport.add(new CQThreat(t, taa));
 		}
-		new ObjectMapper().writeValue(writer, toExport);
+		MAPPER.writeValue(writer, toExport);
 	}
 
 	/**

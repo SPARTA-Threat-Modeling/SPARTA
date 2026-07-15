@@ -12,7 +12,6 @@ package be.kuleuven.cs.distrinet.sparta.io;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
@@ -21,6 +20,8 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.resource.ResourceSet;
@@ -34,38 +35,37 @@ import be.kuleuven.cs.distrinet.sparta.io.templates.ThreatCatalog;
 import be.kuleuven.cs.distrinet.sparta.io.templates.ThreatsTemplate;
 
 public class ReportWriter {
-	
+
+	private static final Logger LOGGER = Logger.getLogger(ReportWriter.class.getName());
+
 	private List<? extends Threat> threats;
 	private ResourceSet model;
 	private File aird;
 
-	
+
 	public void performExport(File path, ResourceSet model, List<? extends Threat> threats) {
 		this.threats = threats;
 		this.model = model;
-		
-		
+
+
 		try {
-			
-			path.mkdirs();
+
+			Files.createDirectories(path.toPath());
 
 			setupClassFileAndLogo(path);
 
 			String filename = "report.tex";
 			File file = new File(path, filename);
 			if (file.exists()) {
-				
+
 				filename = "report-empty.tex";
 				file = new File(path, filename);
 			}
-			try (
-					FileWriter fw = new FileWriter(file);
-				) {
+			try (OutputStreamWriter fw = new OutputStreamWriter(new FileOutputStream(file),
+					StandardCharsets.UTF_8)) {
 				fw.write(ReportTemplate.fill());
-			} catch (IOException e) {
-				e.printStackTrace();
 			}
-			
+
 			// introduction (do not overwrite once generated)
 			filename = "introduction.tex";
 			file = new File(path, filename);
@@ -73,39 +73,30 @@ public class ReportWriter {
 				filename = "introduction-empty.tex";
 				file = new File(path, filename);
 			}
-			try (
-					FileWriter fw = new FileWriter(file);
-				) {
+			try (OutputStreamWriter fw = new OutputStreamWriter(new FileOutputStream(file),
+					StandardCharsets.UTF_8)) {
 				fw.write(IntroductionTemplate.fill());
-			} catch (IOException e) {
-				e.printStackTrace();
 			}
-			
+
 			filename = "description.tex";
 			file = new File(path, filename);
 			try (OutputStreamWriter fw = new OutputStreamWriter(new FileOutputStream(file),
-					StandardCharsets.UTF_8.newEncoder()); BufferedWriter bw = new BufferedWriter(fw);) {
+					StandardCharsets.UTF_8); BufferedWriter bw = new BufferedWriter(fw);) {
 				writeDescriptionToFile(bw);
 
-			} catch (Exception e) {
-				e.printStackTrace();
-				return;
 			}
-			
+
 			filename = "threatcatalog.tex";
 			file = new File(path, filename);
 			try (OutputStreamWriter fw = new OutputStreamWriter(new FileOutputStream(file),
-					StandardCharsets.UTF_8.newEncoder()); BufferedWriter bw = new BufferedWriter(fw);) {
+					StandardCharsets.UTF_8); BufferedWriter bw = new BufferedWriter(fw);) {
 				writeThreatCatalogToFile(bw);
 
-			} catch (Exception e) {
-				e.printStackTrace();
-				return;
 			}
 
-		} catch (Exception e) {
-			e.printStackTrace();
-		} 
+		} catch (IOException e) {
+			LOGGER.log(Level.SEVERE, e, () -> "Report export failed, aborting");
+		}
 	}
 	
 	private void setupClassFileAndLogo(File path)  throws IOException {
@@ -120,17 +111,17 @@ public class ReportWriter {
 		copyResource(path, "templates/tufte-book-local.txt", "tufte-book-local.tex");
 	}
 	
-	public void writeDescriptionToFile(BufferedWriter fw) {
+	public void writeDescriptionToFile(BufferedWriter fw) throws IOException {
 
 		output(fw, "%%% System description, generated on " + new Date() + "\n\n");
 
 		output(fw, DescriptionTemplate.fill());
 
-		
+
 
 	}
-	
-	public void writeThreatCatalogToFile(BufferedWriter fw) {
+
+	public void writeThreatCatalogToFile(BufferedWriter fw) throws IOException {
 
 		output(fw, "%%% Threat catalog, generated on " + new Date() + "\n\n");
 
@@ -138,35 +129,31 @@ public class ReportWriter {
 
 
 		output(fw, "\n% Threats\n");
-		
-		threats.stream().map(Threat::getThreatTypeName).distinct().forEach(type -> {
+
+		List<String> types = threats.stream().map(Threat::getThreatTypeName).distinct().collect(Collectors.toList());
+		for (String type : types) {
 			output(fw, ThreatsTemplate.fill(threats.stream().filter(t -> type.equals(t.getThreatTypeName())).collect(Collectors.toList())));
-		});
+		}
 		output(fw, "\n% END Threats\n");
 	}
 
 
 
 	private void copyResource(File path, String srcFile, String dstFile) throws IOException {
-		if (!path.exists()) {
-			path.mkdirs();
-		}
+		Files.createDirectories(path.toPath());
 
-		InputStream srcInputStream;
-		srcInputStream = Template.class.getClassLoader().getResourceAsStream(srcFile);
-		
-		
 		File destinationFile = new File(path, dstFile);
-		Files.copy(srcInputStream, destinationFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-	}
-	
-	
-	protected static void output(BufferedWriter fw, String format) {
-		try {
-			fw.write(format);
-			fw.flush();
-		} catch (IOException e) {
-			e.printStackTrace();
+		try (InputStream srcInputStream = Template.class.getClassLoader().getResourceAsStream(srcFile)) {
+			if (srcInputStream == null) {
+				throw new IOException("Report resource not found on classpath: " + srcFile);
+			}
+			Files.copy(srcInputStream, destinationFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 		}
+	}
+
+
+	protected static void output(BufferedWriter fw, String format) throws IOException {
+		fw.write(format);
+		fw.flush();
 	}
 }

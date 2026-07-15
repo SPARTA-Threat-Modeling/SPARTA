@@ -4,7 +4,7 @@ Bundle-Name: SPARTA IO
 Bundle-SymbolicName: be.kuleuven.cs.distrinet.sparta.io
 Bundle-Version: 2026.1.0
 Bundle-Vendor: DistriNet
-Automatic-Module-Name: be.kuleuven.cs.distrinet.sparta.core
+Automatic-Module-Name: be.kuleuven.cs.distrinet.sparta.io
 Bundle-RequiredExecutionEnvironment: JavaSE-11
 Require-Bundle: be.kuleuven.cs.distrinet.sparta.threatanalysis,
  be.kuleuven.cs.distrinet.sparta.core,
@@ -17,10 +17,7 @@ Require-Bundle: be.kuleuven.cs.distrinet.sparta.threatanalysis,
  org.apache.commons.commons-codec,
  org.apache.commons.commons-io,
  org.yaml.snakeyaml,
- org.eclipse.core.runtime;bundle-version="3.32.0",
- org.eclipse.sirius.diagram,
- org.eclipse.sirius.diagram.ui,
- org.eclipse.sirius.common.ui
+ org.eclipse.core.runtime;bundle-version="3.32.0"
 Export-Package: be.kuleuven.cs.distrinet.sparta.io,
  be.kuleuven.cs.distrinet.sparta.io.convert,
  be.kuleuven.cs.distrinet.sparta.io.json,

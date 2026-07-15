@@ -50,6 +50,9 @@ public class LaTeX {
 		funs.add(ltxEscape("{", "\\{"));
 		funs.add(ltxEscape("}", "\\}"));
 		funs.add(ltxEscape("~", "\\textasciitilde "));
+		funs.add(ltxEscape("^", "\\textasciicircum "));
+		funs.add(ltxEscape("<", "\\textless "));
+		funs.add(ltxEscape(">", "\\textgreater "));
 		ltxEscaper = funs.stream().reduce(Function.identity(), (f1, f2) -> {
 			return (i) -> f2.apply(f1.apply(i));
 		});
@@ -57,7 +60,7 @@ public class LaTeX {
 
 	/**
 	 * Escape the LaTeX characters in the provided text.
-	 * Currently \,_,&,$,%,#,{,}, and ~ are escaped.
+	 * Currently \,_,&,$,%,#,{,},~,^,&lt;, and &gt; are escaped.
 	 * @param text the text which requires escaping.
 	 * @return The escaped text.
 	 */
