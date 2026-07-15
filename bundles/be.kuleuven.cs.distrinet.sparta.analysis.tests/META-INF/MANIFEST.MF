@@ -6,7 +6,7 @@ Automatic-Module-Name: be.kuleuven.cs.distrinet.sparta.analysis.tests
 Bundle-Version: 2026.1.0
 Bundle-ClassPath: .
 Bundle-Vendor: DistriNet
-Bundle-RequiredExecutionEnvironment: JavaSE-11
+Require-Capability: osgi.ee;filter:="(&(osgi.ee=JavaSE)(version=21))"
 Require-Bundle: org.eclipse.core.runtime,
  be.kuleuven.cs.distrinet.sparta.analysis,
  org.junit

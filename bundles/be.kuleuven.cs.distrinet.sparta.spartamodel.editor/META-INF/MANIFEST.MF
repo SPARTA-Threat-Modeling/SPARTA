@@ -7,7 +7,7 @@ Bundle-ClassPath: .
 Bundle-Activator: be.kuleuven.cs.distrinet.sparta.spartamodel.presentation.SpartaModelEditorPlugin$Implementation
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Require-Capability: osgi.ee;filter:="(&(osgi.ee=JavaSE)(version=21))"
 Export-Package: be.kuleuven.cs.distrinet.sparta.spartamodel.presentation
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.core.resources;visibility:=reexport,

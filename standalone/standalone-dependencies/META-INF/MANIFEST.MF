@@ -12,4 +12,4 @@ Require-Bundle: org.eclipse.emf.ecore,
  org.eclipse.emf.codegen.ecore
 Bundle-Vendor: Ignored
 Automatic-Module-Name: standalone.dependencies
-Bundle-RequiredExecutionEnvironment: JavaSE-11
+Require-Capability: osgi.ee;filter:="(&(osgi.ee=JavaSE)(version=21))"

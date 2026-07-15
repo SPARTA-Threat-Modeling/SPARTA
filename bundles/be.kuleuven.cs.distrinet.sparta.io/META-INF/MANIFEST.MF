@@ -5,7 +5,7 @@ Bundle-SymbolicName: be.kuleuven.cs.distrinet.sparta.io
 Bundle-Version: 2026.1.0
 Bundle-Vendor: DistriNet
 Automatic-Module-Name: be.kuleuven.cs.distrinet.sparta.io
-Bundle-RequiredExecutionEnvironment: JavaSE-11
+Require-Capability: osgi.ee;filter:="(&(osgi.ee=JavaSE)(version=21))"
 Require-Bundle: be.kuleuven.cs.distrinet.sparta.threatanalysis,
  be.kuleuven.cs.distrinet.sparta.core,
  com.fasterxml.jackson.core.jackson-databind,

@@ -7,7 +7,7 @@ Bundle-Version: 2026.1.0
 Bundle-ClassPath: .
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Require-Capability: osgi.ee;filter:="(&(osgi.ee=JavaSE)(version=21))"
 Export-Package: be.kuleuven.cs.distrinet.sparta.spartamodel.tests
 Require-Bundle: org.eclipse.core.runtime,
  be.kuleuven.cs.distrinet.sparta.spartamodel;visibility:=reexport,

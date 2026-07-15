@@ -39,7 +39,7 @@ Require-Bundle: org.eclipse.ui,
  org.apache.commons.math3;bundle-version="3.6.1",
  org.eclipse.collections;bundle-version="10.4.0",
  org.eclipse.xtext
-Bundle-RequiredExecutionEnvironment: JavaSE-11
+Require-Capability: osgi.ee;filter:="(&(osgi.ee=JavaSE)(version=21))"
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Export-Package: be.kuleuven.cs.distrinet.sparta.analysis.util
