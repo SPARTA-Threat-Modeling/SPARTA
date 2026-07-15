@@ -83,14 +83,36 @@ public class PatternThreat extends Threat {
 		threatenedElement = conversion.getThreatLocation();
 		dataFlow = conversion.getDataFlow();
 
+		if (dataFlow == null) {
+			// Element-based match (pattern without a data flow parameter, e.g.
+			// STRIDE-per-element catalogs): label with the threatened element only.
+			matchType = threatenedElement != null ? typeAbbreviation(threatenedElement) + "*" : "";
+			return;
+		}
+
 		String type = "";
-        type += dataFlow.getSender().getClass().getSimpleName().substring(0,dataFlow.getSender().getClass().getSimpleName().length()-4).replaceAll("[^A-Z]", "");
-        type += dataFlow.getSender().equals(threatenedElement) ? "*" : "";
-        type += "-DF" + (dataFlow.equals(threatenedElement) ? "*" : "") + "->";
-        type += dataFlow.getRecipient().getClass().getSimpleName().substring(0,dataFlow.getRecipient().getClass().getSimpleName().length()-4).replaceAll("[^A-Z]", "");
-        type += dataFlow.getRecipient().equals(threatenedElement) ? "*" : "";
-        matchType = type;
-		
+		type += typeAbbreviation(dataFlow.getSender());
+		type += dataFlow.getSender() != null && dataFlow.getSender().equals(threatenedElement) ? "*" : "";
+		type += "-DF" + (dataFlow.equals(threatenedElement) ? "*" : "") + "->";
+		type += typeAbbreviation(dataFlow.getRecipient());
+		type += dataFlow.getRecipient() != null && dataFlow.getRecipient().equals(threatenedElement) ? "*" : "";
+		matchType = type;
+	}
+
+	/**
+	 * Abbreviated element type for match-type labels, e.g. ProcessImpl -> "P",
+	 * DataStoreImpl -> "DS", ExternalEntityImpl -> "EE". Null-safe ("?" for
+	 * unresolved references).
+	 */
+	private static String typeAbbreviation(Object element) {
+		if (element == null) {
+			return "?";
+		}
+		String name = element.getClass().getSimpleName();
+		if (name.endsWith("Impl")) {
+			name = name.substring(0, name.length() - 4);
+		}
+		return name.replaceAll("[^A-Z]", "");
 	}
 
 

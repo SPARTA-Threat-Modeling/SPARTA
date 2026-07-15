@@ -89,11 +89,11 @@ public class Threat implements IThreat, IInteractionThreat {
 	}
 
 	public ModelElement getDataFlowFrom() {
-		return dataFlow.getSender();
+		return dataFlow != null ? dataFlow.getSender() : null;
 	}
 
 	public ModelElement getDataFlowTo() {
-		return dataFlow.getRecipient();
+		return dataFlow != null ? dataFlow.getRecipient() : null;
 	}
 
 	public String getMessage() {
