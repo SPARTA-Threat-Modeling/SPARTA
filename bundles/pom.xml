@@ -18,8 +18,11 @@
   	<module>be.kuleuven.cs.distrinet.sparta.queries</module>
 
   	<module>be.kuleuven.cs.distrinet.sparta.analysis</module>
+  	<module>be.kuleuven.cs.distrinet.sparta.analysis.tests</module>
   	<module>be.kuleuven.cs.distrinet.sparta.core</module>
+  	<module>be.kuleuven.cs.distrinet.sparta.core.tests</module>
   	<module>be.kuleuven.cs.distrinet.sparta.io</module>
+  	<module>be.kuleuven.cs.distrinet.sparta.io.tests</module>
   	<module>be.kuleuven.cs.distrinet.sparta.threatanalysis</module>
   </modules>
 
