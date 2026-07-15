@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: SPARTA Analysis Tests
+Bundle-SymbolicName: be.kuleuven.cs.distrinet.sparta.analysis.tests;singleton:=true
+Automatic-Module-Name: be.kuleuven.cs.distrinet.sparta.analysis.tests
+Bundle-Version: 2026.1.0
+Bundle-ClassPath: .
+Bundle-Vendor: DistriNet
+Bundle-RequiredExecutionEnvironment: JavaSE-11
+Require-Bundle: org.eclipse.core.runtime,
+ be.kuleuven.cs.distrinet.sparta.analysis,
+ org.junit
+Bundle-ActivationPolicy: lazy
