@@ -9,8 +9,11 @@
  */
 package be.kuleuven.cs.distrinet.sparta.core.patterns;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -30,7 +33,7 @@ import be.kuleuven.cs.distrinet.sparta.spartamodel.ThreatTypeCatalog;
 
 public class PatternProcessor {
 
-	Set<ThreatTypeCatalog> processing,processed;
+	Set<ThreatTypeCatalog> processed;
 	
 	private final Engine engine;
 	private final PatternParser parser;
@@ -61,8 +64,8 @@ public class PatternProcessor {
 		PatternProcessingContext ctxt = new PatternProcessingContext(catalog.getPackage(),catalog.getImports().stream().collect(Collectors.joining("\n")));
 		
 		processHelperPatterns(catalog, ctxt);
-		
-		processThreatTypeCatalogPatterns(catalog,ctxt);
+
+		processThreatTypeCatalogPatterns(catalog);
 	}
 	
 	private final Set<PatternParsingResults> helperPatterns = new HashSet<>();
@@ -72,28 +75,59 @@ public class PatternProcessor {
 		PatternParsingResults parseResults;
 		parseResults = parser.parse(ctxt.instantiatePattern(catalog.getHelperPatterns().stream().collect(Collectors.joining("\n"))));
 		helperPatterns.add(parseResults);
-		System.out.println(parseResults);
 	}
 
-	private void processThreatTypeCatalogPatterns(ThreatTypeCatalog catalog, PatternProcessingContext ctxt) {
-		if (processed.contains(catalog))
-			return;
-		for (ThreatTypeCatalog dep : catalog.getPatternDependencies()) {
-			if (processing.contains(dep))
-				throw new IllegalArgumentException("Cyclic dependencies in threat type catalog dependencies; this is not supported.");
-			processing.add(catalog);
-			processThreatTypeCatalogPatterns(catalog, ctxt);
-		}
-		Set<ThreatType> threattypes = engine.getMatcherOnEngine(ThreatTypeCatalogThreatTypesWithNonEmptyPatterns.Matcher::on)
-			.getAllMatches(ThreatTypeCatalogThreatTypesWithNonEmptyPatterns.Match.newMatch(catalog, null))
-			.stream().map(ThreatTypeCatalogThreatTypesWithNonEmptyPatterns.Match::getThreatType).collect(Collectors.toSet());
-		for (ThreatType t : threattypes) {
-			for (ThreatPattern tp : t.getThreatpattern()) {
-				PatternParsingResults parseResults = parser.parse(ctxt.instantiatePattern(tp.getPatterns().stream().collect(Collectors.joining("\n"))));
-				addThreatTypePatternList(new ThreatPatternMatchMetadata(t,tp),parseResults);
+	private void processThreatTypeCatalogPatterns(ThreatTypeCatalog catalog) {
+		for (ThreatTypeCatalog c : dependencyOrder(catalog, processed)) {
+			PatternProcessingContext ctxt = new PatternProcessingContext(c.getPackage(),
+					c.getImports().stream().collect(Collectors.joining("\n")));
+			Set<ThreatType> threattypes = engine.getMatcherOnEngine(ThreatTypeCatalogThreatTypesWithNonEmptyPatterns.Matcher::on)
+				.getAllMatches(ThreatTypeCatalogThreatTypesWithNonEmptyPatterns.Match.newMatch(c, null))
+				.stream().map(ThreatTypeCatalogThreatTypesWithNonEmptyPatterns.Match::getThreatType).collect(Collectors.toSet());
+			for (ThreatType t : threattypes) {
+				for (ThreatPattern tp : t.getThreatpattern()) {
+					PatternParsingResults parseResults = parser.parse(ctxt.instantiatePattern(tp.getPatterns().stream().collect(Collectors.joining("\n"))));
+					addThreatTypePatternList(new ThreatPatternMatchMetadata(t,tp),parseResults);
+				}
 			}
+			processed.add(c);
 		}
-		processed.add(catalog);
+	}
+
+	/**
+	 * Compute the transitive pattern-dependency closure of {@code root} in
+	 * dependency-first order: every catalog appears after all catalogs it (transitively)
+	 * depends on. Catalogs contained in {@code alreadyProcessed} - and their
+	 * dependencies - are skipped. Cyclic dependencies are unsupported and rejected.
+	 *
+	 * <p>This traversal is intentionally free of engine/parser state so it can be unit
+	 * tested in isolation.
+	 *
+	 * @param root             the catalog to start the traversal from
+	 * @param alreadyProcessed catalogs already handled, to be skipped
+	 * @return the catalogs to process, dependencies first, without duplicates
+	 * @throws IllegalArgumentException if a dependency cycle is detected
+	 */
+	public static List<ThreatTypeCatalog> dependencyOrder(ThreatTypeCatalog root,
+			Set<ThreatTypeCatalog> alreadyProcessed) {
+		List<ThreatTypeCatalog> order = new ArrayList<>();
+		visitDependencies(root, alreadyProcessed, new HashSet<>(), new LinkedHashSet<>(), order);
+		return order;
+	}
+
+	private static void visitDependencies(ThreatTypeCatalog catalog, Set<ThreatTypeCatalog> alreadyProcessed,
+			Set<ThreatTypeCatalog> visited, Set<ThreatTypeCatalog> onStack, List<ThreatTypeCatalog> order) {
+		if (alreadyProcessed.contains(catalog) || visited.contains(catalog))
+			return;
+		if (!onStack.add(catalog))
+			throw new IllegalArgumentException(
+					"Cyclic dependencies in threat type catalog dependencies; this is not supported.");
+		for (ThreatTypeCatalog dep : catalog.getPatternDependencies()) {
+			visitDependencies(dep, alreadyProcessed, visited, onStack, order);
+		}
+		onStack.remove(catalog);
+		visited.add(catalog);
+		order.add(catalog);
 	}
 	
 	private void addThreatTypePatternList(ThreatPatternMatchMetadata t, PatternParsingResults patterns) {
@@ -101,7 +135,6 @@ public class PatternProcessor {
 	}
 
 	public Map<ThreatPatternMatchMetadata,PatternParsingResults> parsePatterns(ResourceSet resourceSet) {
-		processing = new HashSet<>();
 		processed = new HashSet<>();
 		Set<ThreatTypeCatalog> patternCatalogs = engine.getMatcherOnEngine(IsThreatTypeCatalog.Matcher::on).getAllMatches().stream().map(IsThreatTypeCatalog.Match::getCatalog).collect(Collectors.toSet());
 		for (ThreatTypeCatalog ttc: patternCatalogs) {

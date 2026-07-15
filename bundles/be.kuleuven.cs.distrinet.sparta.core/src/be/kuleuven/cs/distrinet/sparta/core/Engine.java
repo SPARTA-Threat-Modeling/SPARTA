@@ -168,13 +168,12 @@ public class Engine {
 		List<Threat> threats = new ArrayList<>();
 
 		for (Entry<ThreatPatternMatchMetadata,PatternParsingResults> entry : parseResults.entrySet()) {
-			entry.getKey();
 			StreamSupport.stream(entry.getValue().getQuerySpecifications().spliterator(),false)
 				.map(qs -> getVQMatchers(qs))
 				.filter(vqm -> vqm != null)
 				.forEach(vqm -> {
 					threats.addAll(vqm.getAllMatches().stream().map(x -> new PatternThreat(x, entry.getKey())).collect(Collectors.toSet()));
-				});;
+				});
 		}
 		return threats;
 	}

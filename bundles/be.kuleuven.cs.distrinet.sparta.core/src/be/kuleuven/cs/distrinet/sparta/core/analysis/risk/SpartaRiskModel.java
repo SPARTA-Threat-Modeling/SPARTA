@@ -47,6 +47,7 @@ public class SpartaRiskModel implements IRiskModel {
 	protected double[][][][] potRiskMatrix;
 	protected double[][][][] vulnMatrix;
 	protected double[][][][] lefMatrix;
+	protected double[][][][] tefMatrix;
 	protected double[][][] applicabilityMatrix;
 
 	protected double[] vulnerability;
@@ -93,6 +94,7 @@ public class SpartaRiskModel implements IRiskModel {
 		potRiskMatrix = new double[aps.length][matDsts][matPdts][3];
 		vulnMatrix = new double[aps.length][matDsts][matPdts][3];
 		lefMatrix = new double[aps.length][matDsts][matPdts][3];
+		tefMatrix = new double[aps.length][matDsts][matPdts][3];
 		applicabilityMatrix = new double[aps.length][matDsts][matPdts];
 
 		for (int ap = 0; ap < aps.length; ap++) {
@@ -128,6 +130,22 @@ public class SpartaRiskModel implements IRiskModel {
 		// sle
 		sle = RiskCalculation.aggregateMatrix(sleMatrix);
 		lef = RiskCalculation.aggregateAvgMatrix(lefMatrix,applicabilityMatrix);
+
+		// TEF depends only on (threat type, attacker profile): within one attacker every
+		// data-subject/data-type cell holds the same value, so summing all cells would
+		// over-count it. Instead sum one TEF per attacker profile (that attacker's
+		// unconditional asset-impact cell). Combining more attackers must raise the total
+		// threat event frequency, so we sum across attackers rather than averaging - which
+		// would wash out attackers with very different frequencies. (Fixes the previous bug
+		// where this.tef kept only the last cell's value.)
+		double[] tefTotal = new double[3];
+		for (int ap = 0; ap < aps.length; ap++) {
+			double[] attackerTef = tefMatrix[ap][dsts.length][pdts.length];
+			tefTotal[0] += attackerTef[0];
+			tefTotal[1] += attackerTef[1];
+			tefTotal[2] += attackerTef[2];
+		}
+		this.tef = tefTotal;
 	}
 
 	private void calculateRisk(DFDElement threatenedElement, DataFlow flow, ThreatType tt,
@@ -143,7 +161,7 @@ public class SpartaRiskModel implements IRiskModel {
 		double[] tefSamples = RiskCalculation.calculateTefArray(tt, attackerProfile, samples);
 		double[] tefInterval = RiskCalculation.calculateBoundaries(tefSamples);
 
-		this.tef = tefInterval;
+		tefMatrix[apIdx][dstIdx][pdtIdx] = tefInterval;
 
 		double[] vulnerability = RiskCalculation.calculateVulnerabilityArray(threatenedElement, flow, tt,
 				countermeasureBindings, attackerProfile, samples);

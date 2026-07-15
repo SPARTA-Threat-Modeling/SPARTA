@@ -11,7 +11,6 @@ package be.kuleuven.cs.distrinet.sparta.core.model;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.Locale;
 
 import org.eclipse.viatra.query.runtime.api.IPatternMatch;
 
@@ -42,9 +41,6 @@ public class Threat implements IThreat, IInteractionThreat {
 	protected String message;
 
 
-	protected static final NumberFormat CF = DecimalFormat.getInstance(Locale.forLanguageTag("nl-BE"));
-	protected static final NumberFormat RF = DecimalFormat.getInstance();
-
 	protected Threat(IPatternMatch match, IRiskModel model) {
 		this.patternMatch = match;
 		this.riskModel = model;
@@ -60,10 +56,6 @@ public class Threat implements IThreat, IInteractionThreat {
 		nf.setMaximumFractionDigits(2);
 		this.patternMatch = x;
 		setupBindings();
-		CF.setGroupingUsed(true);
-		CF.setMaximumFractionDigits(2);
-		RF.setGroupingUsed(false);
-		RF.setMaximumFractionDigits(4);
 		this.riskModel = new SpartaRiskModel();
 	}
 

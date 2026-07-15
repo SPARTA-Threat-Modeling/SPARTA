@@ -44,15 +44,29 @@ public class BetaPERT {
 		
 		this.min = min;
 		range = max - min;
-		
+
+		if (range == 0) {
+			// Degenerate estimate (min == max == mode): the distribution is a point
+			// mass at min. Skip the beta computation, which would divide by zero and
+			// yield NaN samples.
+			bDist = null;
+			return;
+		}
+
 		double alpha1 = 1 + lambda * (mode - min)/(max - min);
 		double alpha2 = 1 + lambda * (max - mode)/(max - min);
-		
+
 		bDist = new BetaDistribution(alpha1, alpha2);
 	}
-	
-	
+
+
 	public double[] sample(int n) {
+		if (bDist == null) {
+			// point mass at min (see setup): every sample is exactly min
+			double[] result = new double[n];
+			Arrays.fill(result, min);
+			return result;
+		}
 		return Arrays.stream(bDist.sample(n)).parallel().map(x -> x * range + min).toArray();
 	}
 	

@@ -103,18 +103,14 @@ public class RiskCalculation {
 		double[] cfSamples = new BetaPERT(attackerType.getContactFrequency()).sample(samples);
 		double[] paSamples = new BetaPERT(attackerType.getProbabilityOfAction()).sample(samples);
 		if (Arrays.stream(cfSamples).anyMatch(Double::isNaN)) {
-			throw new AssertionError("CF");
+			throw new IllegalStateException("NaN in contact-frequency samples for threat type " + tt.getName());
 		}
 		if (Arrays.stream(paSamples).anyMatch(Double::isNaN)) {
-			throw new AssertionError("PA");
+			throw new IllegalStateException("NaN in probability-of-action samples for threat type " + tt.getName());
 		}
 		double[] probVect = StatsUtil.ebeMult(cfSamples, paSamples);
 		if (Arrays.stream(probVect).anyMatch(Double::isNaN)) {
-			throw new AssertionError("PA");
-		}
-
-		if ((Arrays.stream(probVect).anyMatch(Double::isNaN))) {
-			throw new AssertionError("tefint");
+			throw new IllegalStateException("NaN in threat-event-frequency for threat type " + tt.getName());
 		}
 		return probVect;
 	}
@@ -211,8 +207,9 @@ public class RiskCalculation {
 			return result;
 		}
 		
-		// att is another (unsupported) subclass of AbstractThreatType
-		return null;	
+		// att is another (unsupported) subclass of AbstractThreatType:
+		// return the (empty) accumulator rather than null so callers can addAll() safely
+		return result;
 	}
 	
 	private static List<AbstractThreatType> getAllAncestors(AbstractThreatType att) {

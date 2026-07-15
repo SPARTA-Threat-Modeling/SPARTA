@@ -9,10 +9,6 @@
  */
 package be.kuleuven.cs.distrinet.sparta.core.model;
 
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.util.Locale;
-
 import org.eclipse.viatra.query.runtime.api.IPatternMatch;
 
 import be.kuleuven.cs.distrinet.sparta.core.analysis.risk.SpartaRiskModel;
@@ -33,19 +29,12 @@ public class PatternThreat extends Threat {
 	private final ThreatPatternConversion conversion;
 
 
-	private static final NumberFormat CF = DecimalFormat.getInstance(Locale.forLanguageTag("nl-BE"));
-	private static final NumberFormat RF = DecimalFormat.getInstance();
-
 	public PatternThreat(IPatternMatch x, ThreatPatternMatchMetadata meta) {
 		super(x, new SpartaRiskModel());
 		nf.setMaximumFractionDigits(2);
 		this.metadata = meta;
 		this.conversion = new ThreatPatternConversion(meta.getThreatPattern(), x);
 		setupBindings();
-		CF.setGroupingUsed(true);
-		CF.setMaximumFractionDigits(2);
-		RF.setGroupingUsed(false);
-		RF.setMaximumFractionDigits(4);
 	}
 
 
