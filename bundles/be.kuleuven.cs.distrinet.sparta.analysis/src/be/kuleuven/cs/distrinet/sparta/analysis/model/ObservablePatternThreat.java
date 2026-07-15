@@ -9,13 +9,7 @@
  */
 package be.kuleuven.cs.distrinet.sparta.analysis.model;
 
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.util.Locale;
-
 import org.eclipse.core.databinding.DataBindingContext;
-import org.eclipse.core.databinding.observable.value.IObservableValue;
-import org.eclipse.viatra.addon.databinding.runtime.adapter.MatcherProperties;
 import org.eclipse.viatra.query.runtime.api.IPatternMatch;
 
 import be.kuleuven.cs.distrinet.sparta.core.analysis.risk.SpartaRiskModel;
@@ -35,10 +29,6 @@ public class ObservablePatternThreat extends ObservableThreat {
 	private final ThreatPatternMatchMetadata metadata;
 	private final ThreatPatternConversion conversion;
 
-
-	private static final NumberFormat CF = DecimalFormat.getInstance(Locale.forLanguageTag("nl-BE"));
-	private static final NumberFormat RF = DecimalFormat.getInstance();
-
 	public ObservablePatternThreat(DataBindingContext dbc, IPatternMatch x, ThreatPatternMatchMetadata meta) {
 		super(x, new SpartaRiskModel());
 		this.metadata = meta;
@@ -54,10 +44,6 @@ public class ObservablePatternThreat extends ObservableThreat {
 		this.tef.setValue(0d);
 		this.sle.setValue(0d);
 		setupBindings(dbc);
-		CF.setGroupingUsed(true);
-		CF.setMaximumFractionDigits(2);
-		RF.setGroupingUsed(false);
-		RF.setMaximumFractionDigits(4);
 
 	}
 
@@ -67,16 +53,6 @@ public class ObservablePatternThreat extends ObservableThreat {
 
 	public String getRecipient() {
 		return recipient;
-	}
-
-	@SuppressWarnings("rawtypes")
-	protected IObservableValue getMatchObservable(String propertyName) {
-		try {
-			return MatcherProperties.getObservableValue(patternMatch.specification(), patternMatch, propertyName);
-		} catch (NullPointerException npe) {
-			npe.printStackTrace();
-			throw npe;
-		}
 	}
 
 	@Override
@@ -152,17 +128,6 @@ public class ObservablePatternThreat extends ObservableThreat {
 		this.vulnerability_lower.setValue(super.getVulnerability_lower());
 		this.vulnerability_upper.setValue(super.getVulnerability_upper());
 		this.lef.setValue(super.getLef());
-	}
-
-	private double[][][][] riskMatrix;
-	private double[][][][] sleMatrix;
-	private double[][][][] potRiskMatrix;
-	private double[][][][] vulnMatrix;
-	private double[][][][] lefMatrix;
-	private double[][][] applicabilityMatrix;
-
-	public double[][][][] getRiskMatrix() {
-		return riskMatrix;
 	}
 
 	@Override

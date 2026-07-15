@@ -55,8 +55,49 @@ public class ObservableThreat extends Threat {
 	protected String recipient = "";
 
 
-	private static final NumberFormat CF = DecimalFormat.getInstance(Locale.forLanguageTag("nl-BE"));
-	private static final NumberFormat RF = DecimalFormat.getInstance();
+	/** Single source of truth for the currency locale used across the analysis views. */
+	public static final Locale CURRENCY_LOCALE = Locale.forLanguageTag("nl-BE");
+
+	/**
+	 * {@link NumberFormat} is not thread-safe, but threats are converted on VIATRA
+	 * engine callbacks (off the UI thread) while getters are called on the UI
+	 * thread. A {@link ThreadLocal}, configured once, gives every thread its own
+	 * formatter instance without reconfiguring shared state per construction.
+	 */
+	private static final ThreadLocal<NumberFormat> CF = ThreadLocal.withInitial(() -> {
+		NumberFormat nf = DecimalFormat.getInstance(CURRENCY_LOCALE);
+		nf.setGroupingUsed(true);
+		nf.setMaximumFractionDigits(2);
+		return nf;
+	});
+	private static final ThreadLocal<NumberFormat> RF = ThreadLocal.withInitial(() -> {
+		NumberFormat nf = DecimalFormat.getInstance();
+		nf.setGroupingUsed(false);
+		nf.setMaximumFractionDigits(4);
+		return nf;
+	});
+
+	protected static String formatCurrency(double value) {
+		return CF.get().format(value);
+	}
+
+	protected static String formatRisk(double value) {
+		return RF.get().format(value);
+	}
+
+	/**
+	 * @return a freshly configured currency formatter (grouping, exactly two
+	 *         fraction digits) using the shared {@link #CURRENCY_LOCALE}. Intended
+	 *         for callers such as the analysis view header that need their own
+	 *         formatter instance.
+	 */
+	public static NumberFormat newCurrencyFormat() {
+		NumberFormat nf = DecimalFormat.getInstance(CURRENCY_LOCALE);
+		nf.setGroupingUsed(true);
+		nf.setMinimumFractionDigits(2);
+		nf.setMaximumFractionDigits(2);
+		return nf;
+	}
 
 	public ObservableThreat(DataBindingContext dbc, IPatternMatch x) {
 		super(x);
@@ -71,10 +112,6 @@ public class ObservableThreat extends Threat {
 		this.tef.setValue(0d);
 		this.sle.setValue(0d);
 		setupBindings(dbc);
-		CF.setGroupingUsed(true);
-		CF.setMaximumFractionDigits(2);
-		RF.setGroupingUsed(false);
-		RF.setMaximumFractionDigits(4);
 		processMatch();
 
 	}
@@ -152,7 +189,7 @@ public class ObservableThreat extends Threat {
 	}
 
 	public String getVulnerabilityString() {
-		return RF.format(vulnerability.getValue());
+		return formatRisk(vulnerability.getValue());
 	}
 
 	public void setVulnerability(double vulnerability) {
@@ -160,7 +197,7 @@ public class ObservableThreat extends Threat {
 	}
 
 	public String getVulnerability_lowerString() {
-		return RF.format(vulnerability_lower.getValue());
+		return formatRisk(vulnerability_lower.getValue());
 	}
 
 	public void setVulnerability_lower(double vulnerability_lower) {
@@ -168,7 +205,7 @@ public class ObservableThreat extends Threat {
 	}
 
 	public String getVulnerability_upperString() {
-		return RF.format(vulnerability_upper.getValue());
+		return formatRisk(vulnerability_upper.getValue());
 	}
 
 	public void setVulnerability_upper(double vulnerability_upper) {
@@ -176,7 +213,7 @@ public class ObservableThreat extends Threat {
 	}
 
 	public String getRiskString() {
-		return CF.format(risk.getValue());
+		return formatCurrency(risk.getValue());
 	}
 
 	public void setRisk(double risk) {
@@ -184,7 +221,7 @@ public class ObservableThreat extends Threat {
 	}
 
 	public String getPotentialRiskString() {
-		return CF.format(potentialRisk.getValue());
+		return formatCurrency(potentialRisk.getValue());
 	}
 
 	public void setPotentialRisk(double risk) {
@@ -192,7 +229,7 @@ public class ObservableThreat extends Threat {
 	}
 
 	public String getRisk_lowerString() {
-		return CF.format(risk_lower.getValue());
+		return formatCurrency(risk_lower.getValue());
 	}
 
 	public void setRisk_lower(double risk) {
@@ -200,7 +237,7 @@ public class ObservableThreat extends Threat {
 	}
 
 	public String getRisk_upperString() {
-		return CF.format(risk_upper.getValue());
+		return formatCurrency(risk_upper.getValue());
 	}
 
 	public void setRisk_upper(double risk) {
@@ -208,7 +245,7 @@ public class ObservableThreat extends Threat {
 	}
 
 	public String getSleString() {
-		return CF.format(sle.getValue());
+		return formatCurrency(sle.getValue());
 	}
 
 	public void setSle(double sle) {
@@ -216,7 +253,7 @@ public class ObservableThreat extends Threat {
 	}
 
 	public String getTefString() {
-		return RF.format(tef.getValue());
+		return formatRisk(tef.getValue());
 	}
 
 	public void setTef(double tef) {
@@ -224,7 +261,7 @@ public class ObservableThreat extends Threat {
 	}
 
 	public String getLefString() {
-		return RF.format(lef.getValue());
+		return formatRisk(lef.getValue());
 	}
 
 	public void setLef(double lef) {
@@ -323,17 +360,6 @@ public class ObservableThreat extends Threat {
 		this.vulnerability_lower.setValue(super.getVulnerability_lower());
 		this.vulnerability_upper.setValue(super.getVulnerability_upper());
 		this.lef.setValue(super.getLef());
-	}
-
-	private double[][][][] riskMatrix;
-	private double[][][][] sleMatrix;
-	private double[][][][] potRiskMatrix;
-	private double[][][][] vulnMatrix;
-	private double[][][][] lefMatrix;
-	private double[][][] applicabilityMatrix;
-
-	public double[][][][] getRiskMatrix() {
-		return riskMatrix;
 	}
 
 	public String getDescription() {

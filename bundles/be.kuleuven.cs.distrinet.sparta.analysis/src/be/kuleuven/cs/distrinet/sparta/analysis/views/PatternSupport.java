@@ -57,6 +57,7 @@ import org.eclipse.xtext.validation.Issue;
 
 import be.kuleuven.cs.distrinet.sparta.analysis.service.PatternParseListener;
 import be.kuleuven.cs.distrinet.sparta.analysis.service.ThreatAnalysisService;
+import be.kuleuven.cs.distrinet.sparta.analysis.util.IssueStatus;
 import be.kuleuven.cs.distrinet.sparta.analysis.views.sorter.ThreatSorter;
 import be.kuleuven.cs.distrinet.sparta.core.patterns.ThreatPatternMatchMetadata;
 
@@ -132,7 +133,8 @@ public class PatternSupport extends ViewPart implements PatternParseListener {
 				if (e1 instanceof PatternDiagnostics && e2 instanceof PatternDiagnostics) {
 					PatternDiagnostics t1 = (PatternDiagnostics) e1;
 					PatternDiagnostics t2 = (PatternDiagnostics) e2;
-					return t1.getThreatType().compareTo(t2.getThreatType());
+					return Comparator.nullsFirst(Comparator.<String>naturalOrder())
+							.compare(t1.getThreatType(), t2.getThreatType());
 				} else
 					return super.compareImpl(viewer, e1, e2);
 			}
@@ -147,7 +149,8 @@ public class PatternSupport extends ViewPart implements PatternParseListener {
 	}
 
 	private <U extends Comparable<? super U>> void createCol(TableViewer viewer, final String colname, int width, int alignment, Function<? super PatternDiagnostics, ? extends U> keyExtractor) {
-		Comparator<? super PatternDiagnostics> cmp = Comparator.comparing(keyExtractor);
+		Comparator<? super PatternDiagnostics> cmp = Comparator.comparing(keyExtractor,
+				Comparator.nullsFirst(Comparator.naturalOrder()));
 		TableViewerColumn col = new TableViewerColumn(viewer, SWT.NONE);
 
 		final TableColumn tc = col.getColumn();
@@ -175,7 +178,6 @@ public class PatternSupport extends ViewPart implements PatternParseListener {
 			public void run() {
 				IStructuredSelection selection = viewer.getStructuredSelection();
 				Object obj = selection.getFirstElement();
-				System.out.println(obj);
 				if (obj instanceof PatternDiagnostics) {
 					PatternDiagnostics pd = (PatternDiagnostics) obj;
 					showMessage(pd.getPatternName() + " error", pd.getIssue());
@@ -206,7 +208,13 @@ public class PatternSupport extends ViewPart implements PatternParseListener {
 	public void setFocus() {
 		parent.setFocus();
 	}
-	
+
+	@Override
+	public void dispose() {
+		ThreatAnalysisService.getInstance().unSub(this);
+		super.dispose();
+	}
+
 	public void load() {
 		
 		parseResults = convertDiagnostics(ThreatAnalysisService.getInstance().parseResults());
@@ -225,7 +233,7 @@ public class PatternSupport extends ViewPart implements PatternParseListener {
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void bind(StructuredViewer viewer, IObservableList<? extends PatternDiagnostics> input, IValueProperty... labelProperties) {
-		ObservableListContentProvider contentProvider = new ObservableListContentProvider();
+		ObservableListContentProvider<PatternDiagnostics> contentProvider = new ObservableListContentProvider<>();
 		if (viewer.getInput() != null)
 			viewer.setInput(null);
 		viewer.setContentProvider(contentProvider);
@@ -338,15 +346,20 @@ public class PatternSupport extends ViewPart implements PatternParseListener {
 		@Override
 		public Color getBackground(Object element) {
 			if (element instanceof PatternDiagnostics) {
-				if ( ((PatternDiagnostics) element).getIssue() == "" || ((PatternDiagnostics) element).getIssue() == null) {
-					return green;
-				} else {
-					return red;
-				}
+				String issue = ((PatternDiagnostics) element).getIssue();
+				return IssueStatus.isResolved(issue) ? green : red;
 			}
 			return white;
 		}
-		
+
+		@Override
+		public void dispose() {
+			super.dispose();
+			red.dispose();
+			green.dispose();
+			white.dispose();
+		}
+
 	}
 	
 }

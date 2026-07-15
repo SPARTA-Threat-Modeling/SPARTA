@@ -42,4 +42,5 @@ Require-Bundle: org.eclipse.ui,
 Bundle-RequiredExecutionEnvironment: JavaSE-11
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
+Export-Package: be.kuleuven.cs.distrinet.sparta.analysis.util
 Automatic-Module-Name: be.kuleuven.cs.distrinet.sparta.analysis

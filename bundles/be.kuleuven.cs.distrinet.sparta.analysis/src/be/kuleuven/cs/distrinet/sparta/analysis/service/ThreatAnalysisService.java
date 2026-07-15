@@ -28,7 +28,9 @@ import org.eclipse.core.databinding.observable.list.MultiList;
 import org.eclipse.core.databinding.observable.list.WritableList;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.common.notify.Notifier;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature.Setting;
@@ -45,6 +47,7 @@ import org.eclipse.viatra.query.runtime.base.api.BaseIndexOptions;
 import org.eclipse.viatra.query.runtime.emf.EMFScope;
 import org.eclipse.viatra.query.runtime.exception.ViatraQueryException;
 
+import be.kuleuven.cs.distrinet.sparta.analysis.Activator;
 import be.kuleuven.cs.distrinet.sparta.analysis.conversion.PatternThreatConverter;
 import be.kuleuven.cs.distrinet.sparta.analysis.conversion.ThreatConverter;
 import be.kuleuven.cs.distrinet.sparta.analysis.model.ObservableThreat;
@@ -78,23 +81,59 @@ public class ThreatAnalysisService implements IPropertyListener {
 	private Engine engine;
 	private MultiList<? extends ObservableThreat> ml;
 	private Map<ThreatPatternMatchMetadata,PatternParsingResults> parseResults;
-	
-	public void clear() {
-		if (engine != null ) {
-			try {
-				engine.dispose();
-				notifyListenersDisposal();
 
-			} catch (Exception e) {
-				System.err.println(e);
-			} finally {
-				try {
-					ml.clear();
-					ml.dispose();
-				} catch (Exception e) {
-				}
+	private DataBindingContext dbc;
+	private final List<WritableList<ObservableThreat>> targetLists = new ArrayList<>();
+	private final List<IObservableList<IPatternMatch>> sourceLists = new ArrayList<>();
+
+	public void clear() {
+		if (engine == null) {
+			return;
+		}
+		try {
+			engine.dispose();
+		} catch (Exception e) {
+			log("Error while disposing the analysis engine", e);
+		}
+		engine = null;
+
+		// Detach the views before tearing down the observable graph so they can
+		// still remove their own listeners from a live list.
+		notifyListenersDisposal();
+
+		// Dispose the binding graph created per load() so it does not leak.
+		if (dbc != null) {
+			dbc.dispose();
+			dbc = null;
+		}
+
+		// MultiList is a read-only composite view over its sublists: clear() is
+		// unsupported and used to be swallowed by an empty catch. Clear and
+		// dispose the underlying WritableLists directly, then the source
+		// pattern-match collections that hold the VIATRA listeners.
+		if (ml != null) {
+			ml.dispose();
+			ml = null;
+		}
+		for (WritableList<ObservableThreat> target : targetLists) {
+			if (!target.isDisposed()) {
+				target.clear();
+				target.dispose();
 			}
-			engine = null;
+		}
+		targetLists.clear();
+		for (IObservableList<IPatternMatch> source : sourceLists) {
+			if (!source.isDisposed()) {
+				source.dispose();
+			}
+		}
+		sourceLists.clear();
+	}
+
+	private void log(String message, Throwable t) {
+		Activator activator = Activator.getDefault();
+		if (activator != null) {
+			activator.getLog().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, message, t));
 		}
 	}
 	
@@ -103,8 +142,7 @@ public class ThreatAnalysisService implements IPropertyListener {
 		try {
 			project = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(resource.getURI().toPlatformString(true))).getProject();
 			this.resource = resource;
-			System.out.println("Active project: " + project.getName());
-			
+
 			if (engine != null) {
 				clear();
 			}
@@ -119,13 +157,15 @@ public class ThreatAnalysisService implements IPropertyListener {
 			
 			final List<IObservableList<ObservableThreat>> observableLists = new ArrayList<IObservableList<ObservableThreat>>();//= null;
 
-			DataBindingContext dbc = new DataBindingContext();
+			dbc = new DataBindingContext();
 			List<Function<ViatraQueryEngine,ViatraQueryMatcher<? extends IPatternMatch>>> ms = engine.getPatternMatchers();
 			ms.stream().map(engine::getVQMatcherOnEngine)
 						.forEach(vqm -> {
 							IObservableList<IPatternMatch> list = ObservablePatternMatchCollectionBuilder.create(vqm).buildList();
 							WritableList<ObservableThreat> obsList = new WritableList<ObservableThreat>();
 							dbc.bindList(obsList, list,null,new UpdateListStrategy(UpdateListStrategy.POLICY_UPDATE).setConverter(new ThreatConverter(dbc)));
+							sourceLists.add(list);
+							targetLists.add(obsList);
 							observableLists.add(obsList);
 						});
 
@@ -136,12 +176,13 @@ public class ThreatAnalysisService implements IPropertyListener {
 					.map(qs -> getVQMatchers(qs, engine))
 					.filter(vqm -> vqm != null)
 					.forEach(vqm -> {
-						System.err.println("MATCH COUNT " + vqm.getPatternName() +": " + vqm.countMatches());
 						IObservableList<IPatternMatch> list = ObservablePatternMatchCollectionBuilder.create(vqm).buildList();
 						WritableList<ObservableThreat> obsList = new WritableList<ObservableThreat>();
 						dbc.bindList(obsList, list,null,new UpdateListStrategy(UpdateListStrategy.POLICY_UPDATE).setConverter(new PatternThreatConverter(dbc,e.getKey())));
+						sourceLists.add(list);
+						targetLists.add(obsList);
 						observableLists.add(obsList);
-					});;	
+					});;
 			}
 			
 			ml = new MultiList<>(observableLists);

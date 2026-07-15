@@ -10,6 +10,7 @@
 package be.kuleuven.cs.distrinet.sparta.analysis.views;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.core.databinding.observable.ChangeEvent;
 import org.eclipse.core.databinding.observable.IChangeListener;
@@ -24,19 +25,35 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Display;
 
 import be.kuleuven.cs.distrinet.sparta.analysis.model.ObservableThreat;
+import be.kuleuven.cs.distrinet.sparta.analysis.util.ColorTriple;
+import be.kuleuven.cs.distrinet.sparta.analysis.util.RiskBoundaries;
 
 /**
  * Map label provider to enable colored threat list. The colors are determined
  * by the maximum potential threat value to ensure the coloring remains
  * consistent over time.
- * 
+ *
  * @author Laurens
  *
  */
 public class ColouredObservableMapLabelProvider extends ObservableMapLabelProvider
 		implements IColorProvider, IListChangeListener<ObservableThreat>, IChangeListener {
 
-	private static final HashMap<Triple, Color> colormap = new HashMap<Triple, Color>();
+	public static final ColorTriple high = new ColorTriple(231, 76, 60);
+	public static final ColorTriple med = new ColorTriple(230, 126, 34);
+	public static final ColorTriple low = new ColorTriple(46, 204, 113);
+
+	private static final ColorTriple WHITE = new ColorTriple(255, 255, 255);
+
+	/**
+	 * Per-instance cache of the SWT colours handed out by this label provider.
+	 * Instance scoped (not static) so that {@link #dispose()} can release every
+	 * colour when the label provider goes away, avoiding the SWT resource leak.
+	 */
+	private final Map<ColorTriple, Color> colormap = new HashMap<>();
+
+	private IObservableList<? extends ObservableThreat> input;
+
 	private double minValue = 0;
 	private double medValue = 1000;
 	private double maxValue = 10000;
@@ -55,27 +72,18 @@ public class ColouredObservableMapLabelProvider extends ObservableMapLabelProvid
 	public ColouredObservableMapLabelProvider(IObservableMap[] attributeMap,
 			IObservableList<? extends ObservableThreat> input) {
 		this(attributeMap);
+		this.input = input;
 		input.addListChangeListener(this);
 		input.addChangeListener(this);
-		try {
-			calcRiskBoundaries(input);
-		} catch (Exception e) {
-
-		}
+		calcRiskBoundaries(input);
 	}
 
 	private void calcRiskBoundaries(IObservableList<? extends ObservableThreat> input) {
-		double min = 0;
-		double max = input.stream().mapToDouble(t -> t.getPotentialRiskAsDouble()).max().getAsDouble();
-		double med = (min + max) / 2;
-		minValue = min;
-		medValue = med;
-		maxValue = max;
-		if (max <= 0) {
-			minValue = -1;
-			medValue = 0;
-			maxValue = 1;
-		}
+		double max = input.stream().mapToDouble(ObservableThreat::getPotentialRiskAsDouble).max().orElse(0);
+		double[] boundaries = RiskBoundaries.compute(max);
+		minValue = boundaries[0];
+		medValue = boundaries[1];
+		maxValue = boundaries[2];
 	}
 
 	@Override
@@ -88,127 +96,18 @@ public class ColouredObservableMapLabelProvider extends ObservableMapLabelProvid
 		if (element instanceof ObservableThreat) {
 			double r = ((ObservableThreat) element).getRiskAsDouble();
 			if (r > medValue) {
-				return getColor(Triple.interPol(med, high, (r - medValue) / (maxValue - medValue)));
+				return getColor(ColorTriple.interPol(med, high, (r - medValue) / (maxValue - medValue)));
 			} else {
-				return getColor(Triple.interPol(low, med, (r - minValue) / (medValue - minValue)));
+				return getColor(ColorTriple.interPol(low, med, (r - minValue) / (medValue - minValue)));
 			}
 		}
 		return getColor(high);
 	}
 
-	private static Color getColor(Triple col) {
-		if (!col.validColor())
-			return new Color(Display.getDefault(), 255, 255, 255, 255);
-		Color c = colormap.get(col);
-		if (c == null) {
-			c = new Color(Display.getDefault(), col.getX(), col.getY(), col.getZ(), 255);
-			colormap.put(col, c);
-		}
-		return c;
-	}
-
-	public static final Triple high = new Triple(231, 76, 60);
-	public static final Triple med = new Triple(230, 126, 34);
-	public static final Triple low = new Triple(46, 204, 113);
-
-	private static final class Triple {
-		private Integer x;
-		private Integer y;
-		private Integer z;
-
-		public Triple() {
-			this(0, 0, 0);
-		}
-
-		public boolean validColor() {
-			return (x >= 0 && x <= 255 && y >= 0 && y <= 255 && z >= 0 && z <= 255);
-		}
-
-		public Triple(int x, int y, int z) {
-			this.x = x;
-			this.y = y;
-			this.z = z;
-		}
-
-		public Integer getX() {
-			return x;
-		}
-
-		public void setX(Integer x) {
-			this.x = x;
-		}
-
-		public Integer getY() {
-			return y;
-		}
-
-		public void setY(Integer y) {
-			this.y = y;
-		}
-
-		public Integer getZ() {
-			return z;
-		}
-
-		public void setZ(Integer z) {
-			this.z = z;
-		}
-
-		private static int inter(int x, int y, double pct) {
-			return (int) (((1.0 - pct) * x) + (pct * y));
-		}
-
-		public static Triple interPol(Triple t1, Triple t2, double pct) {
-			Triple t = new Triple();
-			t.setX(inter(t1.getX(), t2.getX(), pct));
-			t.setY(inter(t1.getY(), t2.getY(), pct));
-			t.setZ(inter(t1.getZ(), t2.getZ(), pct));
-			return t;
-
-		}
-
-		@Override
-		public String toString() {
-			return "Triple(X:" + x + " Y:" + y + " Z:" + z + ")";
-		}
-
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + ((x == null) ? 0 : x.hashCode());
-			result = prime * result + ((y == null) ? 0 : y.hashCode());
-			result = prime * result + ((z == null) ? 0 : z.hashCode());
-			return result;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			Triple other = (Triple) obj;
-			if (x == null) {
-				if (other.x != null)
-					return false;
-			} else if (!x.equals(other.x))
-				return false;
-			if (y == null) {
-				if (other.y != null)
-					return false;
-			} else if (!y.equals(other.y))
-				return false;
-			if (z == null) {
-				if (other.z != null)
-					return false;
-			} else if (!z.equals(other.z))
-				return false;
-			return true;
-		}
-
+	private Color getColor(ColorTriple col) {
+		ColorTriple key = col.validColor() ? col : WHITE;
+		return colormap.computeIfAbsent(key,
+				k -> new Color(Display.getDefault(), k.getX(), k.getY(), k.getZ(), 255));
 	}
 
 	@Override
@@ -231,5 +130,21 @@ public class ColouredObservableMapLabelProvider extends ObservableMapLabelProvid
 	@Override
 	public void handleChange(ChangeEvent event) {
 		fireLabelProviderChanged(new LabelProviderChangedEvent(this));
+	}
+
+	@Override
+	public void dispose() {
+		if (input != null && !input.isDisposed()) {
+			input.removeListChangeListener(this);
+			input.removeChangeListener(this);
+		}
+		input = null;
+		for (Color color : colormap.values()) {
+			if (color != null && !color.isDisposed()) {
+				color.dispose();
+			}
+		}
+		colormap.clear();
+		super.dispose();
 	}
 }

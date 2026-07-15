@@ -33,10 +33,7 @@ public class ThreatConverter extends Converter<IPatternMatch, ObservableThreat> 
 
 	@Override
 	public ObservableThreat convert(IPatternMatch fromObject) {
-		if (!(fromObject instanceof IPatternMatch))
-			throw new IllegalArgumentException();
-		IPatternMatch pm = (IPatternMatch) fromObject;
-		return new ObservableThreat(dbc, pm);
+		return new ObservableThreat(dbc, fromObject);
 	}
 
 }

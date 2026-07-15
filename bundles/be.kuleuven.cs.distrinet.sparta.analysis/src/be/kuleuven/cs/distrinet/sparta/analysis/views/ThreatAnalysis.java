@@ -10,11 +10,9 @@
 package be.kuleuven.cs.distrinet.sparta.analysis.views;
 
 
-import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Locale;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -208,7 +206,8 @@ public class ThreatAnalysis extends ViewPart implements AnalysisListener {
 				if (e1 instanceof ObservableThreat && e2 instanceof ObservableThreat) {
 					ObservableThreat t1 = (ObservableThreat) e1;
 					ObservableThreat t2 = (ObservableThreat) e2;
-					return t1.getThreatenedElementName().compareTo(t2.getThreatenedElementName());
+					return Comparator.nullsFirst(Comparator.<String>naturalOrder())
+							.compare(t1.getThreatenedElementName(), t2.getThreatenedElementName());
 				} else
 					return super.compareImpl(viewer, e1, e2);
 			}
@@ -236,7 +235,8 @@ public class ThreatAnalysis extends ViewPart implements AnalysisListener {
 	}
 
 	private <U extends Comparable<? super U>> void createCol(TableViewer viewer, final String colname, int width, int alignment, Function<? super ObservableThreat, ? extends U> keyExtractor) {
-		Comparator<? super ObservableThreat> cmp = Comparator.comparing(keyExtractor);
+		Comparator<? super ObservableThreat> cmp = Comparator.comparing(keyExtractor,
+				Comparator.nullsFirst(Comparator.naturalOrder()));
 		TableViewerColumn col = new TableViewerColumn(viewer, SWT.NONE);
 
 		final TableColumn tc = col.getColumn();
@@ -309,12 +309,12 @@ public class ThreatAnalysis extends ViewPart implements AnalysisListener {
 		double max = ml.stream().mapToDouble(t -> t.getPotentialRiskAsDouble()).sum();
 		double residual = ml.stream().mapToDouble(t -> t.getRiskAsDouble()).sum();
 		double reduction = max - residual;
-		progressBar.setMaximum((int) max);
-		progressBar.setSelection((int) reduction);
-		NumberFormat nf = DecimalFormat.getInstance(Locale.forLanguageTag("nl-BE"));
-		nf.setGroupingUsed(true);
-		nf.setMinimumFractionDigits(2);
-		nf.setMaximumFractionDigits(2);
+		// Scale to a fixed 0-100 range: casting the raw fractional risk sum to int
+		// truncates large totals and setMaximum(0) (no potential risk) is invalid.
+		progressBar.setMaximum(100);
+		int reductionPercentage = (max > 0) ? (int) Math.round((reduction / max) * 100) : 0;
+		progressBar.setSelection(reductionPercentage);
+		NumberFormat nf = ObservableThreat.newCurrencyFormat();
 		riskRedurLabel.setText(riskRedur + nf.format(reduction)+ " of total risk " + nf.format(max) + " reduced.");
 
 		mitigatedRisk.setText(nf.format(reduction));
@@ -328,7 +328,7 @@ public class ThreatAnalysis extends ViewPart implements AnalysisListener {
 	}
 
 	private void bind(StructuredViewer viewer, IObservableList<? extends ObservableThreat> input, IValueProperty... labelProperties) {
-		ObservableListContentProvider contentProvider = new ObservableListContentProvider();
+		ObservableListContentProvider<ObservableThreat> contentProvider = new ObservableListContentProvider<>();
 		if (viewer.getInput() != null)
 			viewer.setInput(null);
 		viewer.setContentProvider(contentProvider);
@@ -399,7 +399,6 @@ public class ThreatAnalysis extends ViewPart implements AnalysisListener {
 		
 		@Override
 		public void handleChange(ChangeEvent event) {
-			System.err.println(event.getObservable());
 			processRiskChange(ml);
 		}
 
@@ -419,11 +418,25 @@ public class ThreatAnalysis extends ViewPart implements AnalysisListener {
 	}
 	@Override
 	public void invalidatePreviousBindings() {
-		ml.removeChangeListener(changeListener);
-		ml.clear();
-		ml.dispose();
-		ml = null;
-		viewer.setInput(null);	
+		// The service owns the MultiList lifecycle (it disposes it in clear()).
+		// The view only detaches its own change listener and drops its reference.
+		if (ml != null) {
+			ml.removeChangeListener(changeListener);
+			ml = null;
+		}
+		if (viewer != null && !viewer.getTable().isDisposed()) {
+			viewer.setInput(null);
+		}
+	}
+
+	@Override
+	public void dispose() {
+		ThreatAnalysisService.getInstance().unSub(this);
+		if (ml != null) {
+			ml.removeChangeListener(changeListener);
+			ml = null;
+		}
+		super.dispose();
 	}
 
 }
