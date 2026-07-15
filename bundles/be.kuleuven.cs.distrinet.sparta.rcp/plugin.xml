@@ -30,6 +30,13 @@
    </extension>
    <extension
          point="org.eclipse.ui.perspectiveExtensions">
+      <!--
+         The base layout (Project Explorer left, Threat Analysis right,
+         Property Sheet/Problems bottom) is built explicitly in
+         SPARTAPerspective.createInitialLayout. This self-targeting
+         perspectiveExtension only contributes the File > New and
+         perspective shortcuts.
+      -->
       <perspectiveExtension
             targetID="be.kuleuven.cs.distrinet.sparta.rcp.spartaperspective">
          <newWizardShortcut
@@ -41,36 +48,6 @@
          <perspectiveShortcut
                id="be.kuleuven.cs.distrinet.sparta.rcp.spartaperspective">
          </perspectiveShortcut>
-         <view
-               id="org.eclipse.ui.navigator.ProjectExplorer"
-               minimized="false"
-               ratio="0.15"
-               relationship="left"
-               relative="org.eclipse.ui.editorss"
-               visible="true">
-         </view>
-         <view
-               id="be.kuleuven.cs.distrinet.sparta.analysis.views.ThreatAnalysis"
-               minimized="false"
-               ratio="0.66"
-               relationship="right"
-               relative="org.eclipse.ui.editorss">
-         </view>
-         <view
-               id="org.eclipse.ui.views.PropertySheet"
-               minimized="false"
-               ratio=".75"
-               relationship="bottom"
-               relative="org.eclipse.ui.editorss"
-               visible="true">
-         </view>
-         <view
-               id="org.eclipse.ui.views.ProblemView"
-               minimized="false"
-               relationship="stack"
-               relative="org.eclipse.ui.views.PropertySheet"
-               visible="true">
-         </view>
       </perspectiveExtension>
    </extension>
    <extension
@@ -87,20 +64,6 @@
                      value="org.eclipse.core.resources.IProject">
                </instanceof>
             </or></enablement>
-      </commonWizard>
-      <commonWizard
-            type="new"
-            wizardId="be.kuleuven.cs.distrinet.sparta.threattree.presentation.ThreattreeModelWizardID">
-         <enablement>
-            <or>
-               <instanceof
-                     value="org.eclipse.core.resources.IFolder">
-               </instanceof>
-               <instanceof
-                     value="org.eclipse.core.resources.IProject">
-               </instanceof>
-            </or>
-         </enablement>
       </commonWizard>
    </extension>
 
