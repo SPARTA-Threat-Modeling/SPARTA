@@ -7,6 +7,8 @@
    </configIni>
 
    <launcherArgs>
+      <vmArgs>-Declipse.e4.inject.javax.warning=false
+      </vmArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts
       </vmArgsMac>
    </launcherArgs>
