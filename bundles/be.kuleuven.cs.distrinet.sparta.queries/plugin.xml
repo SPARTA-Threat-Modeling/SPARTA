@@ -26,7 +26,6 @@
       <query-specification fqn="be.kuleuven.cs.distrinet.sparta.queries.externalEntityThroughProcessComm"/>
       <query-specification fqn="be.kuleuven.cs.distrinet.sparta.queries.externalEntityThroughDataStoreComm"/>
       <query-specification fqn="be.kuleuven.cs.distrinet.sparta.queries.externalEntityThroughExternalEntityComm"/>
-      <query-specification fqn="be.kuleuven.cs.distrinet.sparta.queries.flowThroughElementComm"/>
       <query-specification fqn="be.kuleuven.cs.distrinet.sparta.queries.threatTypeAncestor"/>
       <query-specification fqn="be.kuleuven.cs.distrinet.sparta.queries.flowContainerDiff"/>
     </group>

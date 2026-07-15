@@ -113,7 +113,7 @@ public class Engine {
 	    ms.add(be.kuleuven.cs.distrinet.sparta.queries.ExternalEntityThroughProcessComm.Matcher::on);
 	    ms.add(be.kuleuven.cs.distrinet.sparta.queries.ExternalEntityThroughDataStoreComm.Matcher::on);
 	    ms.add(be.kuleuven.cs.distrinet.sparta.queries.ExternalEntityThroughExternalEntityComm.Matcher::on);
-	    ms.add(be.kuleuven.cs.distrinet.sparta.queries.FlowThroughElementComm.Matcher::on);
+//	    ms.add(be.kuleuven.cs.distrinet.sparta.queries.FlowThroughElementComm.Matcher::on);
 		return ms;
 	}
 	

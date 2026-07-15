@@ -7,10 +7,35 @@ import "http://www.eclipse.org/emf/2002/Ecore"
 pattern flowComm(location : DataFlow, p : DataFlowEntity, p2 : DataFlowEntity,
 							t : ThreatType) {
 	DataFlow(location);DataFlowEntity(p);DataFlowEntity(p2);
-	
+
 	find threatApplicable(location,t,"DataFlow");
 	find communication(p,location,p2);
-} 
+} or {
+	Process(p);
+	Process(p2);
+	find threatApplicable(location,t,"ProcessTo*Process");
+	find communication(p,location,p2);
+} or {
+	Process(p);
+	DataStore(p2);
+	find threatApplicable(location,t,"ProcessTo*DataStore");
+	find communication(p,location,p2);
+} or {
+	DataStore(p);
+	Process(p2);
+	find threatApplicable(location,t,"DataStoreTo*Process");
+	find communication(p,location,p2);
+} or {
+	Process(p);
+	ExternalEntity(p2);
+	find threatApplicable(location,t,"ProcessTo*ExternalEntity");
+	find communication(p,location,p2);
+} or {
+	ExternalEntity(p);
+	Process(p2);
+	find threatApplicable(location,t,"ExternalEntityTo*Process");
+	find communication(p,location,p2);
+}
 
 pattern processToProcessComm(location : Process, p2 : Process, df : DataFlow,
 							t : ThreatType) {
@@ -174,11 +199,41 @@ or {
 pattern flowThroughComm(location : DataFlow, p : DataFlowEntity, p2 : DataFlowEntity,
 							t : ThreatType) {
 	DataFlow(location);DataFlowEntity(p);DataFlowEntity(p2);
-	
+
 	find threatApplicable(location,t,"DataFlowThrough");
 	find communication(p,location,p2);
 	find flowContainerDiff(p,p2);
-} 
+} or {
+	Process(p);
+	Process(p2);
+	find threatApplicable(location,t,"ProcessThrough*Process");
+	find communication(p,location,p2);
+	find flowContainerDiff(p,p2);
+} or {
+	Process(p);
+	DataStore(p2);
+	find threatApplicable(location,t,"ProcessThrough*DataStore");
+	find communication(p,location,p2);
+	find flowContainerDiff(p,p2);
+} or {
+	DataStore(p);
+	Process(p2);
+	find threatApplicable(location,t,"DataStoreThrough*Process");
+	find communication(p,location,p2);
+	find flowContainerDiff(p,p2);
+} or {
+	Process(p);
+	ExternalEntity(p2);
+	find threatApplicable(location,t,"ProcessThrough*ExternalEntity");
+	find communication(p,location,p2);
+	find flowContainerDiff(p,p2);
+} or {
+	ExternalEntity(p);
+	Process(p2);
+	find threatApplicable(location,t,"ExternalEntityThrough*Process");
+	find communication(p,location,p2);
+	find flowContainerDiff(p,p2);
+}
 pattern processThroughProcessComm(location : Process, p2 : Process, df : DataFlow,
 							t : ThreatType) {
 	Process(location);	Process(p2);	DataFlow(df);
@@ -355,26 +410,26 @@ or {
 // In addition, the fow has to be between certain types of elements
 //
 ///////////////////// ////////////////////////////////////////////////////////// /////////////////////
-pattern flowThroughElementComm(location : DataFlow, p : DataFlowEntity, p2 : DataFlowEntity,
-							t : ThreatType) {
-	Process(p);
-	Process(p2);
-	find threatApplicable(location,t,"ProcessTo*Process");
-	find communication(p,location,p2);
-	find flowContainerDiff(p,p2);
-} or {
-	Process(p);
-	DataStore(p2);
-	find threatApplicable(location,t,"ProcessTo*DataStore");
-	find communication(p,location,p2);
-	find flowContainerDiff(p,p2);
-} or {
-	ExternalEntity(p);
-	Process(p2);
-	find threatApplicable(location,t,"ExternalEntityTo*Process");
-	find communication(p,location,p2);
-	find flowContainerDiff(p,p2);
-}
+//pattern flowThroughElementComm(location : DataFlow, p : DataFlowEntity, p2 : DataFlowEntity,
+//							t : ThreatType) {
+//	Process(p);
+//	Process(p2);
+//	find threatApplicable(location,t,"ProcessTo*Process");
+//	find communication(p,location,p2);
+//	find flowContainerDiff(p,p2);
+//} or {
+//	Process(p);
+//	DataStore(p2);
+//	find threatApplicable(location,t,"ProcessTo*DataStore");
+//	find communication(p,location,p2);
+//	find flowContainerDiff(p,p2);
+//} or {
+//	ExternalEntity(p);
+//	Process(p2);
+//	find threatApplicable(location,t,"ExternalEntityTo*Process");
+//	find communication(p,location,p2);
+//	find flowContainerDiff(p,p2);
+//}
 
 
 
