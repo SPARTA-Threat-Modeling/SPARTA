@@ -38,10 +38,16 @@ public class PatternProcessor {
 	private final Engine engine;
 	private final PatternParser parser;
 	
+	private static final String VQL_LIBRARY = "be/kuleuven/cs/distrinet/sparta/queries/DFDQueries.vql";
+
 	public PatternProcessor(Engine engine) {
 		this.engine = engine;
+		java.net.URL library = PatternProcessor.class.getClassLoader().getResource(VQL_LIBRARY);
+		if (library == null) {
+			throw new IllegalStateException("Required VQL library not found on the classpath: " + VQL_LIBRARY);
+		}
 		this.parser = PatternParserBuilder.instance()
-				.withLibrary(URI.createURI(PatternProcessor.class.getClassLoader().getResource("be/kuleuven/cs/distrinet/sparta/queries/DFDQueries.vql").toString(), false))
+				.withLibrary(URI.createURI(library.toString(), false))
 				.build();
 	}
 	
@@ -69,7 +75,7 @@ public class PatternProcessor {
 	}
 	
 	private final Set<PatternParsingResults> helperPatterns = new HashSet<>();
-	private final Map<ThreatPatternMatchMetadata,PatternParsingResults> threatPatterns = new HashMap();
+	private final Map<ThreatPatternMatchMetadata,PatternParsingResults> threatPatterns = new HashMap<>();
 	
 	private void processHelperPatterns(ThreatTypeCatalog catalog, PatternProcessingContext ctxt) {
 		PatternParsingResults parseResults;

@@ -14,6 +14,7 @@ import org.eclipse.viatra.query.runtime.api.IPatternMatch;
 import be.kuleuven.cs.distrinet.sparta.core.analysis.risk.SpartaRiskModel;
 import be.kuleuven.cs.distrinet.sparta.core.patterns.ThreatPatternConversion;
 import be.kuleuven.cs.distrinet.sparta.core.patterns.ThreatPatternMatchMetadata;
+import be.kuleuven.cs.distrinet.sparta.spartamodel.AbstractThreatType;
 
 /**
  * Observable threat which contains the threat data to enable automatic updating
@@ -88,22 +89,6 @@ public class PatternThreat extends Threat {
 		matchType = type;
 	}
 
-	/**
-	 * Abbreviated element type for match-type labels, e.g. ProcessImpl -> "P",
-	 * DataStoreImpl -> "DS", ExternalEntityImpl -> "EE". Null-safe ("?" for
-	 * unresolved references).
-	 */
-	private static String typeAbbreviation(Object element) {
-		if (element == null) {
-			return "?";
-		}
-		String name = element.getClass().getSimpleName();
-		if (name.endsWith("Impl")) {
-			name = name.substring(0, name.length() - 4);
-		}
-		return name.replaceAll("[^A-Z]", "");
-	}
-
 
 	@Override
 	public String getThreatName() {
@@ -112,7 +97,12 @@ public class PatternThreat extends Threat {
 
 	@Override
 	public String getThreatTypeName() {
-		return conversion.processAndReplaceParams(metadata.getThreatAncestor().getName());
+		AbstractThreatType ancestor = metadata.getThreatAncestor();
+		if (ancestor == null) {
+			// No ancestor category on this threat type; fall back to the threat's own name.
+			return getThreatName();
+		}
+		return conversion.processAndReplaceParams(ancestor.getName());
 	}
 
 }

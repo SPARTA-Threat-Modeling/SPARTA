@@ -12,6 +12,7 @@ package be.kuleuven.cs.distrinet.sparta.core.model;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.viatra.query.runtime.api.IPatternMatch;
 
 import be.kuleuven.cs.distrinet.sparta.core.analysis.RiskAssessmentLoopConfiguration;
@@ -146,7 +147,8 @@ public class Threat implements IThreat, IInteractionThreat {
 		if (o instanceof ModelElement) {
 			return (ModelElement) o;
 		}
-		throw new IllegalArgumentException();
+		throw new IllegalArgumentException(
+				"Expected a ModelElement for match parameter '" + propertyName + "' but got: " + o);
 	}
 
 	protected DataFlow getDataFlowElement() {
@@ -154,7 +156,7 @@ public class Threat implements IThreat, IInteractionThreat {
 		if (o instanceof DataFlow) {
 			return (DataFlow) o;
 		}
-		throw new IllegalArgumentException();
+		throw new IllegalArgumentException("Expected a DataFlow for match parameter 'df' but got: " + o);
 	}
 
 	protected ThreatType getThreatTypeElement() {
@@ -162,7 +164,23 @@ public class Threat implements IThreat, IInteractionThreat {
 		if (tt instanceof ThreatType) {
 			return (ThreatType) tt;
 		}
-		throw new IllegalArgumentException();
+		throw new IllegalArgumentException("Expected a ThreatType for match parameter 't' but got: " + tt);
+	}
+
+	/**
+	 * Abbreviated element type for match-type labels, e.g. {@code ProcessImpl -> "P"},
+	 * {@code DataStoreImpl -> "DS"}, {@code ExternalEntityImpl -> "EE"}. Null-safe
+	 * ({@code "?"} for an unresolved reference).
+	 */
+	protected static String typeAbbreviation(Object element) {
+		if (element == null) {
+			return "?";
+		}
+		String name = element.getClass().getSimpleName();
+		if (name.endsWith("Impl")) {
+			name = name.substring(0, name.length() - 4);
+		}
+		return name.replaceAll("[^A-Z]", "");
 	}
 
 	private void setupBindings() {
@@ -173,14 +191,14 @@ public class Threat implements IThreat, IInteractionThreat {
 			dataFlow = getDataFlowElement();
 		}
 		threatType = getThreatTypeElement();
-		
-        String type = "";
-        type += dataFlow.getSender().getClass().getSimpleName().substring(0,dataFlow.getSender().getClass().getSimpleName().length()-4).replaceAll("[^A-Z]", "");
-        type += dataFlow.getSender().equals(threatenedElement) ? "*" : "";
-        type += "-DF" + (dataFlow.equals(threatenedElement) ? "*" : "") + "->";
-        type += dataFlow.getRecipient().getClass().getSimpleName().substring(0,dataFlow.getRecipient().getClass().getSimpleName().length()-4).replaceAll("[^A-Z]", "");
-        type += dataFlow.getRecipient().equals(threatenedElement) ? "*" : "";
-        matchType = type;
+
+		String type = "";
+		type += typeAbbreviation(dataFlow.getSender());
+		type += dataFlow.getSender() != null && dataFlow.getSender().equals(threatenedElement) ? "*" : "";
+		type += "-DF" + (dataFlow.equals(threatenedElement) ? "*" : "") + "->";
+		type += typeAbbreviation(dataFlow.getRecipient());
+		type += dataFlow.getRecipient() != null && dataFlow.getRecipient().equals(threatenedElement) ? "*" : "";
+		matchType = type;
 	}
 
 	/**
@@ -247,7 +265,17 @@ public class Threat implements IThreat, IInteractionThreat {
 	
 	@Override
 	public String getThreatenedElementId() {
-		return this.getThreatenedElement() != null ? "" + this.getThreatenedElement().hashCode() : "";
+		DFDElement element = this.getThreatenedElement();
+		if (element == null) {
+			return "";
+		}
+		// A stable identity: the resource URI fragment (the model's own xmi:id) when the
+		// element is contained in a resource, otherwise the EMF URI. This replaces the
+		// previous hashCode(), which was not stable across runs/JVMs and collision-prone.
+		if (element.eResource() != null) {
+			return element.eResource().getURIFragment(element);
+		}
+		return EcoreUtil.getURI(element).toString();
 	}
 
 	@Override

@@ -13,6 +13,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.eclipse.viatra.query.runtime.api.ViatraQueryEngine;
 import org.eclipse.viatra.query.runtime.exception.ViatraQueryException;
@@ -39,6 +41,10 @@ import be.kuleuven.cs.distrinet.sparta.spartamodel.PersonalDataType;
  */
 public class RiskAssessmentLoopConfiguration {
 
+	private static final Logger LOGGER = Logger.getLogger(RiskAssessmentLoopConfiguration.class.getName());
+
+	private static final String DEFAULT_ATTACKER_NAME = "Opportunist";
+
 	private Set<AttackerProfile> attackerProfiles;
 	private Set<DataSubjectType> dataSubjects;
 	private Set<PersonalDataType> dataTypes;
@@ -61,7 +67,11 @@ public class RiskAssessmentLoopConfiguration {
 	 * @param engine {@link ViatraQueryEngine} to use
 	 */
 	public void setUpLoopParameters(Engine engine) {
+		// Initialise every collection up front so that a query failure below cannot leave
+		// dataSubjects/dataTypes null (which would NPE in the getters).
 		attackerProfiles = new HashSet<>();
+		dataSubjects = new HashSet<>();
+		dataTypes = new HashSet<>();
 		dfdDataTypes = new HashMap<>();
 		dfdElements = new HashSet<>();
 
@@ -91,17 +101,26 @@ public class RiskAssessmentLoopConfiguration {
 			dfdElements.addAll(dfdel.getAllValuesOfdfdel());
 
 		} catch (ViatraQueryException e) {
-			e.printStackTrace();
+			LOGGER.log(Level.SEVERE, e, () -> "Failed to set up risk-assessment loop parameters from the model");
 		}
 
-		// check if attackerpofiles are empty
+		// Fall back to a default attacker profile when the model declares none.
 		if (attackerProfiles.isEmpty()) {
-			attackerProfiles.add(new Attacker("Opportunist", 0, 15, 35, 2, // tcap
-					4, 12, 24, 4, // cf
-					0, 0.1, 0.3, 4 // poa
-			));
+			attackerProfiles.add(defaultAttackerProfile());
 		}
 
+	}
+
+	/**
+	 * @return the default "opportunist" attacker profile used when a model declares no
+	 *         attacker profiles of its own (threat-capability / contact-frequency /
+	 *         probability-of-action estimates as min, probable, max, confidence).
+	 */
+	private static Attacker defaultAttackerProfile() {
+		return new Attacker(DEFAULT_ATTACKER_NAME,
+				0, 15, 35, 2, // threat capability
+				4, 12, 24, 4, // contact frequency
+				0, 0.1, 0.3, 4); // probability of action
 	}
 
 	/**
@@ -137,7 +156,7 @@ public class RiskAssessmentLoopConfiguration {
 	 * @return the dfd elements
 	 */
 	public Set<DFDElement> getDfdElements() {
-		return dfdElements;
+		return new HashSet<>(dfdElements);
 	}
 
 	/**
@@ -147,7 +166,7 @@ public class RiskAssessmentLoopConfiguration {
 	 * @return map of dfd elements and their associated personal data types
 	 */
 	public Map<DFDElement, Set<PersonalDataType>> getDfdDataTypes() {
-		return dfdDataTypes;
+		return new HashMap<>(dfdDataTypes);
 	}
 
 }

@@ -59,9 +59,15 @@ public class StatsUtil {
 	 * @return the mode
 	 */
 	public static double mode(double[] values, int numbins) {
+		// Guard against a zero (or negative) bin count - e.g. the single-argument
+		// mode() computes values.length/100, which is 0 for arrays shorter than 100
+		// elements and would make binwidth infinite/NaN.
+		if (numbins < 1) {
+			numbins = 1;
+		}
 		double max = max(values);
 		double min = min(values);
-		
+
 		double binwidth = (max - min) / numbins;
 		
 		double[] bincounts = new double[numbins+1];

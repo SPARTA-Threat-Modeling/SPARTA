@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Function;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -45,6 +47,11 @@ import be.kuleuven.cs.distrinet.sparta.core.patterns.ThreatPatternMatchMetadata;
  */
 public class Engine implements AutoCloseable {
 
+	private static final Logger LOGGER = Logger.getLogger(Engine.class.getName());
+
+	/** Guards the one-time global Xtext/VIATRA standalone setup (see {@link #ensureStandaloneSetup()}). */
+	private static volatile boolean standaloneSetupDone = false;
+
 	private final AdvancedViatraQueryEngine vqe;
 
 	/**
@@ -63,35 +70,30 @@ public class Engine implements AutoCloseable {
 	 * @param resource - the resource set to analyze for threats
 	 */
 	public Engine(ResourceSet resource) {
-		// create an *unmanaged* engine to ensure that no one else is going
-		// to use our engine
-		
-		// local search does not work from command line when run outside eclipse
-		ViatraQueryEngineOptions options = ViatraQueryEngineOptions.
-				defineOptions().
-		                withDefaultBackend((new ReteBackendFactoryProvider()).getFactory()). // this line is needed in 1.4 due to bug 507777
-				build();
-		vqe = AdvancedViatraQueryEngine.createUnmanagedEngine(new EMFScope(resource),options);
-
-		// Initializing Xtext-based resource parser
-		// Do not use if VIATRA Query tooling is loaded!
-		EMFPatternLanguageStandaloneSetup.doSetup();
+		this(new EMFScope(resource));
 	}
-	
+
 	public Engine(EMFScope scope) {
-		// create an *unmanaged* engine to ensure that no one else is going
-		// to use our engine
-		
-		// local search does not work from command line when run outside eclipse
+		// create an *unmanaged* engine to ensure that no one else is going to use our engine.
+		// local search does not work from command line when run outside eclipse.
 		ViatraQueryEngineOptions options = ViatraQueryEngineOptions.
 				defineOptions().
 		                withDefaultBackend((new ReteBackendFactoryProvider()).getFactory()). // this line is needed in 1.4 due to bug 507777
 				build();
 		vqe = AdvancedViatraQueryEngine.createUnmanagedEngine(scope,options);
+		ensureStandaloneSetup();
+	}
 
-		// Initializing Xtext-based resource parser
-		// Do not use if VIATRA Query tooling is loaded!
-		EMFPatternLanguageStandaloneSetup.doSetup();
+	/**
+	 * Initialize the Xtext-based VIATRA pattern-language parser exactly once per JVM.
+	 * This is an idempotent-but-costly global side effect, so it is guarded rather than
+	 * repeated on every engine construction. (Do not use if VIATRA Query tooling is loaded.)
+	 */
+	private static synchronized void ensureStandaloneSetup() {
+		if (!standaloneSetupDone) {
+			EMFPatternLanguageStandaloneSetup.doSetup();
+			standaloneSetupDone = true;
+		}
 	}
 	
 	/**
@@ -189,6 +191,8 @@ public class Engine implements AutoCloseable {
 		try {
 			return getVQMatcherOnEngine(qs::getMatcher);
 		} catch (ViatraQueryException e) {
+			LOGGER.log(Level.WARNING, e,
+					() -> "Skipping pattern that failed to initialize: " + qs.getFullyQualifiedName());
 			return null;
 		}
 	}
@@ -226,6 +230,7 @@ public class Engine implements AutoCloseable {
 		return func.apply(vqe);
 	}
 	
+	@SuppressWarnings("unchecked")
 	public <T extends BasePatternMatch, E extends BaseMatcher<T>> E getMatcherOnEngine(Function<ViatraQueryEngine, BaseMatcher<T>> func) {
 		return (E) func.apply(vqe);
 	}

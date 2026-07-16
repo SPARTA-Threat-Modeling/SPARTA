@@ -28,7 +28,9 @@ public class ThreatPatternConversion {
 	private final ThreatPattern meta;
 	private final IPatternMatch match;
 	
-	private static final Pattern p = Pattern.compile("<\\$(\\w+)(\\.*(\\w+))*\\$>");
+	// Matches <$name$> and dotted paths such as <$name.attr$>: a name followed by zero or
+	// more ".word" segments. group(1) is the name; group(3) is the last (attribute) segment.
+	private static final Pattern p = Pattern.compile("<\\$(\\w+)(\\.(\\w+))*\\$>");
 	
 	public ThreatPatternConversion(ThreatPattern meta, IPatternMatch match) {
 		this.meta = meta;
@@ -46,12 +48,11 @@ public class ThreatPatternConversion {
 	}
 	
 	public String processAndReplaceParams(String src) {
-		try {
-			Matcher m = p.matcher(src);
-			return m.replaceAll(this::processMatch);
-		} catch (NullPointerException e) {
+		if (src == null) {
 			return null;
 		}
+		Matcher m = p.matcher(src);
+		return m.replaceAll(this::processMatch);
 	}
 	
 	protected String processMatch(MatchResult mr) {
