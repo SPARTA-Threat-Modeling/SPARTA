@@ -18,8 +18,15 @@ import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PlatformUI;
 
+import be.kuleuven.cs.distrinet.sparta.analysis.Activator;
 import be.kuleuven.cs.distrinet.sparta.analysis.model.ObservableThreat;
 import be.kuleuven.cs.distrinet.sparta.analysis.service.ThreatAnalysisService;
 import be.kuleuven.cs.distrinet.sparta.io.ReportWriter;
@@ -39,7 +46,15 @@ public class ReportExportHandler extends AbstractHandler {
 		try {
 			(new ReportWriter()).performExport(path, ThreatAnalysisService.getInstance().getResource().getResourceSet(), threats);
 		} catch (Exception e1) {
-			System.err.println(e1);
+			Activator activator = Activator.getDefault();
+			if (activator != null) {
+				activator.getLog().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID,
+						"Failed to export the threat report", e1));
+			}
+			IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+			Shell shell = window != null ? window.getShell() : null;
+			MessageDialog.openError(shell, "Report export failed",
+					"Could not export the report: " + e1.getMessage());
 		}
 		return null;
 	}

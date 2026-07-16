@@ -22,7 +22,6 @@ import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.observable.list.ListChangeEvent;
 import org.eclipse.core.databinding.observable.list.WritableList;
 import org.eclipse.core.databinding.observable.map.IObservableMap;
-import org.eclipse.core.databinding.observable.value.WritableValue;
 import org.eclipse.core.databinding.property.Properties;
 import org.eclipse.core.databinding.property.value.IValueProperty;
 import org.eclipse.jface.action.Action;
@@ -216,7 +215,9 @@ public class PatternSupport extends ViewPart implements PatternParseListener {
 	}
 
 	public void load() {
-		
+
+		IObservableList<? extends PatternDiagnostics> previous = parseResults;
+
 		parseResults = convertDiagnostics(ThreatAnalysisService.getInstance().parseResults());
 
 		bind(
@@ -228,6 +229,13 @@ public class PatternSupport extends ViewPart implements PatternParseListener {
 						PojoProperties.value(PatternDiagnostics.class,"issue"),
 						}
 				);
+
+		// bind() installs a fresh content/label provider (disposing the previous
+		// label provider, which detaches its listeners from `previous`). The old
+		// diagnostics list is now unreferenced; dispose it so re-parses don't leak.
+		if (previous != null && !previous.isDisposed()) {
+			previous.dispose();
+		}
 		viewer.refresh();
 	}
 	
@@ -279,50 +287,57 @@ public class PatternSupport extends ViewPart implements PatternParseListener {
 		return result;
 	}
 	
-	private class PatternDiagnostics {  
-		
-		protected WritableValue<String> threatType = new WritableValue<String>();
-		protected WritableValue<String> patternName = new WritableValue<String>();
-		protected WritableValue<String> issue = new WritableValue<String>();
-		
+	private static class PatternDiagnostics {
+
+		// Plain immutable fields: these values are set once at construction and
+		// never bound or mutated, so the previous WritableValue wrappers only
+		// created throwaway observables (each touching the default realm). The
+		// PojoProperties bindings read the getters reflectively either way.
+		private final String threatType;
+		private final String patternName;
+		private final String issue;
+
 		PatternDiagnostics(String threattype, String patternName, String issue) {
-			this.threatType.setValue(threattype);
-			this.patternName.setValue(patternName);
-			this.issue.setValue(issue);
+			this.threatType = threattype;
+			this.patternName = patternName;
+			this.issue = issue;
 		}
-		
+
 		public String getThreatType() {
-			return threatType.getValue();
+			return threatType;
 		}
 
 		public String getPatternName() {
-			return patternName.getValue();
+			return patternName;
 		}
 
 		public String getIssue() {
-			return issue.getValue();
+			return issue;
 		}
-	   
-	}  
+
+	}
 	
 	private class IssueLabelProvider extends ObservableMapLabelProvider implements IColorProvider, IListChangeListener<PatternDiagnostics>, IChangeListener {
 
 		private final Color red = new Color(Display.getDefault(), 255, 0, 0, 255);
 		private final Color green = new Color(Display.getDefault(), 0, 255, 0, 255);
 		private final Color white = new Color(Display.getDefault(), 255, 255, 255, 255);
-		
+
+		private IObservableList<? extends PatternDiagnostics> input;
+
 		public IssueLabelProvider(IObservableMap<?, ?> attributeMap) {
 			super(attributeMap);
 		}
-		
+
 		@SuppressWarnings("rawtypes")
 		public IssueLabelProvider(IObservableMap[] attributeMap) {
 			super(attributeMap);
 		}
-		
+
 		@SuppressWarnings("rawtypes")
 		public IssueLabelProvider(IObservableMap[] attributeMap, IObservableList<? extends PatternDiagnostics> input) {
 			this(attributeMap);
+			this.input = input;
 			input.addListChangeListener(this);
 			input.addChangeListener(this);
 		}
@@ -354,6 +369,14 @@ public class PatternSupport extends ViewPart implements PatternParseListener {
 
 		@Override
 		public void dispose() {
+			// Detach from the input list before disposing, mirroring
+			// ColouredObservableMapLabelProvider.dispose(); otherwise the
+			// discarded WritableList keeps a reference to this label provider.
+			if (input != null && !input.isDisposed()) {
+				input.removeListChangeListener(this);
+				input.removeChangeListener(this);
+			}
+			input = null;
 			super.dispose();
 			red.dispose();
 			green.dispose();

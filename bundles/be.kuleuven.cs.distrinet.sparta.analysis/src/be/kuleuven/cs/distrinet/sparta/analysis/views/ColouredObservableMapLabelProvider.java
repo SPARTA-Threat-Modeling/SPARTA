@@ -96,12 +96,32 @@ public class ColouredObservableMapLabelProvider extends ObservableMapLabelProvid
 		if (element instanceof ObservableThreat) {
 			double r = ((ObservableThreat) element).getRiskAsDouble();
 			if (r > medValue) {
-				return getColor(ColorTriple.interPol(med, high, (r - medValue) / (maxValue - medValue)));
+				double denom = maxValue - medValue;
+				double pct = denom > 0 ? (r - medValue) / denom : 1;
+				return getColor(ColorTriple.interPol(med, high, clamp01(pct)));
 			} else {
-				return getColor(ColorTriple.interPol(low, med, (r - minValue) / (medValue - minValue)));
+				double denom = medValue - minValue;
+				double pct = denom > 0 ? (r - minValue) / denom : 0;
+				return getColor(ColorTriple.interPol(low, med, clamp01(pct)));
 			}
 		}
 		return getColor(high);
+	}
+
+	/**
+	 * Clamp the interpolation factor to [0,1] so a risk above {@code maxValue}
+	 * saturates to the endpoint colour instead of producing an out-of-range
+	 * triple that {@link #getColor} silently maps to white. Also guards the
+	 * degenerate zero-width band (equal boundaries) against division by zero.
+	 */
+	private static double clamp01(double v) {
+		if (v < 0) {
+			return 0;
+		}
+		if (v > 1) {
+			return 1;
+		}
+		return v;
 	}
 
 	private Color getColor(ColorTriple col) {

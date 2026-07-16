@@ -191,7 +191,11 @@ public class ThreatAnalysisService implements IPropertyListener {
 			patternsParsed();
 			notifyListeners();
 		} catch (ViatraQueryException e) {
-			e.printStackTrace();
+			// Loading failed after the engine and observable graph were partially
+			// built; log it and tear the half-built state back down so views are
+			// not left bound to an inconsistent list.
+			log("Failed to initialise the analysis engine for " + resource.getURI(), e);
+			clear();
 		}
 
 	}
@@ -210,10 +214,13 @@ public class ThreatAnalysisService implements IPropertyListener {
 	}
 	
 	private void notifyListeners() {
-		listeners.stream().forEach(l -> l.analysisResultsAvailable());
+		// Iterate over a snapshot: a listener callback may (un)subscribe during
+		// notification (e.g. a view disposing), which would otherwise throw a
+		// ConcurrentModificationException on the live set.
+		new ArrayList<>(listeners).forEach(l -> l.analysisResultsAvailable());
 	}
 	private void notifyListenersDisposal() {
-		listeners.stream().forEach(l -> l.invalidatePreviousBindings());
+		new ArrayList<>(listeners).forEach(l -> l.invalidatePreviousBindings());
 	}
 
 	public void sub(AnalysisListener l)	{
@@ -236,7 +243,7 @@ public class ThreatAnalysisService implements IPropertyListener {
 	}
 	
 	public void patternsParsed() {
-		plisteners.stream().forEach(pl -> pl.parseResultsAvailable());
+		new ArrayList<>(plisteners).forEach(pl -> pl.parseResultsAvailable());
 	}
 
 	public void sub(PatternParseListener l)	{

@@ -43,6 +43,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.widgets.Table;
@@ -320,11 +321,7 @@ public class ThreatAnalysis extends ViewPart implements AnalysisListener {
 		mitigatedRisk.setText(nf.format(reduction));
 		residualRisk.setText(nf.format(residual));
 		totalRisk.setText(nf.format(max));
-		try {
-			sleRisk.setText(nf.format(ml.stream().mapToDouble(t -> t.getSleAsDouble()).max().orElse(0d)));
-		} catch (NumberFormatException e) {
-
-		}
+		sleRisk.setText(nf.format(ml.stream().mapToDouble(t -> t.getSleAsDouble()).max().orElse(0d)));
 	}
 
 	private void bind(StructuredViewer viewer, IObservableList<? extends ObservableThreat> input, IValueProperty... labelProperties) {
@@ -396,10 +393,22 @@ public class ThreatAnalysis extends ViewPart implements AnalysisListener {
     }
 
 	private IChangeListener changeListener = new IChangeListener() {
-		
+
 		@Override
 		public void handleChange(ChangeEvent event) {
-			processRiskChange(ml);
+			// A list change may be delivered off the SWT UI thread (VIATRA match
+			// propagation); marshal the widget updates onto the display thread,
+			// mirroring ColouredObservableMapLabelProvider.handleListChange.
+			if (viewer == null || viewer.getTable().isDisposed()) {
+				return;
+			}
+			Display display = viewer.getTable().getDisplay();
+			display.asyncExec(() -> {
+				if (viewer == null || viewer.getTable().isDisposed() || ml == null) {
+					return;
+				}
+				processRiskChange(ml);
+			});
 		}
 
 
@@ -412,6 +421,13 @@ public class ThreatAnalysis extends ViewPart implements AnalysisListener {
 	}
 	@Override
 	public void analysisResultsAvailable() {
+		// Detach from the previously bound list before load() reassigns `ml`. On
+		// plain property-change notifications the service reuses the same MultiList
+		// instance, so re-adding without removing would accumulate one duplicate
+		// change listener per editor edit (each firing a full risk recomputation).
+		if (ml != null) {
+			ml.removeChangeListener(changeListener);
+		}
 		load(ThreatAnalysisService.getInstance().getResource());
 		ml.addChangeListener(changeListener);
 

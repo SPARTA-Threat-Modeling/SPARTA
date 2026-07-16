@@ -16,15 +16,17 @@ import java.util.Locale;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.observable.value.WritableValue;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.viatra.addon.databinding.runtime.adapter.MatcherProperties;
 import org.eclipse.viatra.query.runtime.api.IPatternMatch;
 
+import be.kuleuven.cs.distrinet.sparta.analysis.Activator;
 import be.kuleuven.cs.distrinet.sparta.core.analysis.RiskAssessmentLoopConfiguration;
 import be.kuleuven.cs.distrinet.sparta.core.analysis.risk.IRiskModel;
 import be.kuleuven.cs.distrinet.sparta.core.model.Threat;
 import be.kuleuven.cs.distrinet.sparta.spartamodel.DFDElement;
 import be.kuleuven.cs.distrinet.sparta.spartamodel.DataFlow;
-import be.kuleuven.cs.distrinet.sparta.spartamodel.ThreatType;
 
 /**
  * Observable threat which contains the threat data to enable automatic updating
@@ -121,32 +123,37 @@ public class ObservableThreat extends Threat {
 	}
 
 	public void processMatch() {
-		DFDElement threatenedElement = (DFDElement) patternMatch.get("location");
+		Object location = patternMatch.get("location");
+		DFDElement threatenedElement = (location instanceof DFDElement) ? (DFDElement) location : null;
+
 		DataFlow flow;
-		if (threatenedElement instanceof DataFlow)
+		if (threatenedElement instanceof DataFlow) {
 			flow = (DataFlow) threatenedElement;
-		else
-			flow = (DataFlow) patternMatch.get("df");
-		ThreatType tt = (ThreatType) patternMatch.get("t");
+		} else {
+			Object df = patternMatch.get("df");
+			flow = (df instanceof DataFlow) ? (DataFlow) df : null;
+		}
+
+		if (flow == null) {
+			// Element-based match (pattern without a data flow parameter): label
+			// with the threatened element only, matching PatternThreat.setupBindings.
+			matchType = threatenedElement != null ? typeAbbreviation(threatenedElement) + "*" : "";
+			return;
+		}
 
 		DFDElement sender = flow.getSender();
 		DFDElement recipient = flow.getRecipient();
 
-		String type = "";
-		type += sender.getClass().getSimpleName().substring(0, sender.getClass().getSimpleName().length() - 4)
-				.replaceAll("[^A-Z]", "");
-		type += sender.equals(threatenedElement) ? "*" : "";
-		type += "-DF" + (flow.equals(threatenedElement) ? "*" : "") + "->";
-		type += recipient.getClass().getSimpleName().substring(0, recipient.getClass().getSimpleName().length() - 4)
-				.replaceAll("[^A-Z]", "");
-		type += recipient.equals(threatenedElement) ? "*" : "";
-		matchType = type;
-		this.sender = sender.getName();
-		this.recipient = recipient.getName();
-	}
+		StringBuilder type = new StringBuilder();
+		type.append(typeAbbreviation(sender));
+		type.append(sender != null && sender.equals(threatenedElement) ? "*" : "");
+		type.append("-DF").append(flow.equals(threatenedElement) ? "*" : "").append("->");
+		type.append(typeAbbreviation(recipient));
+		type.append(recipient != null && recipient.equals(threatenedElement) ? "*" : "");
+		matchType = type.toString();
 
-	public ObservableThreat(IPatternMatch fromObject) {
-		super(fromObject);
+		this.sender = sender != null ? sender.getName() : "";
+		this.recipient = recipient != null ? recipient.getName() : "";
 	}
 
 	protected ObservableThreat(IPatternMatch x, IRiskModel riskModel, RiskAssessmentLoopConfiguration loopConfiguration) {
@@ -328,12 +335,7 @@ public class ObservableThreat extends Threat {
 
 	@SuppressWarnings("rawtypes")
 	protected IObservableValue getMatchObservable(String propertyName) {
-		try {
-			return MatcherProperties.getObservableValue(patternMatch.specification(), patternMatch, propertyName);
-		} catch (NullPointerException npe) {
-			npe.printStackTrace();
-			throw npe;
-		}
+		return MatcherProperties.getObservableValue(patternMatch.specification(), patternMatch, propertyName);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -349,7 +351,16 @@ public class ObservableThreat extends Threat {
 		try {
 			performRiskCalculation(loopConfiguration);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logRiskCalculationFailure(e);
+		}
+	}
+
+	/** Report a risk-calculation failure to the platform log rather than stderr. */
+	protected void logRiskCalculationFailure(Exception e) {
+		Activator activator = Activator.getDefault();
+		if (activator != null) {
+			activator.getLog().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID,
+					"Risk calculation failed for threat on '" + getThreatenedElementName() + "'", e));
 		}
 	}
 

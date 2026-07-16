@@ -51,6 +51,10 @@ public abstract class ThreatSorter extends ViewerComparator {
 				table.setSortColumn(null);
 				table.setSortDirection(SWT.NONE);
 				viewer.setComparator(null);
+				// Refresh so clearing the sort actually restores insertion order;
+				// previously only the sorting branch refreshed, leaving the table
+				// visually sorted until the next unrelated event.
+				viewer.refresh();
 			} else {
 				table.setSortColumn(column.getColumn());
 				// show arrows
@@ -58,10 +62,17 @@ public abstract class ThreatSorter extends ViewerComparator {
 				viewer.setComparator(this);
 				viewer.refresh();
 			}
-			
+
 		}
-		
+
 		public void toggleSort() {
+			// Each column owns its own sorter and direction. When a different
+			// column (or none) is the active sort, this column's stored direction
+			// is stale and its header arrow was already cleared, so restart its
+			// cycle at ascending rather than resuming the stale value.
+			if (column.getColumn().getParent().getSortColumn() != column.getColumn()) {
+				direction = 0;
+			}
 			direction = ((direction + 2) % 3) - 1;
 			setSorter();
 		}

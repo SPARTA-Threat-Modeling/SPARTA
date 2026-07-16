@@ -114,7 +114,7 @@ public class ObservablePatternThreat extends ObservableThreat {
 		try {
 			performRiskCalculation(loopConfiguration);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logRiskCalculationFailure(e);
 		}
 	}
 

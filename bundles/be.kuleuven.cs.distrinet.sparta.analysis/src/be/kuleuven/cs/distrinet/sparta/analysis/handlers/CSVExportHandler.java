@@ -20,10 +20,14 @@ import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.handlers.HandlerUtil;
 
+import be.kuleuven.cs.distrinet.sparta.analysis.Activator;
 import be.kuleuven.cs.distrinet.sparta.analysis.model.ObservableThreat;
 import be.kuleuven.cs.distrinet.sparta.analysis.views.ThreatAnalysis;
 import be.kuleuven.cs.distrinet.sparta.io.ThreatCSVWriter;
@@ -45,7 +49,13 @@ public class CSVExportHandler extends AbstractHandler {
 			tw.write(threats.toArray(new ObservableThreat[] {}));
 
 		} catch (IOException e1) {
-			System.err.println(e1);
+			Activator activator = Activator.getDefault();
+			if (activator != null) {
+				activator.getLog().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID,
+						"Failed to export threats to CSV", e1));
+			}
+			MessageDialog.openError(activeWorkbenchWindow.getShell(), "CSV export failed",
+					"Could not write threats.csv: " + e1.getMessage());
 		}
 		return null;
 	}
