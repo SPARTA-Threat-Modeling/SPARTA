@@ -20,8 +20,6 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.resource.ResourceSet;
@@ -36,66 +34,66 @@ import be.kuleuven.cs.distrinet.sparta.io.templates.ThreatsTemplate;
 
 public class ReportWriter {
 
-	private static final Logger LOGGER = Logger.getLogger(ReportWriter.class.getName());
-
 	private List<? extends Threat> threats;
 	private ResourceSet model;
 	private File aird;
 
 
-	public void performExport(File path, ResourceSet model, List<? extends Threat> threats) {
+	/**
+	 * Generate the LaTeX report under {@code path}.
+	 *
+	 * @throws IOException if any part of the export fails. The export aborts on the
+	 *                     first failure rather than writing to an already-failed
+	 *                     stream, and the exception is propagated so callers can
+	 *                     surface it to the user instead of producing a silently
+	 *                     partial report.
+	 */
+	public void performExport(File path, ResourceSet model, List<? extends Threat> threats) throws IOException {
 		this.threats = threats;
 		this.model = model;
 
+		Files.createDirectories(path.toPath());
 
-		try {
+		setupClassFileAndLogo(path);
 
-			Files.createDirectories(path.toPath());
+		String filename = "report.tex";
+		File file = new File(path, filename);
+		if (file.exists()) {
 
-			setupClassFileAndLogo(path);
-
-			String filename = "report.tex";
-			File file = new File(path, filename);
-			if (file.exists()) {
-
-				filename = "report-empty.tex";
-				file = new File(path, filename);
-			}
-			try (OutputStreamWriter fw = new OutputStreamWriter(new FileOutputStream(file),
-					StandardCharsets.UTF_8)) {
-				fw.write(ReportTemplate.fill());
-			}
-
-			// introduction (do not overwrite once generated)
-			filename = "introduction.tex";
+			filename = "report-empty.tex";
 			file = new File(path, filename);
-			if (file.exists()) {
-				filename = "introduction-empty.tex";
-				file = new File(path, filename);
-			}
-			try (OutputStreamWriter fw = new OutputStreamWriter(new FileOutputStream(file),
-					StandardCharsets.UTF_8)) {
-				fw.write(IntroductionTemplate.fill());
-			}
+		}
+		try (OutputStreamWriter fw = new OutputStreamWriter(new FileOutputStream(file),
+				StandardCharsets.UTF_8)) {
+			fw.write(ReportTemplate.fill());
+		}
 
-			filename = "description.tex";
+		// introduction (do not overwrite once generated)
+		filename = "introduction.tex";
+		file = new File(path, filename);
+		if (file.exists()) {
+			filename = "introduction-empty.tex";
 			file = new File(path, filename);
-			try (OutputStreamWriter fw = new OutputStreamWriter(new FileOutputStream(file),
-					StandardCharsets.UTF_8); BufferedWriter bw = new BufferedWriter(fw);) {
-				writeDescriptionToFile(bw);
+		}
+		try (OutputStreamWriter fw = new OutputStreamWriter(new FileOutputStream(file),
+				StandardCharsets.UTF_8)) {
+			fw.write(IntroductionTemplate.fill());
+		}
 
-			}
+		filename = "description.tex";
+		file = new File(path, filename);
+		try (OutputStreamWriter fw = new OutputStreamWriter(new FileOutputStream(file),
+				StandardCharsets.UTF_8); BufferedWriter bw = new BufferedWriter(fw);) {
+			writeDescriptionToFile(bw);
 
-			filename = "threatcatalog.tex";
-			file = new File(path, filename);
-			try (OutputStreamWriter fw = new OutputStreamWriter(new FileOutputStream(file),
-					StandardCharsets.UTF_8); BufferedWriter bw = new BufferedWriter(fw);) {
-				writeThreatCatalogToFile(bw);
+		}
 
-			}
+		filename = "threatcatalog.tex";
+		file = new File(path, filename);
+		try (OutputStreamWriter fw = new OutputStreamWriter(new FileOutputStream(file),
+				StandardCharsets.UTF_8); BufferedWriter bw = new BufferedWriter(fw);) {
+			writeThreatCatalogToFile(bw);
 
-		} catch (IOException e) {
-			LOGGER.log(Level.SEVERE, e, () -> "Report export failed, aborting");
 		}
 	}
 	
