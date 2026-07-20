@@ -12,7 +12,7 @@ This feature contains all SPARTA Threat Modeling plugins
    </description>
 
    <copyright>
-      Copyright (c) 2017-2025 DistriNet All rights reserved.
+      Copyright (c) 2017-2026 DistriNet All rights reserved.
    </copyright>
 
    <license url="">
@@ -279,7 +279,7 @@ No third-party beneficiary rights are created under this Agreement.
    </license>
 
    <url>
-      <update label="SPARTA Updates" url="https://downloads.sparta.distrinet-research.be/updates"/>
+      <update label="SPARTA Updates" url="https://downloads.sparta.distrinet-research.be/updatesite/2026"/>
    </url>
 
    <includes
@@ -310,44 +310,15 @@ No third-party beneficiary rights are created under this Agreement.
       <import plugin="org.eclipse.collections"/>
    </requires>
 
-   <plugin
-         id="be.kuleuven.cs.distrinet.sparta.design"
-         version="0.0.0"/>
-
+   <!--
+      Only the rcp plugin is listed directly: it belongs to no sub-feature.
+      Every other SPARTA plugin is contributed by one of the three included
+      sub-features (design → graphicalmodeling; spartamodel/.edit/.editor →
+      modeling; analysis/core/io/queries/threatanalysis → threatanalysis), so
+      listing them here as well only duplicated the maintenance surface.
+   -->
    <plugin
          id="be.kuleuven.cs.distrinet.sparta.rcp"
-         version="0.0.0"/>
-
-   <plugin
-         id="be.kuleuven.cs.distrinet.sparta.analysis"
-         version="0.0.0"/>
-
-   <plugin
-         id="be.kuleuven.cs.distrinet.sparta.queries"
-         version="0.0.0"/>
-
-   <plugin
-         id="be.kuleuven.cs.distrinet.sparta.spartamodel"
-         version="0.0.0"/>
-
-   <plugin
-         id="be.kuleuven.cs.distrinet.sparta.spartamodel.edit"
-         version="0.0.0"/>
-
-   <plugin
-         id="be.kuleuven.cs.distrinet.sparta.spartamodel.editor"
-         version="0.0.0"/>
-
-   <plugin
-         id="be.kuleuven.cs.distrinet.sparta.core"
-         version="0.0.0"/>
-
-   <plugin
-         id="be.kuleuven.cs.distrinet.sparta.io"
-         version="0.0.0"/>
-
-   <plugin
-         id="be.kuleuven.cs.distrinet.sparta.threatanalysis"
          version="0.0.0"/>
 
 </feature>

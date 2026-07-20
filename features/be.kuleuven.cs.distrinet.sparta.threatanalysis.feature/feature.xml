@@ -11,7 +11,7 @@ This feature provides the support for eliciting security and privacy threats fro
    </description>
 
    <copyright>
-      Copyright (c) 2017-2025 DistriNet All rights reserved.
+      Copyright (c) 2017-2026 DistriNet All rights reserved.
    </copyright>
 
    <license url="">
@@ -278,7 +278,7 @@ No third-party beneficiary rights are created under this Agreement.
    </license>
 
    <url>
-      <update label="SPARTA Updates" url="https://downloads.sparta.distrinet-research.be/updates"/>
+      <update label="SPARTA Updates" url="https://downloads.sparta.distrinet-research.be/updatesite/2026"/>
    </url>
 
    <requires>
@@ -288,8 +288,8 @@ No third-party beneficiary rights are created under this Agreement.
       <import feature="org.eclipse.sirius.runtime"/>
       <import feature="org.eclipse.sirius.runtime.aql"/>
       <import feature="org.eclipse.sirius.runtime.ide.ui"/>
-      <import feature="be.kuleuven.cs.distrinet.sparta.graphicalmodeling.feature" version="2022.0.0" match="greaterOrEqual"/>
-      <import feature="be.kuleuven.cs.distrinet.sparta.modeling.feature" version="2022.0.0" match="greaterOrEqual"/>
+      <import feature="be.kuleuven.cs.distrinet.sparta.graphicalmodeling.feature" version="2026.1.0" match="greaterOrEqual"/>
+      <import feature="be.kuleuven.cs.distrinet.sparta.modeling.feature" version="2026.1.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.viatra.addon.databinding.runtime" version="2.0.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.viatra.addon.validation.core" version="2.0.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.viatra.addon.validation.runtime" version="2.0.0" match="greaterOrEqual"/>
@@ -312,13 +312,13 @@ No third-party beneficiary rights are created under this Agreement.
       <import plugin="org.eclipse.viatra.query.runtime.ui" version="2.0.0" match="greaterOrEqual"/>
       <import plugin="be.kuleuven.cs.distrinet.sparta.spartamodel.editor"/>
       <import plugin="com.google.inject"/>
-      <import plugin="be.kuleuven.cs.distrinet.sparta.core" version="2.0.2" match="greaterOrEqual"/>
-      <import plugin="be.kuleuven.cs.distrinet.sparta.io" version="2.0.2" match="greaterOrEqual"/>
+      <import plugin="be.kuleuven.cs.distrinet.sparta.core" version="2026.1.0" match="greaterOrEqual"/>
+      <import plugin="be.kuleuven.cs.distrinet.sparta.io" version="2026.1.0" match="greaterOrEqual"/>
       <import plugin="org.apache.commons.math3" version="3.6.1" match="greaterOrEqual"/>
       <import plugin="org.eclipse.collections" version="10.4.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.viatra.query.runtime.localsearch" version="2.7.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.viatra.query.runtime.rete" version="2.7.0" match="greaterOrEqual"/>
-      <import plugin="be.kuleuven.cs.distrinet.sparta.queries" version="2.0.2" match="greaterOrEqual"/>
+      <import plugin="be.kuleuven.cs.distrinet.sparta.queries" version="2026.1.0" match="greaterOrEqual"/>
       <import plugin="com.fasterxml.jackson.core.jackson-databind"/>
       <import plugin="com.fasterxml.jackson.core.jackson-core" version="2.10.3" match="greaterOrEqual"/>
       <import plugin="org.apache.poi"/>
@@ -328,7 +328,7 @@ No third-party beneficiary rights are created under this Agreement.
       <import plugin="org.apache.commons.io"/>
       <import plugin="org.yaml.snakeyaml"/>
       <import plugin="org.eclipse.xtext.xbase.lib"/>
-      <import plugin="be.kuleuven.cs.distrinet.sparta.spartamodel" version="1.0.0" match="greaterOrEqual"/>
+      <import plugin="be.kuleuven.cs.distrinet.sparta.spartamodel" version="2026.1.0" match="greaterOrEqual"/>
       <import plugin="org.apache.log4j"/>
       <import plugin="org.eclipse.viatra.query.runtime.base" version="2.7.0" match="greaterOrEqual"/>
    </requires>

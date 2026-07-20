@@ -6,6 +6,6 @@ Bundle-Version: 2026.1.0
 Bundle-Vendor: DistriNet
 Automatic-Module-Name: be.kuleuven.cs.distrinet.sparta.threatanalysis
 Require-Capability: osgi.ee;filter:="(&(osgi.ee=JavaSE)(version=21))"
-Require-Bundle: be.kuleuven.cs.distrinet.sparta.spartamodel;bundle-version="2025.0.0",
- be.kuleuven.cs.distrinet.sparta.core;bundle-version="2025.0.0"
+Require-Bundle: be.kuleuven.cs.distrinet.sparta.spartamodel;bundle-version="2026.1.0",
+ be.kuleuven.cs.distrinet.sparta.core;bundle-version="2026.1.0"
 Export-Package: be.kuleuven.cs.distrinet.sparta.analysis

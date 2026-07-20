@@ -12,8 +12,8 @@ Require-Bundle: org.eclipse.viatra.query.runtime.base;bundle-version="2.7.0",
  org.eclipse.emf.ecore,
  org.eclipse.viatra.query.runtime,
  org.eclipse.viatra.query.patternlanguage.emf,
- be.kuleuven.cs.distrinet.sparta.queries;bundle-version="2025.0.0",
- be.kuleuven.cs.distrinet.sparta.spartamodel;bundle-version="2025.0.0",
+ be.kuleuven.cs.distrinet.sparta.queries;bundle-version="2026.1.0",
+ be.kuleuven.cs.distrinet.sparta.spartamodel;bundle-version="2026.1.0",
  org.apache.commons.math3
 Bundle-ClassPath: .
 Export-Package: be.kuleuven.cs.distrinet.sparta.core;uses:="org.eclipse.viatra.query.runtime.api,org.eclipse.emf.ecore.resource,org.eclipse.viatra.query.runtime.emf",

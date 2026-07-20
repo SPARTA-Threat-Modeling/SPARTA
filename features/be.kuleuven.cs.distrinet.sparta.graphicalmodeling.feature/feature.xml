@@ -11,7 +11,7 @@ This feature provides the graphical modeling support for SPARTA models.
    </description>
 
    <copyright>
-      Copyright (c) 2017-2025 DistriNet All rights reserved.
+      Copyright (c) 2017-2026 DistriNet All rights reserved.
    </copyright>
 
    <license url="">
@@ -278,7 +278,7 @@ No third-party beneficiary rights are created under this Agreement.
    </license>
 
    <url>
-      <update label="SPARTA Updates" url="https://downloads.sparta.distrinet-research.be/updates"/>
+      <update label="SPARTA Updates" url="https://downloads.sparta.distrinet-research.be/updatesite/2026"/>
    </url>
 
    <requires>
