@@ -24,6 +24,7 @@
   	<module>be.kuleuven.cs.distrinet.sparta.io</module>
   	<module>be.kuleuven.cs.distrinet.sparta.io.tests</module>
   	<module>be.kuleuven.cs.distrinet.sparta.threatanalysis</module>
+  	<module>be.kuleuven.cs.distrinet.sparta.threatanalysis.tests</module>
   </modules>
 
   <build>
