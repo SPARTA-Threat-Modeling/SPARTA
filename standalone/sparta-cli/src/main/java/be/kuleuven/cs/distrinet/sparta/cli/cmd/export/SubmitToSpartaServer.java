@@ -9,15 +9,8 @@
  */
 package be.kuleuven.cs.distrinet.sparta.cli.cmd.export;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.cli.CommandLine;
@@ -25,25 +18,29 @@ import org.apache.commons.cli.Option;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import be.kuleuven.cs.distrinet.sparta.cli.SpartaServerClient;
 import be.kuleuven.cs.distrinet.sparta.core.model.IInteractionThreat;
 import be.kuleuven.cs.distrinet.sparta.core.model.Threat;
 import be.kuleuven.cs.distrinet.sparta.io.ThreatJsonWriter;
 
 /**
- * Export for text export via the command line.
- * 
+ * Exporter that submits the analysis results to a SPARTA server via the command line. The
+ * HTTP mechanics are delegated to {@link SpartaServerClient} (shared with the CI runner);
+ * this class only maps the CLI options to a submission and serializes the threat list.
+ *
  * @author Laurens
  *
  */
 public class SubmitToSpartaServer implements Exporter {
 
 	private static final Logger logger = LoggerFactory.getLogger(SubmitToSpartaServer.class);
+
 	private final Option token,server,commitId;
 
 	public SubmitToSpartaServer() {
-		token = new Option("st", "token", true, "Server submission token");
-		server = new Option("su", "server", true, "Server submission url");
-		commitId = new Option("sc", "commitid", true, "Server submission commit id");
+		token = new Option(null, "token", true, "Server submission token");
+		server = new Option(null, "server", true, "Server submission url");
+		commitId = new Option(null, "commitid", true, "Server submission commit id");
 	}
 
 	@Override
@@ -52,45 +49,18 @@ public class SubmitToSpartaServer implements Exporter {
 	}
 
 	@Override
-	public void process(CommandLine cmd, Collection<Threat> results) {
-		if (!cmd.hasOption(token.getOpt()) || !cmd.hasOption(server.getOpt()) || !cmd.hasOption(commitId.getOpt()) ) {
-			return;
+	public boolean process(CommandLine cmd, Collection<Threat> results) {
+		if (!cmd.hasOption(token.getLongOpt()) || !cmd.hasOption(server.getLongOpt()) || !cmd.hasOption(commitId.getLongOpt()) ) {
+			return true;
 		}
 		logger.info("Submitting to SPARTA server");
 
-
-
-		try {
-			URL url = new URL(cmd.getOptionValue(server.getOpt()));
-			HttpURLConnection con = (HttpURLConnection) url.openConnection();
-			con.setRequestMethod("POST");
-			con.setRequestProperty("Content-Type", "application/json; utf-8");
-			con.setRequestProperty("token", cmd.getOptionValue(token.getOpt()));
-			con.setRequestProperty("commitId", cmd.getOptionValue(commitId.getOpt()));
-			con.setDoOutput(true);
-	
-			try (OutputStream os = con.getOutputStream();
-					ThreatJsonWriter<IInteractionThreat> tw = new ThreatJsonWriter<>(
-							new BufferedWriter(new OutputStreamWriter(os)), IInteractionThreat.class)) {
-				tw.write(results.stream().map(IInteractionThreat.class::cast).collect(Collectors.toList()));
-				
-			} catch (IOException e1) {
-				logger.error("Error writing json: {}", e1.getMessage());
-				e1.printStackTrace();
-			}
-			try (BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), "utf-8"))) {
-				StringBuilder response = new StringBuilder();
-				String responseLine = null;
-				while ((responseLine = br.readLine()) != null) {
-					response.append(responseLine.trim());
-				}
-				logger.info(response.toString());
-				logger.info("SPARTA Server submission successful.");
-			}
-		} catch (IOException eI) {
-			eI.printStackTrace();
-			logger.error("IOError submitting to SPARTA Server: {}",eI.getMessage());
-		}
-		
+		List<IInteractionThreat> threats = results.stream().map(IInteractionThreat.class::cast)
+				.collect(Collectors.toList());
+		return SpartaServerClient.submit(
+				cmd.getOptionValue(server.getLongOpt()),
+				cmd.getOptionValue(token.getLongOpt()),
+				cmd.getOptionValue(commitId.getLongOpt()),
+				writer -> new ThreatJsonWriter<IInteractionThreat>(writer, IInteractionThreat.class).write(threats));
 	}
 }

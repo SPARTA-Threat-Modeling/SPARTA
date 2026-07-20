@@ -34,6 +34,7 @@ public interface Exporter {
 	 * Process the parsed options and run the export if needed on the provided collection of threats.
 	 * @param cmd the processed command line options.
 	 * @param results the collection of threats to export
+	 * @return {@code true} if the export succeeded or was not requested; {@code false} if it failed.
 	 */
-	public void process(CommandLine cmd, Collection<Threat> results);
+	public boolean process(CommandLine cmd, Collection<Threat> results);
 }

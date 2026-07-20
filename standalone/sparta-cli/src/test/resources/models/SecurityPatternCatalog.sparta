@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<spartamodel:SolutionTypeCatalog xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:spartamodel="http://distrinet.cs.kuleuven.be/spartamodel" xmi:id="_8URtoMk2EeeheeqXVGLgxA">
+  <solutionTypes xmi:id="_8URtock2EeeheeqXVGLgxA" name="SecurePipe">
+    <roles xmi:id="_8URtosk2EeeheeqXVGLgxA" name="SP_sender">
+      <bindingTypes>be.kuleuven.cs.distrinet.sparta.spartamodel.DataFlowEntity</bindingTypes>
+    </roles>
+    <roles xmi:id="_8URto8k2EeeheeqXVGLgxA" name="SP_recipient" subjected="_8USUssk2EeeheeqXVGLgxA">
+      <bindingTypes>be.kuleuven.cs.distrinet.sparta.spartamodel.DataFlowEntity</bindingTypes>
+    </roles>
+    <roles xmi:id="_8URtpMk2EeeheeqXVGLgxA" name="SP_sendFlow" subjected="_8USUsMk2EeeheeqXVGLgxA _8USUtMk2EeeheeqXVGLgxA">
+      <bindingTypes>be.kuleuven.cs.distrinet.sparta.spartamodel.DataFlow</bindingTypes>
+    </roles>
+    <roles xmi:id="_8URtpck2EeeheeqXVGLgxA" name="SP_receiveFlow" subjected="_8USUsMk2EeeheeqXVGLgxA _8USUtMk2EeeheeqXVGLgxA">
+      <bindingTypes>be.kuleuven.cs.distrinet.sparta.spartamodel.DataFlow</bindingTypes>
+    </roles>
+    <countermeasure xmi:id="_8USUsMk2EeeheeqXVGLgxA" name="flowEncryption" scope="_8URtpMk2EeeheeqXVGLgxA _8URtpck2EeeheeqXVGLgxA" subject="_8URtpMk2EeeheeqXVGLgxA _8URtpck2EeeheeqXVGLgxA">
+      <difficulty xmi:id="_8USUsck2EeeheeqXVGLgxA" minimum="75.0" probable="90.0" maximum="95.0" confidence="10.0"/>
+      <mitigatedThreatTypeID>stride.informationdisclosure</mitigatedThreatTypeID>
+    </countermeasure>
+    <countermeasure xmi:id="_8USUssk2EeeheeqXVGLgxA" name="RecipientAuthentication" scope="_8URtpMk2EeeheeqXVGLgxA _8URtpck2EeeheeqXVGLgxA" subject="_8URto8k2EeeheeqXVGLgxA">
+      <difficulty xmi:id="_8USUs8k2EeeheeqXVGLgxA" minimum="60.0" probable="85.0" maximum="95.0" confidence="3.0"/>
+      <mitigatedThreatTypeID>stride.spoofing</mitigatedThreatTypeID>
+    </countermeasure>
+    <countermeasure xmi:id="_8USUtMk2EeeheeqXVGLgxA" name="flowIntegrity" scope="_8URtpMk2EeeheeqXVGLgxA _8URtpck2EeeheeqXVGLgxA" subject="_8URtpMk2EeeheeqXVGLgxA _8URtpck2EeeheeqXVGLgxA">
+      <difficulty xmi:id="_8USUtck2EeeheeqXVGLgxA" minimum="75.0" probable="90.0" maximum="95.0" confidence="10.0"/>
+      <mitigatedThreatTypeID>stride.tampering</mitigatedThreatTypeID>
+    </countermeasure>
+  </solutionTypes>
+  <solutionTypes xmi:id="_8USUtsk2EeeheeqXVGLgxA" name="SecurePipe with ClientAuthentication">
+    <roles xmi:id="_8USUt8k2EeeheeqXVGLgxA" name="SPwCA_sender" subjected="_8USUvck2EeeheeqXVGLgxA _8USUw8k2EeeheeqXVGLgxA">
+      <bindingTypes>be.kuleuven.cs.distrinet.sparta.spartamodel.DataFlowEntity</bindingTypes>
+    </roles>
+    <roles xmi:id="_8USUuMk2EeeheeqXVGLgxA" name="SPwCA_recipient" subjected="_8USUv8k2EeeheeqXVGLgxA">
+      <bindingTypes>be.kuleuven.cs.distrinet.sparta.spartamodel.DataFlowEntity</bindingTypes>
+    </roles>
+    <roles xmi:id="_8USUuck2EeeheeqXVGLgxA" name="SPwCA_sendFlow" subjected="_8USUu8k2EeeheeqXVGLgxA _8USUwck2EeeheeqXVGLgxA">
+      <bindingTypes>be.kuleuven.cs.distrinet.sparta.spartamodel.DataFlow</bindingTypes>
+    </roles>
+    <roles xmi:id="_8USUusk2EeeheeqXVGLgxA" name="SPwCA_receiveFlow" subjected="_8USUu8k2EeeheeqXVGLgxA _8USUwck2EeeheeqXVGLgxA">
+      <bindingTypes>be.kuleuven.cs.distrinet.sparta.spartamodel.DataFlow</bindingTypes>
+    </roles>
+    <countermeasure xmi:id="_8USUu8k2EeeheeqXVGLgxA" name="flowEncryption" scope="_8USUuck2EeeheeqXVGLgxA _8USUusk2EeeheeqXVGLgxA" subject="_8USUuck2EeeheeqXVGLgxA _8USUusk2EeeheeqXVGLgxA">
+      <difficulty xmi:id="_8USUvMk2EeeheeqXVGLgxA" minimum="75.0" probable="90.0" maximum="95.0" confidence="10.0"/>
+      <mitigatedThreatTypeID>stride.informationdisclosure</mitigatedThreatTypeID>
+    </countermeasure>
+    <countermeasure xmi:id="_8USUvck2EeeheeqXVGLgxA" name="InitiatorAuthentication" scope="_8USUuck2EeeheeqXVGLgxA _8USUusk2EeeheeqXVGLgxA" subject="_8USUt8k2EeeheeqXVGLgxA">
+      <difficulty xmi:id="_8USUvsk2EeeheeqXVGLgxA" minimum="60.0" probable="85.0" maximum="95.0" confidence="3.0"/>
+      <mitigatedThreatTypeID>stride.spoofing</mitigatedThreatTypeID>
+    </countermeasure>
+    <countermeasure xmi:id="_8USUv8k2EeeheeqXVGLgxA" name="RecipientAuthentication" scope="_8USUusk2EeeheeqXVGLgxA _8USUuck2EeeheeqXVGLgxA" subject="_8USUuMk2EeeheeqXVGLgxA">
+      <difficulty xmi:id="_8USUwMk2EeeheeqXVGLgxA" minimum="60.0" probable="85.0" maximum="95.0" confidence="3.0"/>
+      <mitigatedThreatTypeID>stride.spoofing</mitigatedThreatTypeID>
+    </countermeasure>
+    <countermeasure xmi:id="_8USUwck2EeeheeqXVGLgxA" name="flowIntegrity" scope="_8USUusk2EeeheeqXVGLgxA _8USUuck2EeeheeqXVGLgxA" subject="_8USUuck2EeeheeqXVGLgxA _8USUusk2EeeheeqXVGLgxA">
+      <difficulty xmi:id="_8USUwsk2EeeheeqXVGLgxA" minimum="75.0" probable="90.0" maximum="95.0" confidence="10.0"/>
+      <mitigatedThreatTypeID>stride.tampering</mitigatedThreatTypeID>
+    </countermeasure>
+    <countermeasure xmi:id="_8USUw8k2EeeheeqXVGLgxA" name="ServerRepudiationProtection" scope="_8USUusk2EeeheeqXVGLgxA _8USUuck2EeeheeqXVGLgxA" subject="_8USUt8k2EeeheeqXVGLgxA">
+      <difficulty xmi:id="_8USUxMk2EeeheeqXVGLgxA" minimum="60.0" probable="85.0" maximum="95.0" confidence="3.0"/>
+      <mitigatedThreatTypeID>stride.repudiation</mitigatedThreatTypeID>
+    </countermeasure>
+  </solutionTypes>
+  <solutionTypes xmi:id="_8USUxck2EeeheeqXVGLgxA" name="Sandbox">
+    <roles xmi:id="_8USUxsk2EeeheeqXVGLgxA" name="SB_SandboxedProcess" subjected="_8USUx8k2EeeheeqXVGLgxA">
+      <bindingTypes>be.kuleuven.cs.distrinet.sparta.spartamodel.Process</bindingTypes>
+    </roles>
+    <countermeasure xmi:id="_8USUx8k2EeeheeqXVGLgxA" name="SB_Sandbox_EoPProtection" description="" subject="_8USUxsk2EeeheeqXVGLgxA">
+      <mitigatedThreatTypeID>stride.elevationofprivilege</mitigatedThreatTypeID>
+    </countermeasure>
+  </solutionTypes>
+  <solutionTypes xmi:id="_8USUyMk2EeeheeqXVGLgxA" name="Encrypted Data">
+    <roles xmi:id="_8USUyck2EeeheeqXVGLgxA" name="ED_flow_w_encrypted_data" subjected="_8USUysk2EeeheeqXVGLgxA">
+      <bindingTypes>be.kuleuven.cs.distrinet.sparta.spartamodel.DataFlow</bindingTypes>
+    </roles>
+    <countermeasure xmi:id="_8USUysk2EeeheeqXVGLgxA" name="Encrypted Data" description="" subject="_8USUyck2EeeheeqXVGLgxA">
+      <difficulty xmi:id="_8USUy8k2EeeheeqXVGLgxA" minimum="75.0" probable="90.0" maximum="95.0" confidence="10.0"/>
+      <mitigatedThreatTypeID>stride.informationdisclosure</mitigatedThreatTypeID>
+    </countermeasure>
+  </solutionTypes>
+  <solutionTypes xmi:id="_8USUzMk2EeeheeqXVGLgxA" name="Cloudflare">
+    <roles xmi:id="_8USUzck2EeeheeqXVGLgxA" name="CF_P_Acces via cloudflare" subjected="_8US7wck2EeeheeqXVGLgxA">
+      <bindingTypes>be.kuleuven.cs.distrinet.sparta.spartamodel.Process</bindingTypes>
+    </roles>
+    <roles xmi:id="_8USUzsk2EeeheeqXVGLgxA" name="CF_DF_Request" description="" subjected="_8US7wck2EeeheeqXVGLgxA">
+      <bindingTypes>be.kuleuven.cs.distrinet.sparta.spartamodel.DataFlow</bindingTypes>
+    </roles>
+    <roles xmi:id="_8US7wMk2EeeheeqXVGLgxA" name="CF_DF_Response" subjected="_8US7wck2EeeheeqXVGLgxA">
+      <bindingTypes>be.kuleuven.cs.distrinet.sparta.spartamodel.DataFlow</bindingTypes>
+    </roles>
+    <countermeasure xmi:id="_8US7wck2EeeheeqXVGLgxA" name="Elastic scaling" scope="_8US7wMk2EeeheeqXVGLgxA _8USUzsk2EeeheeqXVGLgxA" subject="_8USUzsk2EeeheeqXVGLgxA _8US7wMk2EeeheeqXVGLgxA _8USUzck2EeeheeqXVGLgxA">
+      <difficulty xmi:id="_8US7wsk2EeeheeqXVGLgxA" minimum="85.0" probable="90.0" maximum="95.0" confidence="4.0"/>
+      <mitigatedThreatTypeID>stride.denialofservice</mitigatedThreatTypeID>
+    </countermeasure>
+  </solutionTypes>
+  <solutionTypes xmi:id="_8US7w8k2EeeheeqXVGLgxA" name="The Ultimate Security Box™">
+    <roles xmi:id="_8US7xMk2EeeheeqXVGLgxA" name="TUSB_process" subjected="_8US7xck2EeeheeqXVGLgxA">
+      <bindingTypes>be.kuleuven.cs.distrinet.sparta.spartamodel.Process</bindingTypes>
+    </roles>
+    <countermeasure xmi:id="_8US7xck2EeeheeqXVGLgxA" name="" subject="_8US7xMk2EeeheeqXVGLgxA">
+      <difficulty xmi:id="_8US7xsk2EeeheeqXVGLgxA" minimum="90.0" probable="95.0" maximum="100.0" confidence="6.0"/>
+      <mitigatedThreatTypeID>stride.spoofing</mitigatedThreatTypeID>
+      <mitigatedThreatTypeID>stride.tampering</mitigatedThreatTypeID>
+      <mitigatedThreatTypeID>stride.repudiation</mitigatedThreatTypeID>
+      <mitigatedThreatTypeID>stride.informationdisclosure</mitigatedThreatTypeID>
+      <mitigatedThreatTypeID>stride.denialofservice</mitigatedThreatTypeID>
+      <mitigatedThreatTypeID>stride.elevationofprivilege</mitigatedThreatTypeID>
+    </countermeasure>
+  </solutionTypes>
+</spartamodel:SolutionTypeCatalog>

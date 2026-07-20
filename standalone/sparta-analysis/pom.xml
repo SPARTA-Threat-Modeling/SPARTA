@@ -31,38 +31,4 @@
 		</dependency>
 	</dependencies>
 
-	<build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <version>3.3.0</version>
-        <executions>
-          <execution>
-            <id>copy</id>
-            <phase>package</phase>
-            <goals>
-              <goal>copy</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <artifactItems>
-            <artifactItem>
-              <groupId>be.kuleuven.cs.distrinet.sparta</groupId>
-              <artifactId>be.kuleuven.cs.distrinet.sparta.threatanalysis</artifactId>
-              <type>jar</type>
-              <overWrite>true</overWrite>
-              <outputDirectory>${project.build.directory}</outputDirectory>
-<!--               <destFileName>optional-new-name.jar</destFileName> -->
-            </artifactItem>
-          </artifactItems>
-          <outputDirectory>${project.build.directory}/wars</outputDirectory>
-          <overWriteReleases>false</overWriteReleases>
-          <overWriteSnapshots>true</overWriteSnapshots>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
-
 </project>

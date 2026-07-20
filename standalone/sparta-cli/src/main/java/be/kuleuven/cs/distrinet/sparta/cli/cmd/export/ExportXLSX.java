@@ -33,7 +33,7 @@ public class ExportXLSX implements Exporter {
 	private final Option xlsxoption;
 	
 	public ExportXLSX() { 
-		xlsxoption = new Option("ox","outxlsx", true, "XLSX export file");
+		xlsxoption = new Option(null, "outxlsx", true, "XLSX export file");
 	}
 
 	@Override
@@ -42,19 +42,21 @@ public class ExportXLSX implements Exporter {
 	}
 
 	@Override
-	public void process(CommandLine cmd, Collection<Threat> results) {
-		if (!cmd.hasOption(xlsxoption.getOpt())) {
-			return;
+	public boolean process(CommandLine cmd, Collection<Threat> results) {
+		if (!cmd.hasOption(xlsxoption.getLongOpt())) {
+			return true;
 		}
 		logger.info("Exporting to xlsx files");
 
-		String xlsx = cmd.getOptionValue(xlsxoption.getOpt());
+		String xlsx = cmd.getOptionValue(xlsxoption.getLongOpt());
 
 		try (ThreatXlsxOutputStream tw = new ThreatXlsxOutputStream(new FileOutputStream(xlsx))) {
 			tw.write(results.toArray(new Threat[] {}));
 
 		} catch (IOException e1) {
-			logger.error("Error writing xlsx: {}", e1.getMessage());
+			logger.error("Error writing xlsx: {}", e1.getMessage(), e1);
+			return false;
 		}
+		return true;
 	}
 }

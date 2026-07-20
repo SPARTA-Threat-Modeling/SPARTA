@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<spartamodel:DFDModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:spartamodel="http://distrinet.cs.kuleuven.be/spartamodel" xmi:id="_S4bvsMk6EeeheeqXVGLgxA" name="Contoso">
+  <containedElements xsi:type="spartamodel:TrustBoundaryContainer" xmi:id="_S4bvsck6EeeheeqXVGLgxA" name="Contoso Trust Boundary" description="Trust boundary of the system.">
+    <containedElements xsi:type="spartamodel:Process" xmi:id="_S4cWwMk6EeeheeqXVGLgxA" name="Contoso" description="The main process." bound="_S4cW3Mk6EeeheeqXVGLgxA _S4cW4sk6EeeheeqXVGLgxA _S4c90ck6EeeheeqXVGLgxA" send="_S4cWw8k6EeeheeqXVGLgxA _S4cWxck6EeeheeqXVGLgxA _S4cWx8k6EeeheeqXVGLgxA" receive="_S4cW0Mk6EeeheeqXVGLgxA _S4cW0sk6EeeheeqXVGLgxA _S4cW18k6EeeheeqXVGLgxA">
+      <estimates xmi:id="_S4cWwsk6EeeheeqXVGLgxA" minimum="2500.0" probable="5000.0" maximum="10000.0" confidence="4.0" name="Contoso information disclosure"/>
+      <lossMagnitudeByID xmi:id="_aPXYQHQ7EfCsEKHFc5elkA" value="_S4cWwsk6EeeheeqXVGLgxA" key="stride.informationdisclosure"/>
+    </containedElements>
+    <containedElements xsi:type="spartamodel:DataFlow" xmi:id="_S4cWw8k6EeeheeqXVGLgxA" name="create(widgets)" description="Request to create widgets." sender="_S4cWwMk6EeeheeqXVGLgxA" recipient="_S4cWysk6EeeheeqXVGLgxA">
+      <estimates xmi:id="_S4cWxMk6EeeheeqXVGLgxA" minimum="2500.0" probable="5000.0" maximum="10000.0" confidence="4.0"/>
+    </containedElements>
+    <containedElements xsi:type="spartamodel:DataFlow" xmi:id="_S4cWxck6EeeheeqXVGLgxA" name="Write" description="Write request to the database." bound="_S4cW58k6EeeheeqXVGLgxA" sender="_S4cWwMk6EeeheeqXVGLgxA" recipient="_S4cWzck6EeeheeqXVGLgxA">
+      <estimates xmi:id="_S4cWxsk6EeeheeqXVGLgxA" minimum="2500.0" probable="5000.0" maximum="10000.0" confidence="4.0"/>
+    </containedElements>
+    <containedElements xsi:type="spartamodel:DataFlow" xmi:id="_S4cWx8k6EeeheeqXVGLgxA" name="Responses" description="Contoso's response to commands." bound="_S4cW3sk6EeeheeqXVGLgxA _S4cW5Mk6EeeheeqXVGLgxA" sender="_S4cWwMk6EeeheeqXVGLgxA" recipient="_S4cW1Mk6EeeheeqXVGLgxA">
+      <estimates xmi:id="_S4cWyck6EeeheeqXVGLgxA" minimum="500.0" probable="1250.0" maximum="4000.0" confidence="4.0" name="response information disclosure"/>
+      <lossMagnitudeByID xmi:id="_ibK8EHQ7EfCsEKHFc5elkA" value="_S4cWyck6EeeheeqXVGLgxA" key="stride.informationdisclosure"/>
+    </containedElements>
+    <containedElements xsi:type="spartamodel:Process" xmi:id="_S4cWysk6EeeheeqXVGLgxA" name="Fabrikam.dll" description="Some other process." send="_S4cW0Mk6EeeheeqXVGLgxA" receive="_S4cWw8k6EeeheeqXVGLgxA">
+      <estimates xmi:id="_S4cWzMk6EeeheeqXVGLgxA" minimum="3000.0" probable="7500.0" maximum="15000.0" confidence="4.0" name="Fabrikam information disclosure"/>
+      <lossMagnitudeByID xmi:id="_nMbroHQ7EfCsEKHFc5elkA" value="_S4cWzMk6EeeheeqXVGLgxA" key="stride.informationdisclosure"/>
+    </containedElements>
+    <containedElements xsi:type="spartamodel:DataStore" xmi:id="_S4cWzck6EeeheeqXVGLgxA" name="Database" description="An example database." bound="_S4cW5sk6EeeheeqXVGLgxA" send="_S4cW0sk6EeeheeqXVGLgxA" receive="_S4cWxck6EeeheeqXVGLgxA">
+      <estimates xmi:id="_S4cWz8k6EeeheeqXVGLgxA" minimum="10000.0" probable="15000.0" maximum="25000.0" confidence="4.0" name="DB information disclosure"/>
+      <lossMagnitudeByID xmi:id="_qzB-4HQ7EfCsEKHFc5elkA" value="_S4cWz8k6EeeheeqXVGLgxA" key="stride.informationdisclosure"/>
+    </containedElements>
+  </containedElements>
+  <containedElements xsi:type="spartamodel:DataFlow" xmi:id="_S4cW0Mk6EeeheeqXVGLgxA" name="widgets" description="Widgets created by the Fabrikam process." sender="_S4cWysk6EeeheeqXVGLgxA" recipient="_S4cWwMk6EeeheeqXVGLgxA">
+    <estimates xmi:id="_S4cW0ck6EeeheeqXVGLgxA" minimum="2500.0" probable="5000.0" maximum="10000.0" confidence="4.0"/>
+  </containedElements>
+  <containedElements xsi:type="spartamodel:DataFlow" xmi:id="_S4cW0sk6EeeheeqXVGLgxA" name="Results" description="Database response." bound="_S4c90Mk6EeeheeqXVGLgxA" sender="_S4cWzck6EeeheeqXVGLgxA" recipient="_S4cWwMk6EeeheeqXVGLgxA">
+    <estimates xmi:id="_S4cW08k6EeeheeqXVGLgxA" minimum="2500.0" probable="5000.0" maximum="10000.0" confidence="4.0"/>
+  </containedElements>
+  <containedElements xsi:type="spartamodel:Process" xmi:id="_S4cW1Mk6EeeheeqXVGLgxA" name="Browser" description="A user browser." bound="_S4cW28k6EeeheeqXVGLgxA" send="_S4cW18k6EeeheeqXVGLgxA" receive="_S4cWx8k6EeeheeqXVGLgxA">
+    <estimates xmi:id="_S4cW1sk6EeeheeqXVGLgxA" minimum="5.0" probable="500.0" maximum="5000.0" confidence="4.0" name="Browser information disclosure"/>
+    <lossMagnitudeByID xmi:id="_uu7zwHQ7EfCsEKHFc5elkA" value="_S4cW1sk6EeeheeqXVGLgxA" key="stride.informationdisclosure"/>
+  </containedElements>
+  <containedElements xsi:type="spartamodel:DataFlow" xmi:id="_S4cW18k6EeeheeqXVGLgxA" name="Commands" description="Commands sent from the browser to Contoso." bound="_S4cW3ck6EeeheeqXVGLgxA _S4cW48k6EeeheeqXVGLgxA" sender="_S4cW1Mk6EeeheeqXVGLgxA" recipient="_S4cWwMk6EeeheeqXVGLgxA">
+    <estimates xmi:id="_S4cW2ck6EeeheeqXVGLgxA" minimum="500.0" probable="1250.0" maximum="4000.0" confidence="4.0" name="Commands information disclosure"/>
+    <lossMagnitudeByID xmi:id="_wQLkEHQ7EfCsEKHFc5elkA" value="_S4cW2ck6EeeheeqXVGLgxA" key="stride.informationdisclosure"/>
+  </containedElements>
+  <containedElements xsi:type="spartamodel:Solution" xmi:id="_S4cW2sk6EeeheeqXVGLgxA" name="Secure Pipe Instance">
+    <securitypattern href="SecurityPatternCatalog.sparta#_8URtock2EeeheeqXVGLgxA"/>
+    <rolebinding xmi:id="_S4cW28k6EeeheeqXVGLgxA" name="sender" bindsTo="_S4cW1Mk6EeeheeqXVGLgxA">
+      <binds href="SecurityPatternCatalog.sparta#_8URtosk2EeeheeqXVGLgxA"/>
+    </rolebinding>
+    <rolebinding xmi:id="_S4cW3Mk6EeeheeqXVGLgxA" name="Recipient" description="" bindsTo="_S4cWwMk6EeeheeqXVGLgxA">
+      <binds href="SecurityPatternCatalog.sparta#_8URto8k2EeeheeqXVGLgxA"/>
+    </rolebinding>
+    <rolebinding xmi:id="_S4cW3ck6EeeheeqXVGLgxA" name="df1" bindsTo="_S4cW18k6EeeheeqXVGLgxA">
+      <binds href="SecurityPatternCatalog.sparta#_8URtpMk2EeeheeqXVGLgxA"/>
+    </rolebinding>
+    <rolebinding xmi:id="_S4cW3sk6EeeheeqXVGLgxA" name="SP_receiveFlow" description="" bindsTo="_S4cWx8k6EeeheeqXVGLgxA">
+      <binds href="SecurityPatternCatalog.sparta#_8URtpck2EeeheeqXVGLgxA"/>
+    </rolebinding>
+  </containedElements>
+  <containedElements xsi:type="spartamodel:Solution" xmi:id="_S4cW4ck6EeeheeqXVGLgxA" name="RunContoso on cloudflare">
+    <securitypattern href="SecurityPatternCatalog.sparta#_8USUzMk2EeeheeqXVGLgxA"/>
+    <rolebinding xmi:id="_S4cW4sk6EeeheeqXVGLgxA" name="CF_P_Acces via cloudflare" bindsTo="_S4cWwMk6EeeheeqXVGLgxA">
+      <binds href="SecurityPatternCatalog.sparta#_8USUzck2EeeheeqXVGLgxA"/>
+    </rolebinding>
+    <rolebinding xmi:id="_S4cW48k6EeeheeqXVGLgxA" name="CF_DF_Request" bindsTo="_S4cW18k6EeeheeqXVGLgxA">
+      <binds href="SecurityPatternCatalog.sparta#_8USUzsk2EeeheeqXVGLgxA"/>
+    </rolebinding>
+    <rolebinding xmi:id="_S4cW5Mk6EeeheeqXVGLgxA" name="CF_DF_Response" bindsTo="_S4cWx8k6EeeheeqXVGLgxA">
+      <binds href="SecurityPatternCatalog.sparta#_8US7wMk2EeeheeqXVGLgxA"/>
+    </rolebinding>
+  </containedElements>
+  <containedElements xsi:type="spartamodel:Solution" xmi:id="_S4cW5ck6EeeheeqXVGLgxA" name="DB Secure Pipe">
+    <securitypattern href="SecurityPatternCatalog.sparta#_8URtock2EeeheeqXVGLgxA"/>
+    <rolebinding xmi:id="_S4cW5sk6EeeheeqXVGLgxA" name="SP_recipient" bindsTo="_S4cWzck6EeeheeqXVGLgxA">
+      <binds href="SecurityPatternCatalog.sparta#_8URto8k2EeeheeqXVGLgxA"/>
+    </rolebinding>
+    <rolebinding xmi:id="_S4cW58k6EeeheeqXVGLgxA" name="SP_sendFlow" bindsTo="_S4cWxck6EeeheeqXVGLgxA">
+      <binds href="SecurityPatternCatalog.sparta#_8URtpMk2EeeheeqXVGLgxA"/>
+    </rolebinding>
+    <rolebinding xmi:id="_S4c90Mk6EeeheeqXVGLgxA" name="SP_receiveFlow" bindsTo="_S4cW0sk6EeeheeqXVGLgxA">
+      <binds href="SecurityPatternCatalog.sparta#_8URtpck2EeeheeqXVGLgxA"/>
+    </rolebinding>
+    <rolebinding xmi:id="_S4c90ck6EeeheeqXVGLgxA" name="SP_sender" bindsTo="_S4cWwMk6EeeheeqXVGLgxA">
+      <binds href="SecurityPatternCatalog.sparta#_8URtosk2EeeheeqXVGLgxA"/>
+    </rolebinding>
+  </containedElements>
+  <resource xsi:type="spartamodel:SolutionTypeCatalog" href="SecurityPatternCatalog.sparta#_8URtoMk2EeeheeqXVGLgxA"/>
+  <resource xsi:type="spartamodel:ThreatTypeCatalog" href="stride-per-interaction%20-%20Shostack.sparta#_Q9BR4Nx-Ee6qA9No-hJ8dg"/>
+</spartamodel:DFDModel>

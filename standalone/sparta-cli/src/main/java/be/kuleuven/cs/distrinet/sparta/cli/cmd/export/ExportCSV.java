@@ -9,12 +9,11 @@
  */
 package be.kuleuven.cs.distrinet.sparta.cli.cmd.export;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Arrays;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Collection;
-import java.util.stream.Collectors;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
@@ -23,7 +22,6 @@ import org.slf4j.LoggerFactory;
 
 import be.kuleuven.cs.distrinet.sparta.core.model.Threat;
 import be.kuleuven.cs.distrinet.sparta.io.ThreatCSVWriter;
-import be.kuleuven.cs.distrinet.sparta.io.ThreatWriter;
 
 /**
  * Support for exporting to CSV via the command line.
@@ -40,7 +38,7 @@ public class ExportCSV implements Exporter {
 	 * Create a new ExportCSV class.
 	 */
 	public ExportCSV() { 
-		csvoption = new Option("oc","outcsv", true, "CSV Export file");
+		csvoption = new Option(null, "outcsv", true, "CSV Export file");
 	}
 
 	@Override
@@ -49,20 +47,23 @@ public class ExportCSV implements Exporter {
 	}
 
 	@Override
-	public void process(CommandLine cmd, Collection<Threat> results) {
-		if (!cmd.hasOption(csvoption.getOpt())) {
-			return;
+	public boolean process(CommandLine cmd, Collection<Threat> results) {
+		if (!cmd.hasOption(csvoption.getLongOpt())) {
+			return true;
 		}
 		logger.info("Exporting to csv");
 
-		String csv = cmd.getOptionValue(csvoption.getOpt());
+		String csv = cmd.getOptionValue(csvoption.getLongOpt());
 
-		try (ThreatCSVWriter tw = new ThreatCSVWriter(new BufferedWriter(new FileWriter(csv)))) {
+		try (ThreatCSVWriter tw = new ThreatCSVWriter(
+				Files.newBufferedWriter(Paths.get(csv), StandardCharsets.UTF_8))) {
 			tw.writeHeader();
 			tw.write(results.toArray(new Threat[] {}));
 
 		} catch (IOException e1) {
-			logger.error("Error writing csv: {}", e1.getMessage());
+			logger.error("Error writing csv: {}", e1.getMessage(), e1);
+			return false;
 		}
+		return true;
 	}
 }

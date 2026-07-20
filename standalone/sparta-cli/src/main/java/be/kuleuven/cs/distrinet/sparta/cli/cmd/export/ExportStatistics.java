@@ -11,8 +11,9 @@ package be.kuleuven.cs.distrinet.sparta.cli.cmd.export;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.Collection;
 
 import org.apache.commons.cli.CommandLine;
@@ -26,8 +27,8 @@ import be.kuleuven.cs.distrinet.sparta.spartamodel.ModelElement;
 import be.kuleuven.cs.distrinet.sparta.spartamodel.ThreatType;
 
 /**
- * Export for text export via the command line.
- * 
+ * Export for threat statistics via the command line.
+ *
  * @author Laurens
  *
  */
@@ -37,7 +38,7 @@ public class ExportStatistics implements Exporter {
 	private final Option txtoption;
 
 	public ExportStatistics() {
-		txtoption = new Option("os", "outstatistics", true, "Output txt file with threat statistics");
+		txtoption = new Option(null, "outstatistics", true, "Output txt file with threat statistics");
 	}
 
 	@Override
@@ -46,17 +47,17 @@ public class ExportStatistics implements Exporter {
 	}
 
 	@Override
-	public void process(CommandLine cmd, Collection<Threat> results) {
-		if (!cmd.hasOption(txtoption.getOpt())) {
-			return;
+	public boolean process(CommandLine cmd, Collection<Threat> results) {
+		if (!cmd.hasOption(txtoption.getLongOpt())) {
+			return true;
 		}
 		logger.info("Exporting threat statistics");
 
-		String trgt = cmd.getOptionValue(txtoption.getOpt());
+		String trgt = cmd.getOptionValue(txtoption.getLongOpt());
 
 		ThreatAggregationAnalysis taa = new ThreatAggregationAnalysis(results);
 
-		try (BufferedWriter w = new BufferedWriter(new FileWriter(new File(trgt)));) {
+		try (BufferedWriter w = Files.newBufferedWriter(new File(trgt).toPath(), StandardCharsets.UTF_8)) {
 			w.write("SPARTA Threat Statistics Report");
 			w.newLine();
 			w.write("===============================");
@@ -120,7 +121,9 @@ public class ExportStatistics implements Exporter {
 			}
 			w.newLine();
 		} catch (IOException e1) {
-			logger.error("Error writing statistics report: {}", e1.getMessage());
+			logger.error("Error writing statistics report: {}", e1.getMessage(), e1);
+			return false;
 		}
+		return true;
 	}
 }

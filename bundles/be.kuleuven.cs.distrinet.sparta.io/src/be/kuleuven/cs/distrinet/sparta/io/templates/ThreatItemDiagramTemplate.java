@@ -41,8 +41,6 @@ public class ThreatItemDiagramTemplate extends Template<Threat> {
 
 	@Override
 	public String instantiate(Threat x) {
-		String name = x.toString();
-		
 		return getTemplate().replace(SENDERTYPE, getTikzNode(x, x.getDataFlow().getSender(), getSender(x.getDataFlow())))
 				.replace(RECIPIENTTYPE, getTikzNode(x, x.getDataFlow().getRecipient(), getRecipient(x.getDataFlow())))
 				.replace(SENDERNAME, LaTeX.latexEscape(x.getDataFlowFromName()))

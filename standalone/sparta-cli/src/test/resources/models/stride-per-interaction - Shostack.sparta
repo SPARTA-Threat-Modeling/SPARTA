@@ -1,0 +1,395 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<spartamodel:ThreatTypeCatalog xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:spartamodel="http://distrinet.cs.kuleuven.be/spartamodel" xmi:id="_Q9BR4Nx-Ee6qA9No-hJ8dg" name="STRIDE-per-interaction - Shostack" description="This threat type catalog implements the STRIDE-per-interaction threat applicability table (specifically Table 3-10) as described in 'Shostack, Adam. Threat modeling: Designing for security. John wiley &amp; sons, 2014.'" package="stride">
+  <threat xsi:type="spartamodel:ThreatTypeGroup" xmi:id="_EeVx4Gk4EfC5ldgLKeCtLA" name="Spoofing" id="stride.spoofing">
+    <subThreatTypes xsi:type="spartamodel:ThreatType" xmi:id="_rKBYgGk4EfC5ldgLKeCtLA" name="&lt;$location$> spoofed">
+      <threatpattern xmi:id="_rKBYgWk4EfC5ldgLKeCtLA" name="Spoofed P --> DS" description="&lt;$location$> is spoofed, and a malicious process writes to &lt;$recipient$>.">
+        <patterns>pattern spoofingSenderPtoDS(location : DFDElement, recipient : DFDElement, df : DataFlow) {&#xD;
+  find processToDataStoreComm(location, recipient, df);&#xD;
+}</patterns>
+      </threatpattern>
+      <threatpattern xmi:id="_WcGC0Wk2EfC5ldgLKeCtLA" name="Spoofed P --> P" description="&lt;$location$> is spoofed, and &lt;$recipient$> receives data from a malicious process.">
+        <patterns>pattern spoofingSenderPtoP(location : DFDElement, recipient : DFDElement, df : DataFlow) {&#xD;
+  find processToProcessComm(location, recipient, df);&#xD;
+}</patterns>
+      </threatpattern>
+      <threatpattern xmi:id="_Wek5oWk3EfC5ldgLKeCtLA" name="Spoofed P --> EE" description="&lt;$location$> is spoofed, and &lt;$recipient$> receives data from a malicious process.">
+        <patterns>pattern spoofingSenderPtoE(location : DFDElement, recipient : DFDElement, df : DataFlow) {&#xD;
+  find processToExternalEntityComm(location, recipient, df);&#xD;
+}</patterns>
+      </threatpattern>
+      <threatpattern xmi:id="_Q4Ev4WlSEfC5ldgLKeCtLA" name="Spoofed P &lt;-- DS" description="&lt;$location$> is spoofed, and a malicious process reads from &lt;$sender$>.">
+        <patterns>pattern spoofingRecipientDStoP(location : DFDElement, sender : DFDElement, df : DataFlow) {&#xD;
+  find dataStoreToProcessComm(sender, location, df);&#xD;
+}</patterns>
+      </threatpattern>
+      <threatpattern xmi:id="_TtvboGk1EfC5ldgLKeCtLA" name="Spoofed P &lt;-- P" description="&lt;$location$> is spoofed, and &lt;$sender$> sends data to a malicious process.">
+        <patterns>pattern spoofingRecipientPtoP(location : DFDElement, sender : DFDElement, df : DataFlow) {&#xD;
+  find processToProcessComm(sender, location, df);&#xD;
+}</patterns>
+      </threatpattern>
+      <threatpattern xmi:id="_koP5UWlTEfC5ldgLKeCtLA" name="Spoofed P &lt;-- EE" description="&lt;$location$> is spoofed, and &lt;$sender$> sends data to a malicious process.">
+        <patterns>pattern spoofingRecipientEEtoP(location : DFDElement, sender : DFDElement, df : DataFlow) {&#xD;
+  find externalEntityToProcessComm(sender, location, df);&#xD;
+}</patterns>
+      </threatpattern>
+      <threatpattern xmi:id="_6X3toWk2EfC5ldgLKeCtLA" name="Spoofed EE --> P" description="&lt;$location$> is spoofed, and &lt;$recipient$> receives data from a malicious external entity.">
+        <patterns>pattern spoofingSenderEtoP(location : DFDElement, recipient : DFDElement, df : DataFlow) {&#xD;
+  find externalEntityToProcessComm(location, recipient, df);&#xD;
+}</patterns>
+      </threatpattern>
+      <threatpattern xmi:id="_ctmSkWk1EfC5ldgLKeCtLA" name="Spoofed EE &lt;-- P" description="&lt;$location$> is spoofed, and &lt;$sender$> sends data to a malicious external entity.">
+        <patterns>pattern spoofingRecipientPtoE(location : DFDElement, sender : DFDElement, df : DataFlow) {&#xD;
+  find processToExternalEntityComm(sender, location, df);&#xD;
+}</patterns>
+      </threatpattern>
+    </subThreatTypes>
+  </threat>
+  <threat xsi:type="spartamodel:ThreatTypeGroup" xmi:id="_e-RB8GlnEfCOr57errktoQ" name="Tampering" id="stride.tampering">
+    <subThreatTypes xsi:type="spartamodel:ThreatType" xmi:id="_pS2QIGlnEfCOr57errktoQ" name="&lt;$location$> state corrupted">
+      <threatpattern xmi:id="_yweBIGlnEfCOr57errktoQ" name="Tampering P &lt;-- DS" description="&lt;$location$> state is corrputed by data read from &lt;$sender$>.">
+        <patterns>pattern tamperingRecipientDStoP(location : DFDElement, sender : DFDElement, df : DataFlow) {&#xD;
+  find dataStoreToProcessComm(sender, location, df);&#xD;
+}</patterns>
+      </threatpattern>
+    </subThreatTypes>
+    <subThreatTypes xsi:type="spartamodel:ThreatType" xmi:id="_Mr0v4GloEfCOr57errktoQ" name="&lt;$location$> corrupted" description="">
+      <threatpattern xmi:id="_RyZBEGloEfCOr57errktoQ" name="Tampering DS &lt;-- P" description="&lt;$sender$> corrupts &lt;$location$>.">
+        <patterns>pattern tamperingRecipientPtoDS(location : DFDElement, sender : DFDElement, df : DataFlow) {&#xD;
+  find processToDataStoreComm(sender, location, df);&#xD;
+}</patterns>
+      </threatpattern>
+    </subThreatTypes>
+    <subThreatTypes xsi:type="spartamodel:ThreatType" xmi:id="_rUb38GloEfCOr57errktoQ" name="&lt;$location$> modified">
+      <threatpattern xmi:id="_uR4ggGloEfCOr57errktoQ" name="Data flow tampering" description="&lt;$location$> modified by MITM attack.">
+        <patterns>pattern tamperingDataFlow(location : DFDElement, df : DataFlow, sender: DFDElement, recipient: DFDElement) {&#xD;
+  location == df;&#xD;
+  DataFlow.sender(df,sender);&#xD;
+  DataFlow.recipient(df,recipient);&#xD;
+  find containerDiff(sender,recipient);&#xD;
+}</patterns>
+      </threatpattern>
+    </subThreatTypes>
+  </threat>
+  <threat xsi:type="spartamodel:ThreatTypeGroup" xmi:id="_IrOy0GlpEfCOr57errktoQ" name="Repudiation" id="stride.repudiation">
+    <subThreatTypes xsi:type="spartamodel:ThreatType" xmi:id="_fF0JgGlpEfCOr57errktoQ" name="&lt;$location$> repudiates action" description="">
+      <threatpattern xmi:id="_s8pgoWuREfCBBqd5WnJmTw" name="Repudiation P &lt;-- DS" description="&lt;$location$> claims not to have read data from &lt;$sender$>.">
+        <patterns>pattern repudiationRecipientDStoP(location : DFDElement, sender : DFDElement, df : DataFlow) {&#xD;
+  find dataStoreToProcessComm(sender, location, df);&#xD;
+}</patterns>
+      </threatpattern>
+      <threatpattern xmi:id="_fF0JgWlpEfCOr57errktoQ" name="Repudiation P --> P" description="&lt;$location$> claims not to have called and/or sent data to &lt;$recipient$>.">
+        <patterns>pattern repudiationSenderPtoP(location : DFDElement, recipient : DFDElement, df : DataFlow) {&#xD;
+  find processToProcessComm(location, recipient, df);&#xD;
+}</patterns>
+      </threatpattern>
+      <threatpattern xmi:id="_4TGbgWuREfCBBqd5WnJmTw" name="Repudiation P --> DS" description="&lt;$location$> claims not to have written to &lt;$recipient$>.">
+        <patterns>pattern repudiationSenderPtoDS(location : DFDElement, recipient : DFDElement, df : DataFlow) {&#xD;
+  find processToDataStoreComm(location, recipient, df);&#xD;
+}</patterns>
+      </threatpattern>
+      <threatpattern xmi:id="_fF0JhWlpEfCOr57errktoQ" name="Repudiation P &lt;-- P" description="&lt;$location$> claims not to have been called by and/or received data from &lt;$sender$>.">
+        <patterns>pattern repudiationRecipientPtoP(location : DFDElement, sender : DFDElement, df : DataFlow) {&#xD;
+  find processToProcessComm(sender, location, df);&#xD;
+}</patterns>
+      </threatpattern>
+      <threatpattern xmi:id="_S3DQwWuREfCBBqd5WnJmTw" name="Repudiation EE --> P" description="&lt;$location$> claims not to have called and/or sent data to &lt;$recipient$>.">
+        <patterns>pattern repudiationSenderEtoP(location : DFDElement, recipient : DFDElement, df : DataFlow) {&#xD;
+  find externalEntityToProcessComm(location, recipient, df);&#xD;
+}</patterns>
+      </threatpattern>
+      <threatpattern xmi:id="_S3DQw2uREfCBBqd5WnJmTw" name="Repudiation EE &lt;-- P" description="&lt;$location$> claims not to have received data from &lt;$sender$>.">
+        <patterns>pattern repudiationRecipientPtoE(location : DFDElement, sender : DFDElement, df : DataFlow) {&#xD;
+  find processToExternalEntityComm(sender, location, df);&#xD;
+}</patterns>
+      </threatpattern>
+    </subThreatTypes>
+  </threat>
+  <threat xsi:type="spartamodel:ThreatTypeGroup" xmi:id="_sPNWYGuSEfCBBqd5WnJmTw" name="Information Disclosure" id="stride.informationdisclosure">
+    <subThreatTypes xsi:type="spartamodel:ThreatType" xmi:id="_A9tlwGuTEfCBBqd5WnJmTw" name="&lt;$location$> discloses information">
+      <threatpattern xmi:id="_A9tlwWuTEfCBBqd5WnJmTw" name="Information Disclosure P --> DS" description="&lt;$location$> writes information to &lt;$recipient$> which should not be in &lt;$recipient$>.">
+        <patterns>pattern infdiscSenderPtoDS(location : DFDElement, recipient : DFDElement, df : DataFlow) {&#xD;
+  find processToDataStoreComm(location, recipient, df);&#xD;
+}</patterns>
+      </threatpattern>
+      <threatpattern xmi:id="_A9tlw2uTEfCBBqd5WnJmTw" name="Information Disclosure P --> P" description="&lt;$location$> sends data to &lt;$recipient$> which &lt;$recipient$> is not authorized to receive.">
+        <patterns>pattern infdiscSenderPtoP(location : DFDElement, recipient : DFDElement, df : DataFlow) {&#xD;
+  find processToProcessComm(location, recipient, df);&#xD;
+}</patterns>
+      </threatpattern>
+      <threatpattern xmi:id="_A9tlxWuTEfCBBqd5WnJmTw" name="Information Disclosure P --> EE" description="&lt;$location$> sends data to &lt;$recipient$> which &lt;$recipient$> is not authorized to receive.">
+        <patterns>pattern infdiscSenderPtoE(location : DFDElement, recipient : DFDElement, df : DataFlow) {&#xD;
+  find processToExternalEntityComm(location, recipient, df);&#xD;
+}</patterns>
+      </threatpattern>
+      <threatpattern xmi:id="_ftshIWuTEfCBBqd5WnJmTw" name="Data flow information disclosure" description="The contents of &lt;$location$> are sniffed.">
+        <patterns>pattern infdiscDataFlow(location : DFDElement, df : DataFlow, sender: DFDElement, recipient: DFDElement) {&#xD;
+  location == df;&#xD;
+  DataFlow.sender(df,sender);&#xD;
+  DataFlow.recipient(df,recipient);&#xD;
+  find containerDiff(sender,recipient);&#xD;
+}</patterns>
+      </threatpattern>
+      <threatpattern xmi:id="_55ii8WuTEfCBBqd5WnJmTw" name="Information Disclosure DS --> P" description="&lt;$location$> discloses information.">
+        <patterns>pattern infdiscSenderDStoP(location : DFDElement, recipient : DFDElement, df : DataFlow) {&#xD;
+  find dataStoreToProcessComm(location, recipient, df);&#xD;
+}</patterns>
+      </threatpattern>
+      <threatpattern xmi:id="_55ii82uTEfCBBqd5WnJmTw" name="Information Disclosure DS &lt;-- P" description="&lt;$location$> discloses information.">
+        <patterns>pattern infdiscRecipientPtoDS(location : DFDElement, sender : DFDElement, df : DataFlow) {&#xD;
+  find processToDataStoreComm(sender, location, df);&#xD;
+}</patterns>
+      </threatpattern>
+      <threatpattern xmi:id="_8Q3KMWuUEfCBBqd5WnJmTw" name="Information Disclosure EE --> P" description="&lt;$location$> discloses information.">
+        <patterns>pattern infdiscSenderEtoP(location : DFDElement, recipient : DFDElement, df : DataFlow) {&#xD;
+  find externalEntityToProcessComm(location, recipient, df);&#xD;
+}</patterns>
+      </threatpattern>
+    </subThreatTypes>
+  </threat>
+  <threat xsi:type="spartamodel:ThreatTypeGroup" xmi:id="_UTOXAGuVEfCBBqd5WnJmTw" name="Denial of Service" id="stride.denialofservice">
+    <subThreatTypes xsi:type="spartamodel:ThreatType" xmi:id="_hImG8GuVEfCBBqd5WnJmTw" name="&lt;$location$> disrupted">
+      <threatpattern xmi:id="_hImG8WuVEfCBBqd5WnJmTw" name="DoS P --> P" description="Synchronous calls may disrupt &lt;$location$>.">
+        <patterns>pattern dosSenderPtoP(location : DFDElement, recipient : DFDElement, df : DataFlow) {&#xD;
+  find processToProcessComm(location, recipient, df);&#xD;
+}</patterns>
+      </threatpattern>
+      <threatpattern xmi:id="_hImG82uVEfCBBqd5WnJmTw" name="DoS P --> EE" description="Synchronous calls may disrupt &lt;$location$>.">
+        <patterns>pattern dosSenderPtoE(location : DFDElement, recipient : DFDElement, df : DataFlow) {&#xD;
+  find processToExternalEntityComm(location, recipient, df);&#xD;
+}</patterns>
+      </threatpattern>
+      <threatpattern xmi:id="_-QOkcWuVEfCBBqd5WnJmTw" name="DoS P &lt;-- DS" description="&lt;$location$> state is corrupted by the data retrieved from &lt;$sender$>.">
+        <patterns>pattern dosRecipientDStoP(location : DFDElement, sender : DFDElement, df : DataFlow) {&#xD;
+  find dataStoreToProcessComm(sender, location, df);&#xD;
+}</patterns>
+      </threatpattern>
+      <threatpattern xmi:id="_-QOkc2uVEfCBBqd5WnJmTw" name="DoS P &lt;-- P" description="&lt;$location$> crashes or stops due to the interaction with &lt;$sender$>.">
+        <patterns>pattern dosRecipientPtoP(location : DFDElement, sender : DFDElement, df : DataFlow) {&#xD;
+  find processToProcessComm(sender, location, df);&#xD;
+}</patterns>
+      </threatpattern>
+      <threatpattern xmi:id="_-QOkdWuVEfCBBqd5WnJmTw" name="DoS P &lt;-- EE" description="&lt;$location$> crashes or stops due to the interaction with &lt;$sender$>.">
+        <patterns>pattern dosRecipientEEtoP(location : DFDElement, sender : DFDElement, df : DataFlow) {&#xD;
+  find externalEntityToProcessComm(sender, location, df);&#xD;
+}</patterns>
+      </threatpattern>
+      <threatpattern xmi:id="_XD8VsWuWEfCBBqd5WnJmTw" name="Data flow DoS" description="&lt;$location$> is interrupted by a malicous entity (e.g., messing with TCP sequence numbers).">
+        <patterns>pattern dosDataFlow(location : DFDElement, df : DataFlow, sender: DFDElement, recipient: DFDElement) {&#xD;
+  location == df;&#xD;
+  DataFlow.sender(df,sender);&#xD;
+  DataFlow.recipient(df,recipient);&#xD;
+  find containerDiff(sender,recipient);&#xD;
+}</patterns>
+      </threatpattern>
+      <threatpattern xmi:id="_8rJnkWuWEfCBBqd5WnJmTw" name="DoS DS --> P" description="&lt;$location$> cannot be read from.">
+        <patterns>pattern dosSenderDStoP(location : DFDElement, recipient : DFDElement, df : DataFlow) {&#xD;
+  find dataStoreToProcessComm(location, recipient, df);&#xD;
+}</patterns>
+      </threatpattern>
+      <threatpattern xmi:id="_8rJnk2uWEfCBBqd5WnJmTw" name="DoS DS &lt;-- P" description="&lt;$location$> cannot be written to.">
+        <patterns>pattern dosRecipientPtoDS(location : DFDElement, sender : DFDElement, df : DataFlow) {&#xD;
+  find processToDataStoreComm(sender, location, df);&#xD;
+}</patterns>
+      </threatpattern>
+    </subThreatTypes>
+  </threat>
+  <threattypegroup xmi:id="_O9UXYGuXEfCBBqd5WnJmTw" name="Elevation of Privilege" id="stride.elevationofprivilege">
+    <subThreatTypes xsi:type="spartamodel:ThreatType" xmi:id="_SoK4gGuXEfCBBqd5WnJmTw" name="&lt;$location$> elevates privileges">
+      <threatpattern xmi:id="_SoK4gWuXEfCBBqd5WnJmTw" name="EoP P --> P" description="&lt;$location$> can impersonate another process and use its privileges.">
+        <patterns>pattern eopSenderPtoP(location : DFDElement, recipient : DFDElement, df : DataFlow) {&#xD;
+  find processToProcessComm(location, recipient, df);&#xD;
+}</patterns>
+      </threatpattern>
+    </subThreatTypes>
+    <subThreatTypes xsi:type="spartamodel:ThreatType" xmi:id="_XtaUAGuXEfCBBqd5WnJmTw" name="&lt;$location$> execution flow altered">
+      <threatpattern xmi:id="_XtaUAWuXEfCBBqd5WnJmTw" name="EoP P &lt;-- DS" description="&lt;$location$> internal state is corrupted based on data read from &lt;$sender$>, leading to code execution.">
+        <patterns>pattern eopRecipientDStoP(location : DFDElement, sender : DFDElement, df : DataFlow) {&#xD;
+  find dataStoreToProcessComm(sender, location, df);&#xD;
+}</patterns>
+      </threatpattern>
+      <threatpattern xmi:id="_XtaUA2uXEfCBBqd5WnJmTw" name="EoP P &lt;-- P" description="&lt;$sender$> passes data or args that allow it to change the execution flow of &lt;$location$>.">
+        <patterns>pattern eopRecipientPtoP(location : DFDElement, sender : DFDElement, df : DataFlow) {&#xD;
+  find processToProcessComm(sender, location, df);&#xD;
+}</patterns>
+      </threatpattern>
+      <threatpattern xmi:id="_XtaUBWuXEfCBBqd5WnJmTw" name="EoP P &lt;-- EE" description="&lt;$sender$> passes data or args that allow it to change the execution flow of &lt;$location$>.">
+        <patterns>pattern eopRecipientEEtoP(location : DFDElement, sender : DFDElement, df : DataFlow) {&#xD;
+  find externalEntityToProcessComm(sender, location, df);&#xD;
+}</patterns>
+      </threatpattern>
+    </subThreatTypes>
+  </threattypegroup>
+  <imports>import &quot;http://distrinet.cs.kuleuven.be/spartamodel&quot;</imports>
+  <imports>import &quot;http://www.eclipse.org/emf/2002/Ecore&quot;</imports>
+  <helperPatterns>pattern senderSpecification(spec : SenderSpecifiable, specifiedBy : SenderSpecification) {&#xD;
+   SenderSpecifiable.senderSpecifiedBy(spec, specifiedBy);&#xD;
+}</helperPatterns>
+  <helperPatterns>pattern recipientSpecification(spec : RecipientSpecifiable, specifiedBy : RecipientSpecification) {&#xD;
+   RecipientSpecifiable.recipientSpecifiedBy(spec, specifiedBy);&#xD;
+}</helperPatterns>
+  <helperPatterns>pattern actualRecipient(spec : RecipientSpecifiable, recipient : DataFlowEntity) {&#xD;
+  neg find recipientSpecification(spec, _);&#xD;
+  RecipientSpecifiable.recipient(spec, recipient);&#xD;
+} or {&#xD;
+  RecipientSpecifiable.recipientSpecifiedBy(spec, next);&#xD;
+  find actualRecipient(next, recipient);&#xD;
+}</helperPatterns>
+  <helperPatterns>pattern actualSender(spec : SenderSpecifiable, sender : DataFlowEntity) {&#xD;
+  neg find senderSpecification(spec, _);&#xD;
+  SenderSpecifiable.sender(spec, sender);&#xD;
+} or {&#xD;
+  SenderSpecifiable.senderSpecifiedBy(spec, next);&#xD;
+  find actualSender(next, sender);&#xD;
+}</helperPatterns>
+  <helperPatterns>pattern flowComm(location : DataFlow, p : DataFlowEntity, p2 : DataFlowEntity) { &#xD;
+	DataFlow(location);DataFlowEntity(p);DataFlowEntity(p2);&#xD;
+	find Communication(p,location,p2);&#xD;
+} </helperPatterns>
+  <helperPatterns>pattern processToProcessComm(location : Process, p2 : Process, df : DataFlow) {&#xD;
+	Process(location);	Process(p2);	DataFlow(df);&#xD;
+	find Communication(location,df,p2);&#xD;
+}</helperPatterns>
+  <helperPatterns>pattern processToExternalEntityComm(location : Process, p2 : ExternalEntity, df : DataFlow) {&#xD;
+	Process(location); ExternalEntity(p2); DataFlow(df);&#xD;
+	find Communication(location,df,p2);&#xD;
+}</helperPatterns>
+  <helperPatterns>pattern processToDataStoreComm(location : Process, p2 : DataStore, df : DataFlow) {&#xD;
+	Process(location); DataStore(p2); DataFlow(df);&#xD;
+	find Communication(location,df,p2);&#xD;
+}</helperPatterns>
+  <helperPatterns>pattern dataStoreToProcessComm(location : DataStore, p2 : Process, df : DataFlow) {&#xD;
+	DataStore(location); Process(p2); DataFlow(df);&#xD;
+	find Communication(location,df,p2);&#xD;
+}</helperPatterns>
+  <helperPatterns>pattern dataStoreToDataStoreComm(location : DataStore, p2 : DataStore, df : DataFlow) {&#xD;
+	DataStore(location); DataStore(p2); DataFlow(df);&#xD;
+	find Communication(location,df,p2);&#xD;
+}</helperPatterns>
+  <helperPatterns>pattern dataStoreToExternalEntityComm(location : DataStore, p2 : ExternalEntity, df : DataFlow) {&#xD;
+	DataStore(location); ExternalEntity(p2); DataFlow(df);&#xD;
+	find Communication(location,df,p2);&#xD;
+}</helperPatterns>
+  <helperPatterns>pattern externalEntityToProcessComm(location : ExternalEntity, p2 : Process, df : DataFlow) {&#xD;
+	ExternalEntity(location); Process(p2); DataFlow(df);&#xD;
+	find Communication(location,df,p2);&#xD;
+}</helperPatterns>
+  <helperPatterns>pattern externalEntityToDataStoreComm(location : ExternalEntity, p2 : DataStore, df : DataFlow) {&#xD;
+	ExternalEntity(location); DataStore(p2); DataFlow(df);	&#xD;
+	find Communication(location,df,p2);&#xD;
+}</helperPatterns>
+  <helperPatterns>pattern externalEntityToExternalEntityComm(location : ExternalEntity, p2 : ExternalEntity, df : DataFlow) {&#xD;
+	ExternalEntity(location); ExternalEntity(p2); DataFlow(df);	&#xD;
+	find Communication(location,df,p2);&#xD;
+}</helperPatterns>
+  <helperPatterns>pattern flowThroughComm(location : DataFlow, p : DataFlowEntity, p2 : DataFlowEntity) {&#xD;
+	DataFlow(location);DataFlowEntity(p);DataFlowEntity(p2);&#xD;
+	find Communication(p,location,p2);&#xD;
+	find containerDiff(p,p2);&#xD;
+} </helperPatterns>
+  <helperPatterns>pattern processThroughProcessComm(location : Process, p2 : Process, df : DataFlow) {&#xD;
+	Process(location);	Process(p2);	DataFlow(df);&#xD;
+	find Communication(location,df,p2);&#xD;
+	find containerDiff(location,p2);&#xD;
+}</helperPatterns>
+  <helperPatterns>pattern processThroughExternalEntityComm(location : Process, p2 : ExternalEntity, df : DataFlow) {&#xD;
+	Process(location); ExternalEntity(p2); DataFlow(df);	&#xD;
+	find Communication(location,df,p2);&#xD;
+	find containerDiff(location,p2);&#xD;
+}</helperPatterns>
+  <helperPatterns>pattern processThroughDataStoreComm(location : Process, p2 : DataStore, df : DataFlow) {&#xD;
+	Process(location); DataStore(p2); DataFlow(df);&#xD;
+	find Communication(location,df,p2);&#xD;
+	find containerDiff(location,p2);&#xD;
+}</helperPatterns>
+  <helperPatterns>pattern dataStoreThroughProcessComm(location : DataStore, p2 : Process, df : DataFlow) { &#xD;
+	DataStore(location); Process(p2); DataFlow(df);&#xD;
+	find Communication(location,df,p2);&#xD;
+	find containerDiff(location,p2);&#xD;
+}</helperPatterns>
+  <helperPatterns>pattern dataStoreThroughDataStoreComm(location : DataStore, p2 : DataStore, df : DataFlow) {&#xD;
+	DataStore(location); DataStore(p2); DataFlow(df);&#xD;
+	find Communication(location,df,p2);&#xD;
+	find containerDiff(location,p2);&#xD;
+}</helperPatterns>
+  <helperPatterns>pattern dataStoreThroughExternalEntityComm(location : DataStore, p2 : ExternalEntity, df : DataFlow) {&#xD;
+	DataStore(location); ExternalEntity(p2); DataFlow(df);&#xD;
+	find Communication(location,df,p2);&#xD;
+	find containerDiff(location,p2);&#xD;
+}</helperPatterns>
+  <helperPatterns>pattern externalEntityThroughProcessComm(location : ExternalEntity, p2 : Process, df : DataFlow) {&#xD;
+	ExternalEntity(location); Process(p2); DataFlow(df);&#xD;
+	find Communication(location,df,p2);&#xD;
+	find containerDiff(location,p2);&#xD;
+}</helperPatterns>
+  <helperPatterns>pattern externalEntityThroughDataStoreComm(location : ExternalEntity, p2 : DataStore, df : DataFlow) {&#xD;
+	ExternalEntity(location); DataStore(p2); DataFlow(df);&#xD;
+	find Communication(location,df,p2);&#xD;
+	find containerDiff(location,p2);&#xD;
+}</helperPatterns>
+  <helperPatterns>pattern externalEntityThroughExternalEntityComm(location : ExternalEntity, p2 : ExternalEntity, df : DataFlow) {&#xD;
+	ExternalEntity(location); ExternalEntity(p2); DataFlow(df);&#xD;
+	find Communication(location,df,p2);&#xD;
+	find containerDiff(location,p2);&#xD;
+}</helperPatterns>
+  <helperPatterns>pattern flowThroughElementComm(location : DataFlow, p : DataFlowEntity, p2 : DataFlowEntity) {&#xD;
+	Process(p);&#xD;
+	Process(p2);&#xD;
+	find Communication(p,location,p2);&#xD;
+	find containerDiff(p,p2);&#xD;
+} or {&#xD;
+	Process(p);&#xD;
+	DataStore(p2);&#xD;
+	find Communication(p,location,p2);&#xD;
+	find containerDiff(p,p2);&#xD;
+} or {&#xD;
+	ExternalEntity(p);&#xD;
+	Process(p2);&#xD;
+	find Communication(p,location,p2);&#xD;
+	find containerDiff(p,p2);&#xD;
+}</helperPatterns>
+  <helperPatterns>pattern containerDiff(sender: DataFlowEntity, recipient : DataFlowEntity) {&#xD;
+	DataFlowEntity(sender); DataFlowEntity(recipient);&#xD;
+	find Communication(sender, _df, recipient);&#xD;
+	TrustBoundaryContainer(contain);&#xD;
+	find contains(contain,sender);&#xD;
+	neg find contains(contain,recipient);&#xD;
+} or {&#xD;
+	DataFlowEntity(sender); DataFlowEntity(recipient);&#xD;
+	find Communication(sender, _df2, recipient);&#xD;
+	TrustBoundaryContainer(contain);&#xD;
+	find contains(contain,recipient);&#xD;
+	neg find contains(contain,sender);&#xD;
+}</helperPatterns>
+  <helperPatterns>pattern contains(outer : DFDContainer, inner : DFDContainer) {&#xD;
+	DFDContainer(outer);&#xD;
+	find containment+(outer,inner);&#xD;
+}</helperPatterns>
+  <helperPatterns>pattern containment(outer : DFDContainer, inner : DFDContainer) {&#xD;
+	DFDContainer.containedElements(outer, inner);&#xD;
+} or {&#xD;
+	DFDElement(inner);&#xD;
+	outer == inner;&#xD;
+}</helperPatterns>
+  <helperPatterns>pattern sendSpecReachable(spec: SenderSpecifiable, next: SenderSpecifiable) {&#xD;
+	SenderSpecification(spec);&#xD;
+	SenderSpecification.specifiesSenderOf(spec, next);&#xD;
+} or {&#xD;
+	DataFlow(spec);&#xD;
+	spec == next;&#xD;
+}</helperPatterns>
+  <helperPatterns>pattern receiveSpecReachable(spec: RecipientSpecifiable, next: RecipientSpecifiable) {&#xD;
+	RecipientSpecification(spec);&#xD;
+	RecipientSpecification.specifiesRecipientOf(spec, next);&#xD;
+} or {&#xD;
+	DataFlow(spec);&#xD;
+	spec == next;&#xD;
+}</helperPatterns>
+  <helperPatterns>pattern Communication(&#xD;
+	sender : DataFlowEntity, &#xD;
+	flow: DataFlow, &#xD;
+	recipient : DataFlowEntity&#xD;
+) {&#xD;
+	find actualSender(flow, sender);&#xD;
+        find actualRecipient(flow, recipient);&#xD;
+}</helperPatterns>
+</spartamodel:ThreatTypeCatalog>

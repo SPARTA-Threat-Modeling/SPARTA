@@ -8,22 +8,15 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 /**
- * 
+ *
  */
 package be.kuleuven.cs.distrinet.sparta.cli.ci;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,6 +35,8 @@ import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.yaml.snakeyaml.DumperOptions;
+import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.representer.Representer;
@@ -49,7 +44,9 @@ import org.yaml.snakeyaml.representer.Representer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import be.kuleuven.cs.distrinet.sparta.cli.PathResolver;
 import be.kuleuven.cs.distrinet.sparta.cli.SpartaCliProcessor;
+import be.kuleuven.cs.distrinet.sparta.cli.SpartaServerClient;
 import be.kuleuven.cs.distrinet.sparta.core.model.IInteractionThreat;
 import be.kuleuven.cs.distrinet.sparta.core.model.Threat;
 import be.kuleuven.cs.distrinet.sparta.io.convert.YmlToEmfConverter;
@@ -63,7 +60,12 @@ import be.kuleuven.cs.distrinet.sparta.spartamodel.util.SpartaModelResourceFacto
  * Simple class to run sparta in a CI context. This processes a .sparta.yml file
  * to determine which model to load and to which CTAM server to send the
  * analysis results.
- * 
+ *
+ * <p>The flow is split into {@link #readConfig(File)} (parse {@code .sparta.yml} + resolve the
+ * git commit), {@link #analyze(CiConfiguration)} (load the model, run the analysis and
+ * serialize the result), and the server submission. {@code main} orchestrates them and owns
+ * the process exit codes, which keeps the analysis pipeline testable without a live server.
+ *
  * @author Laurens
  *
  */
@@ -80,7 +82,7 @@ public class SpartaCi {
 	public static class AnalysisResults {
 		/**
 		 * Create a new AnalysisResults object with the specified list of threats and the specified model.
-		 * 
+		 *
 		 * @param threatList the list of threats.
 		 * @param model the model xmi as text
 		 */
@@ -103,138 +105,153 @@ public class SpartaCi {
 
 	}
 
-	
+
 	/**
 	 * Run SPARTA in a CI context.
 	 * @param args command line arguments; SpartaCI currently does not have any cli args.
 	 */
 	public static void main(String[] args) {
-
 		logger.info("Reading SPARTA yml config");
 		File wd = new File(System.getProperty("user.dir"));
 
-		Representer representer = new Representer();
-		representer.getPropertyUtils().setSkipMissingProperties(true);
-		Yaml yaml = new Yaml(new Constructor(CiConfiguration.class), representer);
-		File yml = new File(wd, YML_CONF_FILE);
+		CiConfiguration conf;
 		try {
-			CiConfiguration conf = yaml.load(new FileInputStream(yml));
-
-			logger.info("Input model: {}", conf.getInput().getModel());
-			logger.info("Submitting to server: {}", conf.getServer().getUrl());
-
-			FileRepositoryBuilder repositoryBuilder = new FileRepositoryBuilder();
-			repositoryBuilder.readEnvironment().findGitDir(yml);
-
-			if (repositoryBuilder.getGitDir() != null) {
-				logger.info("Found git repository: {}", repositoryBuilder.getGitDir());
-				Repository repository;
-				try {
-					repository = repositoryBuilder.build();
-					ObjectId head = repository.resolve("HEAD");
-					if (head != null) {
-						conf.setOverrideCommit(head.getName());
-						logger.info("Found commit: {}", head.getName());
-					}
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-
-			}
-
-			String model = conf.getInput().getModel();
-			if (model.endsWith("txt")) {
-				try {
-					new YmlToEmfConverter(model);
-					model = "dfd.securitydfd";
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-
-			SpartaCliProcessor.setupEMFStandalone();
-			SpartaCliProcessor.setupVIATRAStandalone();
-
-			List<Threat> results;
-			results = SpartaCliProcessor.runThreatAnalysis(model);
-
-			ResourceSet modelRes = SpartaCliProcessor.loadModel(model);
-			EcoreUtil.resolveAll(modelRes);
-			DFDModel dfdModel = modelRes
-					.getResource(URI.createFileURI(System.getProperty("user.dir") + "/" + model), false).getContents()
-					.stream().filter(DFDModel.class::isInstance).map(DFDModel.class::cast).findAny().orElse(null);
-
-//
-			ResourceSet newRes = new ResourceSetImpl();
-			newRes.getResourceFactoryRegistry().getExtensionToFactoryMap().put("sparta",
-					new SpartaModelResourceFactoryImpl());
-			Resource res = newRes.createResource(URI.createURI("tmp.sparta"));
-			dfdModel.getContainedElements()
-					.addAll(modelRes.getResources().stream().flatMap(r -> r.getContents().stream())
-							.filter(el -> !dfdModel.equals(el)).filter(SpartaResource.class::isInstance)
-							.map(SpartaResource.class::cast).collect(Collectors.toList()));
-			List<ThreatSpecification> specs = new ArrayList<>();
-			List<ThreatType> types = new ArrayList<>();
-			dfdModel.eAllContents().forEachRemaining(o -> {
-				if (o instanceof ThreatSpecification) {
-					specs.add((ThreatSpecification) o);
-				}
-				if (o instanceof ThreatType) {
-					types.add((ThreatType) o);
-				}
-			});
-			specs.stream().forEach(s -> {
-				s.getPatterns().clear();
-				s.getTypes().clear();
-			});
-			types.stream().forEach(t -> t.getPatterns().clear());
-			res.getContents().add(dfdModel);
-			String out = "";
-			try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-				Map opts = new HashMap();
-				opts.put(XMIResource.OPTION_ENCODING, "UTF-8");
-				res.save(baos, opts);
-				out = baos.toString(StandardCharsets.UTF_8);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-
-			try {
-				URL url = new URL(conf.getServer().getUrl());
-				HttpURLConnection con = (HttpURLConnection) url.openConnection();
-				con.setRequestMethod("POST");
-				con.setRequestProperty("Content-Type", "application/json; utf-8");
-				con.setRequestProperty("token", conf.getServer().getToken());
-				con.setRequestProperty("commitId", conf.getOverrideCommit());
-				con.setDoOutput(true);
-
-				try (OutputStream os = con.getOutputStream();
-						BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os))) {
-					ObjectMapper mapper = new ObjectMapper();
-					mapper.writer().writeValue(bw, new AnalysisResults(
-							results.stream().map(IInteractionThreat.class::cast).collect(Collectors.toList()), out));
-
-				} catch (IOException e1) {
-					logger.error("Error writing json: {}", e1.getMessage());
-					e1.printStackTrace();
-				}
-				try (BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), "utf-8"))) {
-					StringBuilder response = new StringBuilder();
-					String responseLine = null;
-					while ((responseLine = br.readLine()) != null) {
-						response.append(responseLine.trim());
-					}
-					logger.info(response.toString());
-				}
-
-			} catch (IOException eI) {
-				eI.printStackTrace();
-				logger.error("IOError submitting to SPARTA Server: ", eI.getMessage());
-			}
-			logger.info("SPARTA Server submission finished.");
-
+			conf = readConfig(wd);
 		} catch (FileNotFoundException e) {
 			logger.error("Did not find SPARTA ci configuration.");
+			System.exit(1);
+			return;
 		}
+
+		AnalysisResults results = analyze(conf);
+		if (results == null) {
+			System.exit(1);
+			return;
+		}
+
+		// Submit via the shared client (same implementation the CLI exporter uses).
+		boolean ok = SpartaServerClient.submit(
+				conf.getServer().getUrl(),
+				conf.getServer().getToken(),
+				conf.getOverrideCommit(),
+				writer -> new ObjectMapper().writer().writeValue(writer, results));
+		if (!ok) {
+			System.exit(1);
+		}
+	}
+
+	/**
+	 * Parse the {@code .sparta.yml} configuration from {@code workingDir} and, if the file
+	 * sits inside a git repository, resolve the current HEAD commit onto the configuration.
+	 *
+	 * @param workingDir the directory containing the {@code .sparta.yml} file.
+	 * @return the parsed configuration.
+	 * @throws FileNotFoundException if there is no {@code .sparta.yml} in {@code workingDir}.
+	 */
+	public static CiConfiguration readConfig(File workingDir) throws FileNotFoundException {
+		Representer representer = new Representer(new DumperOptions());
+		representer.getPropertyUtils().setSkipMissingProperties(true);
+		Yaml yaml = new Yaml(new Constructor(CiConfiguration.class, new LoaderOptions()), representer);
+		File yml = new File(workingDir, YML_CONF_FILE);
+		CiConfiguration conf = yaml.load(new FileInputStream(yml));
+
+		logger.info("Input model: {}", conf.getInput().getModel());
+		logger.info("Submitting to server: {}", conf.getServer().getUrl());
+
+		FileRepositoryBuilder repositoryBuilder = new FileRepositoryBuilder();
+		repositoryBuilder.readEnvironment().findGitDir(yml);
+		if (repositoryBuilder.getGitDir() != null) {
+			logger.info("Found git repository: {}", repositoryBuilder.getGitDir());
+			try {
+				Repository repository = repositoryBuilder.build();
+				ObjectId head = repository.resolve("HEAD");
+				if (head != null) {
+					conf.setOverrideCommit(head.getName());
+					logger.info("Found commit: {}", head.getName());
+				}
+			} catch (IOException e) {
+				logger.error("Error reading git repository: {}", e.getMessage(), e);
+			}
+		}
+		return conf;
+	}
+
+	/**
+	 * Load the configured model, run the threat analysis and serialize the (pattern-stripped)
+	 * DFD model, producing the payload that would be submitted to the server. Performs no
+	 * network I/O, so it is safe to run without a CTAM server.
+	 *
+	 * @param conf the CI configuration.
+	 * @return the analysis results (threats + serialized model), or {@code null} if the model
+	 *         could not be converted, contained no {@link DFDModel}, or failed to serialize.
+	 */
+	public static AnalysisResults analyze(CiConfiguration conf) {
+		String model = conf.getInput().getModel();
+		if (model.endsWith("txt")) {
+			try {
+				new YmlToEmfConverter(model);
+				model = "dfd.securitydfd";
+			} catch (IOException e) {
+				logger.error("Error converting model to EMF: {}", e.getMessage(), e);
+				return null;
+			}
+		}
+
+		SpartaCliProcessor.setupEMFStandalone();
+		SpartaCliProcessor.setupVIATRAStandalone();
+
+		// Load the model once and reuse the ResourceSet for both the analysis and the
+		// DFDModel extraction, rather than parsing the model multiple times.
+		ResourceSet modelRes = SpartaCliProcessor.loadModel(model);
+		List<Threat> results = SpartaCliProcessor.runThreatAnalysis(modelRes);
+		EcoreUtil.resolveAll(modelRes);
+		DFDModel dfdModel = modelRes
+				.getResource(PathResolver.toFileURI(System.getProperty("user.dir"), model), false).getContents()
+				.stream().filter(DFDModel.class::isInstance).map(DFDModel.class::cast).findAny().orElse(null);
+
+		if (dfdModel == null) {
+			logger.error("No DFDModel found in model '{}'; aborting.", model);
+			return null;
+		}
+
+		ResourceSet newRes = new ResourceSetImpl();
+		newRes.getResourceFactoryRegistry().getExtensionToFactoryMap().put("sparta",
+				new SpartaModelResourceFactoryImpl());
+		Resource res = newRes.createResource(URI.createURI("tmp.sparta"));
+		dfdModel.getContainedElements()
+				.addAll(modelRes.getResources().stream().flatMap(r -> r.getContents().stream())
+						.filter(el -> !dfdModel.equals(el)).filter(SpartaResource.class::isInstance)
+						.map(SpartaResource.class::cast).collect(Collectors.toList()));
+		List<ThreatSpecification> specs = new ArrayList<>();
+		List<ThreatType> types = new ArrayList<>();
+		dfdModel.eAllContents().forEachRemaining(o -> {
+			if (o instanceof ThreatSpecification) {
+				specs.add((ThreatSpecification) o);
+			}
+			if (o instanceof ThreatType) {
+				types.add((ThreatType) o);
+			}
+		});
+		specs.stream().forEach(s -> {
+			s.getPatterns().clear();
+			s.getTypes().clear();
+		});
+		types.stream().forEach(t -> t.getPatterns().clear());
+		res.getContents().add(dfdModel);
+
+		String out;
+		try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+			Map<Object, Object> opts = new HashMap<>();
+			opts.put(XMIResource.OPTION_ENCODING, "UTF-8");
+			res.save(baos, opts);
+			out = baos.toString(StandardCharsets.UTF_8);
+		} catch (IOException e) {
+			logger.error("Error serializing model: {}", e.getMessage(), e);
+			return null;
+		}
+
+		List<IInteractionThreat> threats = results.stream().map(IInteractionThreat.class::cast)
+				.collect(Collectors.toList());
+		return new AnalysisResults(threats, out);
 	}
 }

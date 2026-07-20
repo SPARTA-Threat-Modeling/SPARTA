@@ -25,7 +25,7 @@ public class About implements GenericCliCmd {
 	private final Option aboutOption;
 	
 	public About() { 
-		aboutOption = new Option("ab","about", false, "About SPARTA");
+		aboutOption = new Option(null, "about", false, "About SPARTA");
 	}
 
 	@Override
@@ -35,7 +35,7 @@ public class About implements GenericCliCmd {
 
 	@Override
 	public void process(CommandLine cmd) {
-		if (!cmd.hasOption(aboutOption.getOpt())) {
+		if (!cmd.hasOption(aboutOption.getLongOpt())) {
 			return;
 		}
 		logger.info("Sparta-cli supports the automated threat analysis emf models from the command line.");

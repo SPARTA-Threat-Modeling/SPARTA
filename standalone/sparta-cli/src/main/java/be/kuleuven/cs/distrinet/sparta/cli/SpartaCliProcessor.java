@@ -14,8 +14,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
-import jakarta.inject.Singleton;
-
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -28,6 +26,8 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.xmi.impl.EcoreResourceFactoryImpl;
+import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
+import org.eclipse.viatra.query.patternlanguage.emf.EMFPatternLanguageStandaloneSetup;
 import org.eclipse.viatra.query.runtime.api.ViatraQueryEngineOptions;
 import org.eclipse.viatra.query.runtime.localsearch.matcher.integration.LocalSearchBackendFactoryProvider;
 import org.eclipse.viatra.query.runtime.localsearch.matcher.integration.LocalSearchEMFBackendFactory;
@@ -37,6 +37,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 import be.kuleuven.cs.distrinet.sparta.cli.cmd.GenericCliCmd;
 import be.kuleuven.cs.distrinet.sparta.cli.cmd.Help;
@@ -67,7 +68,6 @@ public class SpartaCliProcessor implements CliProcessor {
 	private final CommandLineParser parser = new DefaultParser();
 	private final Option optVerbose;
 	private final Option optInput;
-	private final Option optTreeInput;
 
 	/**
 	 * Create a new SpartaCliProcessor.
@@ -85,10 +85,8 @@ public class SpartaCliProcessor implements CliProcessor {
 		exporters.stream().forEach(this::registerExporter);
 		optVerbose = new Option("v", "verbose", false, "Provide verbose output");
 		optInput = new Option("i", "input", true, "Model to analyze");
-		optTreeInput = new Option("it", "inputtree", true, "Threat Tree to process");
 		options.addOption(optVerbose);
 		options.addOption(optInput);
-		options.addOption(optTreeInput);
 	}
 
 	/**
@@ -112,6 +110,11 @@ public class SpartaCliProcessor implements CliProcessor {
 			c.process(cmd);
 		}
 
+		// When help is requested, do not also run the analysis.
+		if (cmd.hasOption("h")) {
+			return;
+		}
+
 		if (cmd.hasOption(optInput.getOpt())) {
 
 			setupEMFStandalone();
@@ -122,8 +125,13 @@ public class SpartaCliProcessor implements CliProcessor {
 			String target = cmd.getOptionValue(optInput.getOpt());
 			results = runThreatAnalysis(target);
 
+			boolean success = true;
 			for (Exporter c : exporters) {
-				c.process(cmd, results);
+				success &= c.process(cmd, results);
+			}
+			if (!success) {
+				logger.error("One or more exports failed.");
+				System.exit(1);
 			}
 		}
 
@@ -135,16 +143,23 @@ public class SpartaCliProcessor implements CliProcessor {
 	 * @return the resulting list of threats
 	 */
 	public static  List<Threat> runThreatAnalysis(String target) {
-		List<Threat> results;
+		return runThreatAnalysis(loadModel(target));
+	}
+
+	/**
+	 * Run a threat analysis on an already-loaded model. Reusing a
+	 * {@link ResourceSet} avoids parsing the same model more than once.
+	 *
+	 * @param resourceSet the resource set containing the loaded model
+	 * @return the resulting list of threats
+	 */
+	public static List<Threat> runThreatAnalysis(ResourceSet resourceSet) {
 		logger.info("Running SPARTA Analysis ...");
+		logger.debug("Cwd: {}", System.getProperty("user.dir"));
 
-
-		logger.debug("Cwd: {}",System.getProperty("user.dir"));
-
-		ResourceSet resourceSet = loadModel(target);
 		Engine e = new Engine(resourceSet);
 
-		results = e.runAnalysis(resourceSet);
+		List<Threat> results = e.runAnalysis(resourceSet);
 
 		results.stream().map(Threat::toString).forEach(t -> logger.debug("Threat: {}", t));
 
@@ -161,7 +176,7 @@ public class SpartaCliProcessor implements CliProcessor {
 	 */
 	public static ResourceSet loadModel(String target) {
 		ResourceSet resourceSet = new ResourceSetImpl();
-		URI fileURI = URI.createFileURI(System.getProperty("user.dir") + "/" + target);
+		URI fileURI = PathResolver.toFileURI(System.getProperty("user.dir"), target);
 		Resource resource = resourceSet.getResource(fileURI, true);
 		try {
 			resource.load(null);
@@ -209,7 +224,11 @@ public class SpartaCliProcessor implements CliProcessor {
 	public static void setupVIATRAStandalone() {
 		// register ecore
 		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("ecore", new EcoreResourceFactoryImpl());
-		ReteBackendFactory.INSTANCE.getClass();
+		// Register the VIATRA pattern-language grammar, its EPackages and .vql resource
+		// factory in the global EMF registry. Outside OSGi this is not done by the plugin
+		// registry, so without it the pattern parser fails to resolve the PatternLanguage
+		// EPackage ("Unresolved proxy ...PatternModel") when PatternProcessor is built.
+		EMFPatternLanguageStandaloneSetup.doSetup();
 		ViatraQueryEngineOptions.setSystemDefaultBackends(ReteBackendFactory.INSTANCE, ReteBackendFactory.INSTANCE, LocalSearchEMFBackendFactory.INSTANCE);
 		logger.info("LS: {}", new LocalSearchBackendFactoryProvider().isSystemDefaultEngine());
 		logger.info("Rete: {}", new ReteBackendFactoryProvider().isSystemDefaultEngine());
@@ -227,6 +246,10 @@ public class SpartaCliProcessor implements CliProcessor {
 		// Register resource factory
 		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("securitydfd", new SpartaModelResourceFactoryImpl());
 		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("sparta", new SpartaModelResourceFactoryImpl());
+		// secondary/generated model extension
+		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("spartamodel", new SpartaModelResourceFactoryImpl());
+		// generic XMI fallback so unknown extensions (e.g. .xmi) still load
+		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().putIfAbsent("*", new XMIResourceFactoryImpl());
 
 	}
 

@@ -15,18 +15,6 @@
 		<cli.main.class>be.kuleuven.cs.distrinet.sparta.cli.ci.SpartaCi</cli.main.class>
 	</properties>
 
-	<repositories>
-		<repository>
-			<id>eclipse</id>
-			<url>https://repo.eclipse.org/content/groups/releases/</url>
-		</repository>
-		<repository>
-			<id>mvn central</id>
-			<url>https://repo1.maven.org/maven2/</url>
-		</repository>
-	</repositories>
-
-
 	<build>
 		<resources>
 			<resource>
@@ -39,75 +27,16 @@
 			</resource>
 		</resources>
 		<plugins>
-			<!-- <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-dependency-plugin</artifactId> 
-				<executions> <execution> <id>copy-dependencies</id> <phase>prepare-package</phase> 
-				<goals> <goal>copy-dependencies</goal> </goals> <configuration> <outputDirectory>${project.build.directory}/lib</outputDirectory> 
-				<overWriteReleases>false</overWriteReleases> <overWriteSnapshots>false</overWriteSnapshots> 
-				<overWriteIfNewer>true</overWriteIfNewer> </configuration> </execution> </executions> 
-				</plugin> -->
-			<!-- <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-jar-plugin</artifactId> 
-				<version>3.1.0</version> <configuration> <archive> <manifest> <addClasspath>true</addClasspath> 
-				<classpathPrefix>lib/</classpathPrefix> <mainClass>${cli.main.class}</mainClass> 
-				</manifest> </archive> </configuration> </plugin> -->
-			<!-- <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-assembly-plugin</artifactId> 
-				<version>3.3.0</version> <executions> <execution> <phase>package</phase> 
-				<goals> <goal>single</goal> </goals> <configuration> <archive> <manifest> 
-				<mainClass>${cli.main.class}</mainClass> </manifest> </archive> <descriptorRefs> 
-				<descriptorRef>jar-with-dependencies</descriptorRef> </descriptorRefs> </configuration> 
-				</execution> </executions> </plugin> -->
-			<!-- <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-assembly-plugin</artifactId> 
-				<configuration> <descriptors> <descriptor>assembly.xml</descriptor> </descriptors> 
-				</configuration> <executions> <execution> <id>make-assembly</id> <phase>package</phase> 
-				<goals> <goal>single</goal> </goals> </execution> </executions> </plugin> -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>
-				<version>3.2.4</version>
-				<executions>
-					<execution>
-						<goals>
-							<goal>shade</goal>
-						</goals>
-						<configuration>
-							<shadedArtifactAttached>true</shadedArtifactAttached>
-							<transformers>
-								<transformer
-									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-									<mainClass>${cli.main.class}</mainClass>
-								</transformer>
-							</transformers>
-							<filters>
-								<filter>
-									<!-- filter out signature files from signed dependencies, else repackaging 
-										fails with security ex -->
-									<artifact>*:*</artifact>
-									<excludes>
-										<exclude>META-INF/*.SF</exclude>
-										<exclude>META-INF/*.DSA</exclude>
-										<exclude>META-INF/*.RSA</exclude>
-									</excludes>
-								</filter>
-							</filters>
-						</configuration>
-					</execution>
-				</executions>
+				<!-- config (transformers, service-merge, signature filter) inherited from the standalone parent pom -->
 			</plugin>
 
 		</plugins>
 	</build>
 
-
-
 	<dependencies>
-		<!-- <dependency> <groupId>be.kuleuven.cs.distrinet.sparta</groupId> <artifactId> 
-			be.kuleuven.cs.distrinet.sparta.securitydfd </artifactId> <version>1.0.0-SNAPSHOT</version> 
-			<type>eclipse-plugin</type> </dependency> -->
-		<!-- <dependency> <groupId>org.eclipse.emf</groupId> <artifactId>ecore</artifactId> 
-			<version>2.3.0-v200706262000</version> </dependency> <dependency> <groupId>org.eclipse.emf</groupId> 
-			<artifactId>org.eclipse.emf.common</artifactId> <version>2.21.0</version> 
-			</dependency> <dependency> <groupId>org.eclipse.emf</groupId> <artifactId>org.eclipse.emf.ecore.xmi</artifactId> 
-			<version>2.16.0</version> </dependency> -->
-
 
 		<dependency>
 			<groupId>be.kuleuven.cs.distrinet.sparta</groupId>
@@ -115,24 +44,17 @@
 			<version>${project.version}</version>
 		</dependency>
 
-		<dependency>
-			<groupId>org.yaml</groupId>
-			<artifactId>snakeyaml</artifactId>
-			<version>1.27</version>
-		</dependency>
+		<!-- snakeyaml is provided transitively via sparta-cli -> sparta-io -->
 
 		<dependency>
 			<groupId>org.eclipse.jgit</groupId>
 			<artifactId>org.eclipse.jgit</artifactId>
-			<version>5.10.0.202012080955-r</version>
 		</dependency>
 		
 <!-- 		<dependency>
 			<groupId>org.eclipse.emfcloud</groupId>
 			<artifactId>emfjson-jackson</artifactId>
-			<version>2.1.0</version>
 		</dependency> -->
-
 
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -143,9 +65,13 @@
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-simple</artifactId>
 			<version>${slf4j.version}</version>
+			<scope>runtime</scope>
 		</dependency>
-
-
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
 
 	</dependencies>
 </project>

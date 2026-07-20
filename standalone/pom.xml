@@ -19,6 +19,203 @@
 	</modules>
 	<name>be.kuleuven.cs.distrinet.sparta.standalone</name>
 
+	<!--
+	  Centralized third-party dependency versions for the standalone (plain-Java) builds.
+	  Bumped to current patched releases to clear known advisories in the distributed fat
+	  jars and to match the (newer) binaries the Eclipse plugins are compiled against.
+	  Notably snakeyaml is moved to 2.x: the io plugin is compiled against the 2.x
+	  Constructor(Class, LoaderOptions) API, so the previous 1.27 was a latent runtime
+	  mismatch, not just a CVE.
+	-->
+	<properties>
+		<!--
+		  EMF pinned explicitly instead of via xtext-dev-bom 2.20.0, which forced EMF to
+		  ~2.12 and constrained the whole graph to a 2020 set that conflicts with VIATRA
+		  2.9.1's Xtext 2.35. 2.40.0 is the newest EMF with all needed artifacts on Central,
+		  compatible with Xtext 2.35, and one minor behind the plugins' compile-time 2.42.
+		-->
+		<emf.version>2.40.0</emf.version>
+		<!--
+		  Align org.eclipse.equinox.common to the same Eclipse platform release as the rest of
+		  the org.eclipse.core.runtime-contributing jars (core.runtime 3.34.x etc.) that EMF
+		  2.40 pulls in. Left un-aligned it stayed at the old 3.17.100, which splits the
+		  org.eclipse.core.runtime package across two differently-signed jars and trips a
+		  SecurityException on the (raw, unsigned) test classpath.
+		-->
+		<!-- Must be the exact version core.runtime 3.34.200 was co-released/co-signed with,
+		     so the shared org.eclipse.core.runtime package has one signer. -->
+		<equinox-common.version>3.20.300</equinox-common.version>
+		<commons-math3.version>3.6.1</commons-math3.version>
+		<!-- poi core + poi-ooxml pinned to the same version to avoid a core/ooxml skew. -->
+		<poi.version>5.4.1</poi.version>
+		<commons-io.version>2.16.1</commons-io.version>
+		<jackson.version>2.17.1</jackson.version>
+		<snakeyaml.version>2.2</snakeyaml.version>
+		<commons-cli.version>1.8.0</commons-cli.version>
+		<guice.version>7.0.0</guice.version>
+		<jgit.version>6.10.0.202406032230-r</jgit.version>
+		<emfjson-jackson.version>2.1.0</emfjson-jackson.version>
+		<!-- Matches the log4j-api that POI 5.x pulls transitively; the log4j-to-slf4j bridge
+		     routes POI's log4j2 logging to slf4j (bound by slf4j-simple), so the plain-Java
+		     runtime no longer prints "Log4j API could not find a logging provider". -->
+		<log4j.version>2.24.3</log4j.version>
+		<junit.version>4.13.2</junit.version>
+	</properties>
+
+	<dependencyManagement>
+		<dependencies>
+			<!-- EMF: replaces the xtext-dev-bom import that used to version these. -->
+			<dependency>
+				<groupId>org.eclipse.emf</groupId>
+				<artifactId>org.eclipse.emf.common</artifactId>
+				<version>${emf.version}</version>
+			</dependency>
+			<!-- Keep equinox.common on the same platform release as the transitively-pulled
+			     org.eclipse.core.runtime so the shared package has one consistent signer. -->
+			<dependency>
+				<groupId>org.eclipse.platform</groupId>
+				<artifactId>org.eclipse.equinox.common</artifactId>
+				<version>${equinox-common.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.emf</groupId>
+				<artifactId>org.eclipse.emf.ecore</artifactId>
+				<version>${emf.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.emf</groupId>
+				<artifactId>org.eclipse.emf.ecore.xmi</artifactId>
+				<version>${emf.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-math3</artifactId>
+				<version>${commons-math3.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.poi</groupId>
+				<artifactId>poi-ooxml</artifactId>
+				<version>${poi.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.poi</groupId>
+				<artifactId>poi</artifactId>
+				<version>${poi.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>commons-io</groupId>
+				<artifactId>commons-io</artifactId>
+				<version>${commons-io.version}</version>
+			</dependency>
+			<!-- Keep the whole jackson stack on one version so transitive core/annotations
+			     cannot drift from databind. -->
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-databind</artifactId>
+				<version>${jackson.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-core</artifactId>
+				<version>${jackson.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-annotations</artifactId>
+				<version>${jackson.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.yaml</groupId>
+				<artifactId>snakeyaml</artifactId>
+				<version>${snakeyaml.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>commons-cli</groupId>
+				<artifactId>commons-cli</artifactId>
+				<version>${commons-cli.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.google.inject</groupId>
+				<artifactId>guice</artifactId>
+				<version>${guice.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.jgit</groupId>
+				<artifactId>org.eclipse.jgit</artifactId>
+				<version>${jgit.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.emfcloud</groupId>
+				<artifactId>emfjson-jackson</artifactId>
+				<version>${emfjson-jackson.version}</version>
+			</dependency>
+			<!-- Keep POI's transitive log4j-api on the same version as the bridge below. -->
+			<dependency>
+				<groupId>org.apache.logging.log4j</groupId>
+				<artifactId>log4j-api</artifactId>
+				<version>${log4j.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.logging.log4j</groupId>
+				<artifactId>log4j-to-slf4j</artifactId>
+				<version>${log4j.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>junit</groupId>
+				<artifactId>junit</artifactId>
+				<version>${junit.version}</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+	<build>
+		<pluginManagement>
+			<plugins>
+				<!--
+				  Shared fat-jar packaging for the CLI/CI apps. Both shade identically:
+				  the Manifest main class from each module's ${cli.main.class}, a
+				  ServicesResourceTransformer that merges META-INF/services provider lists so
+				  EMF/Xtext/VIATRA standalone discovery survives shading, and a filter that
+				  strips signature files from the signed dependencies. Consolidated here so the
+				  config lives in one place instead of being duplicated per module.
+				-->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-shade-plugin</artifactId>
+					<version>3.2.4</version>
+					<executions>
+						<execution>
+							<goals>
+								<goal>shade</goal>
+							</goals>
+							<configuration>
+								<shadedArtifactAttached>true</shadedArtifactAttached>
+								<transformers>
+									<transformer
+										implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+										<mainClass>${cli.main.class}</mainClass>
+									</transformer>
+									<transformer
+										implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
+								</transformers>
+								<filters>
+									<filter>
+										<artifact>*:*</artifact>
+										<excludes>
+											<exclude>META-INF/*.SF</exclude>
+											<exclude>META-INF/*.DSA</exclude>
+											<exclude>META-INF/*.RSA</exclude>
+										</excludes>
+									</filter>
+								</filters>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+
 	<repositories>
 		<repository>
 			<id>eclipse</id>

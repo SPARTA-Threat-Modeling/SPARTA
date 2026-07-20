@@ -129,6 +129,9 @@ public class YmlToEmfConverter {
 
 
 	private void createProcesses(Set<String> processes) {
+		if (processes == null) {
+			return;
+		}
 		for (String proc : processes) {
 			be.kuleuven.cs.distrinet.sparta.spartamodel.Process p = fac.createProcess();
 			p.setName(proc);
@@ -138,6 +141,9 @@ public class YmlToEmfConverter {
 	}
 
 	private void createDataStores(Set<String> datastores) {
+		if (datastores == null) {
+			return;
+		}
 		for (String store : datastores) {
 			DataStore ds = fac.createDataStore();
 			ds.setName(store);
@@ -147,6 +153,9 @@ public class YmlToEmfConverter {
 	}
 
 	private void createExternalEntities(Set<String> externalentities) {
+		if (externalentities == null) {
+			return;
+		}
 		for (String e : externalentities) {
 			ExternalEntity ee = fac.createExternalEntity();
 			ee.setName(e);

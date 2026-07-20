@@ -26,29 +26,30 @@ import org.slf4j.LoggerFactory;
 public class Version implements GenericCliCmd {
 
 	private static final Logger logger = LoggerFactory.getLogger(Version.class);
-	private final Option csvoption;
+	private final Option versionOption;
 	private static final Properties properties = new Properties();
-	
-	public Version() { 
-		csvoption = new Option("ve","version", false, "Show version info");
+
+	public Version() {
+		versionOption = new Option(null, "version", false, "Show version info");
 	}
 
 	@Override
 	public Option[] getOptions() {
-		return new Option[] {csvoption};
+		return new Option[] {versionOption};
 	}
 
 	@Override
 	public void process(CommandLine cmd) {
-		if (!cmd.hasOption(csvoption.getOpt())) {
+		if (!cmd.hasOption(versionOption.getLongOpt())) {
 			return;
 		}
 		try {
 			properties.load(this.getClass().getClassLoader().getResourceAsStream("project.properties"));
-			logger.info("Version: " + properties.getProperty("version"));
+			logger.info("Version: {}", properties.getProperty("version"));
 		} catch (IOException e) {
+			logger.error("Error loading version info: {}", e.getMessage(), e);
 		}
 
-		
+
 	}
 }
