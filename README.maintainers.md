@@ -6,6 +6,29 @@
 mvn org.eclipse.tycho:tycho-versions-plugin:set-version -DnewVersion=major.minor.service.qualifier
 ```
 
+Always use `set-version` (never hand-edit) so every file moves together: the
+poms, all `MANIFEST.MF`, the four `feature.xml`, and the `.product`.
+
+### When to bump
+
+The git tag is the source of truth for a release build — CI runs `set-version`
+from the tag, so the committed version is ignored while building a release.
+Bump the committed version **right after cutting a release**, not before:
+
+1. `main` sits on the current development line (e.g. `2026.2.0`).
+2. Release: push tag `v2026.2.0`. CI builds/publishes `2026.2.0` from the tag;
+   the repo is untouched.
+3. Immediately after: `set-version` to the next line (e.g. `2026.3.0`), commit
+   (`chore: bump to 2026.3.0`), and push.
+
+A pre-release bump would be redundant (CI overrides the version from the tag).
+The post-release bump keeps `main` always pointing at "what we're building
+toward next", and the released version lives immutably in the tag. It also
+matters for local/source builds: `standalone/*` depends on the bundle jars via
+`${project.version}`, so all modules must share one committed version to resolve,
+and bumping promptly stops a local build of `main` from masquerading as the
+just-released version.
+
 ## Updating license headers
 
 To check header files: `mvn license:check`
