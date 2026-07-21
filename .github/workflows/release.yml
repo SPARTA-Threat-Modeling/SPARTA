@@ -88,9 +88,24 @@ jobs:
       # (product + update site) skip the deploy plugin in their poms, so only
       # the bundle jars, features, standalone jars and parent poms are pushed.
       - name: Build, test and deploy library jars to GitHub Packages
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
-          mvn $MAVEN_CLI_OPTS deploy \
-            -DaltDeploymentRepository=github::https://maven.pkg.github.com/${GITHUB_REPOSITORY}
+          set -euo pipefail
+          VERSION="${GITHUB_REF_NAME#v}"
+          # Idempotency: GitHub Packages rejects re-publishing an existing
+          # version, so on a re-run (e.g. after a later step failed) build+test
+          # WITHOUT deploying -- the steps below still need the packaged products
+          # and update-site archive. Probe a late-built module (sparta-core) as
+          # the "already published" signal.
+          probe="https://maven.pkg.github.com/${GITHUB_REPOSITORY}/be/kuleuven/cs/distrinet/sparta/sparta-core/${VERSION}/sparta-core-${VERSION}.pom"
+          if curl -fsSL -o /dev/null -H "Authorization: Bearer ${GH_TOKEN}" "$probe"; then
+            echo "sparta-core ${VERSION} already in GitHub Packages -- building without deploying."
+            mvn $MAVEN_CLI_OPTS verify
+          else
+            mvn $MAVEN_CLI_OPTS deploy \
+              -DaltDeploymentRepository=github::https://maven.pkg.github.com/${GITHUB_REPOSITORY}
+          fi
 
       - name: Publish test report
         uses: dorny/test-reporter@v3
@@ -133,10 +148,18 @@ jobs:
           )
           echo "Attaching ${#assets[@]} asset(s):"
           printf '  %s\n' "${assets[@]}"
-          gh release create "$GITHUB_REF_NAME" \
-            --title "$GITHUB_REF_NAME" \
-            --generate-notes \
-            "${assets[@]}"
+          # Idempotency: if the release already exists (re-run), refresh its
+          # assets instead of failing on create. --clobber overwrites same-named
+          # assets rather than erroring.
+          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
+            echo "Release $GITHUB_REF_NAME already exists -- updating assets."
+            gh release upload "$GITHUB_REF_NAME" --clobber "${assets[@]}"
+          else
+            gh release create "$GITHUB_REF_NAME" \
+              --title "$GITHUB_REF_NAME" \
+              --generate-notes \
+              "${assets[@]}"
+          fi
 
       # Build and commit the COMPOSITE update-site metadata to the gh-pages
       # branch. CI owns the composite: it regenerates compositeContent.xml /
@@ -158,8 +181,11 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           if git ls-remote --exit-code --heads origin gh-pages >/dev/null 2>&1; then
+            # Fetch lands the branch tip in FETCH_HEAD only (no origin/gh-pages
+            # tracking ref on a shallow default-branch clone), so point a local
+            # gh-pages branch at it explicitly rather than `git checkout gh-pages`.
             git fetch --depth 1 origin gh-pages
-            git checkout gh-pages
+            git checkout -B gh-pages FETCH_HEAD
           else
             git checkout --orphan gh-pages
             git rm -rf . >/dev/null 2>&1 || true
