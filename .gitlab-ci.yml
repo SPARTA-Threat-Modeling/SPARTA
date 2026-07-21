@@ -141,7 +141,11 @@ release:
         [ -e "$f" ] || continue
         upload_generic sparta-updatesite "$f"
       done
-      for f in releng/be.kuleuven.cs.distrinet.sparta.product/target/products/*.zip; do
+      # Product archives are per-platform: win32 -> .zip, linux + macOS -> .tar.gz.
+      for f in \
+        releng/be.kuleuven.cs.distrinet.sparta.product/target/products/*.zip \
+        releng/be.kuleuven.cs.distrinet.sparta.product/target/products/*.tar.gz \
+        releng/be.kuleuven.cs.distrinet.sparta.product/target/products/*.tgz; do
         [ -e "$f" ] || continue
         upload_generic sparta-product "$f"
       done

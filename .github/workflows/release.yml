@@ -120,9 +120,15 @@ jobs:
           fi
           cp "${repo_zip[0]}" "sparta-updatesite-${VERSION}.zip"
 
+          # Product archives are per-platform: win32 -> .zip, but linux and
+          # macOS -> .tar.gz (linux via <formats>, macOS via Tycho's default),
+          # so all three archive formats must be matched. nullglob (set above)
+          # drops any pattern with no match.
           assets=(
             "sparta-updatesite-${VERSION}.zip"
             releng/**/target/products/*.zip
+            releng/**/target/products/*.tar.gz
+            releng/**/target/products/*.tgz
             standalone/**/target/*-shaded.jar
           )
           echo "Attaching ${#assets[@]} asset(s):"
