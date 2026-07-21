@@ -2,7 +2,7 @@
 <feature
       id="be.kuleuven.cs.distrinet.sparta.feature"
       label="SPARTA Threat Modeling"
-      version="2026.1.0"
+      version="2026.2.0"
       provider-name="DistriNet"
       plugin="be.kuleuven.cs.distrinet.sparta.rcp">
 

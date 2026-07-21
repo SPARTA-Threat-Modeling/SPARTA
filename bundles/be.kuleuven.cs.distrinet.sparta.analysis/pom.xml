@@ -18,6 +18,6 @@
   <parent>
   	<groupId>be.kuleuven.cs.distrinet.sparta</groupId>
   	<artifactId>be.kuleuven.cs.distrinet.sparta.bundles</artifactId>
-  	<version>2026.1.0</version>
+  	<version>2026.2.0</version>
   </parent>
 </project>

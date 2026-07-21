@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Bundle-SymbolicName: be.kuleuven.cs.distrinet.sparta.design;singleton:=true
-Bundle-Version: 2026.1.0
+Bundle-Version: 2026.2.0
 Bundle-Activator: be.kuleuven.cs.distrinet.sparta.design.Activator
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.ui,

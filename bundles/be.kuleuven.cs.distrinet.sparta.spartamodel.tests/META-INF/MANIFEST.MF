@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Bundle-SymbolicName: be.kuleuven.cs.distrinet.sparta.spartamodel.tests;singleton:=true
 Automatic-Module-Name: be.kuleuven.cs.distrinet.sparta.spartamodel.tests
-Bundle-Version: 2026.1.0
+Bundle-Version: 2026.2.0
 Bundle-ClassPath: .
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin

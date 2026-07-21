@@ -2,7 +2,7 @@
 <feature
       id="be.kuleuven.cs.distrinet.sparta.graphicalmodeling.feature"
       label="SPARTA Graphical Modeling Support"
-      version="2026.1.0"
+      version="2026.2.0"
       provider-name="DistriNet">
 
    <description>
