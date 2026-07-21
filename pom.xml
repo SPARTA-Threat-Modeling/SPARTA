@@ -361,9 +361,10 @@
 			<layout>p2</layout>
 			<url>https://download.eclipse.org/justj/jres/21/updates/release/latest</url>
 		</repository>
+		<!-- Public, anonymously-readable endpoint for SPARTA's own artifacts. -->
 		<repository>
 			<id>gitlab-maven</id>
-			<url>https://gitlab.kuleuven.be/api/v4/projects/3377/packages/maven</url>
+			<url>https://maven.sparta.distrinet-research.be</url>
 		</repository>
 	</repositories>
 
