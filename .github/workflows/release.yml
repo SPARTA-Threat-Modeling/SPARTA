@@ -1,0 +1,231 @@
+# GitHub Actions release for SPARTA (tag-driven).
+#
+# The git tag is the single source of truth for the version:
+# tycho-versions:set-version rewrites every pom, MANIFEST.MF, feature.xml and
+# the .product before the build, and the jgit build qualifier (configured in
+# the root pom) is derived from the commit timestamp.
+#
+# The tag filter below is the gate (GitHub filters are glob, not regex, so the
+# equivalent version shapes are listed explicitly). Tags that don't match --
+# e.g. tags created for other purposes -- don't trigger this workflow at all,
+# mirroring the GitLab `rules` gate.
+
+name: Release
+
+on:
+  push:
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'
+      - '[0-9]+.[0-9]+.[0-9]+.*'
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+      - 'v[0-9]+.[0-9]+.[0-9]+.*'
+
+env:
+  # -Declipse.p2.mirrors=false: download p2 artifacts straight from the canonical
+  # Eclipse repo instead of the mirror redirector (www.eclipse.org/downloads/
+  # download.php), which rate-limits CI (HTTP 429) and floods the log with retries.
+  MAVEN_CLI_OPTS: --batch-mode --errors --show-version --no-transfer-progress -Declipse.p2.mirrors=false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write   # `gh release create` publishes the release + assets
+      packages: write   # `mvn deploy` publishes library jars to GitHub Packages
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          # Full history so the jgit build-qualifier timestamp resolves.
+          fetch-depth: 0
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      # Define the `github` server used as the mvn deploy target. The GitLab
+      # registry referenced by the root pom is anonymously readable, so it needs
+      # no server entry here.
+      - name: Configure Maven settings
+        env:
+          GH_ACTOR: ${{ github.actor }}
+          GH_TOKEN_M2: ${{ github.token }}
+        run: |
+          mkdir -p ~/.m2
+          cat > ~/.m2/settings.xml <<EOF
+          <settings>
+            <servers>
+              <server>
+                <id>github</id>
+                <username>${GH_ACTOR}</username>
+                <password>${GH_TOKEN_M2}</password>
+              </server>
+            </servers>
+          </settings>
+          EOF
+
+      - name: Set version from tag
+        run: |
+          set -euo pipefail
+          VERSION="${GITHUB_REF_NAME#v}"
+          YEAR="${VERSION%%.*}"
+          echo "Building release version $VERSION (update line $YEAR) from tag $GITHUB_REF_NAME"
+          mvn $MAVEN_CLI_OPTS tycho-versions:set-version -DnewVersion="$VERSION"
+          # Keep the per-year update-site URLs in sync with the release line, so
+          # an e.g. 2027 build advertises .../updates/2027 rather than a stale
+          # year. Only the SPARTA /updates/<year> path is touched (the legacy
+          # /updatesite/2025 site is a different path and is left alone).
+          sed -i -E "s#(downloads\.sparta\.distrinet-research\.be/updates/)[0-9]+#\1${YEAR}#g" \
+            features/*/feature.xml \
+            releng/be.kuleuven.cs.distrinet.sparta.product/*.product \
+            releng/be.kuleuven.cs.distrinet.sparta.update/src/main/resources/index.html
+
+      # Single build pass: `deploy` runs test + package for the whole reactor
+      # (so the update-site repo + zip are produced for the steps below) and
+      # publishes the library jars to GitHub Packages. The releng modules
+      # (product + update site) skip the deploy plugin in their poms, so only
+      # the bundle jars, features, standalone jars and parent poms are pushed.
+      - name: Build, test and deploy library jars to GitHub Packages
+        run: |
+          mvn $MAVEN_CLI_OPTS deploy \
+            -DaltDeploymentRepository=github::https://maven.pkg.github.com/${GITHUB_REPOSITORY}
+
+      - name: Publish test report
+        uses: dorny/test-reporter@v3
+        if: ${{ !cancelled() }}
+        with:
+          name: Test results
+          path: '**/target/surefire-reports/TEST-*.xml'
+          reporter: java-junit
+
+      # Create the actual GitHub Release for the tag and attach the packaged
+      # deliverables as release assets (permanent downloads on the Releases
+      # page). Uses the built-in gh CLI + GITHUB_TOKEN -- no third-party action.
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          shopt -s globstar nullglob
+          VERSION="${GITHUB_REF_NAME#v}"
+
+          # Give the p2 update-site archive a stable, predictable asset name so
+          # the server-side fetch-releases.sh can fetch it deterministically.
+          repo_zip=(releng/be.kuleuven.cs.distrinet.sparta.update/target/*.zip)
+          if [ ${#repo_zip[@]} -eq 0 ]; then
+            echo "::error::No update-site archive built under the update module." >&2
+            exit 1
+          fi
+          cp "${repo_zip[0]}" "sparta-updatesite-${VERSION}.zip"
+
+          assets=(
+            "sparta-updatesite-${VERSION}.zip"
+            releng/**/target/products/*.zip
+            standalone/**/target/*-shaded.jar
+          )
+          echo "Attaching ${#assets[@]} asset(s):"
+          printf '  %s\n' "${assets[@]}"
+          gh release create "$GITHUB_REF_NAME" \
+            --title "$GITHUB_REF_NAME" \
+            --generate-notes \
+            "${assets[@]}"
+
+      # Build and commit the COMPOSITE update-site metadata to the gh-pages
+      # branch. CI owns the composite: it regenerates compositeContent.xml /
+      # compositeArtifacts.xml with one <child> per released version tag, and
+      # commits them together with the fetch-releases.sh helper + docs. No
+      # binaries are committed -- the per-version p2 repos stay as the
+      # `sparta-updatesite-<version>.zip` release assets above. A web server
+      # clones this branch and runs fetch-releases.sh to download+extract the
+      # referenced versions next to the composite.
+      - name: Publish composite update-site metadata to gh-pages
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          SITE_DIR="$(mktemp -d)"
+          git clone --depth 1 \
+            "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "$SITE_DIR"
+          cd "$SITE_DIR"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git ls-remote --exit-code --heads origin gh-pages >/dev/null 2>&1; then
+            git fetch --depth 1 origin gh-pages
+            git checkout gh-pages
+          else
+            git checkout --orphan gh-pages
+            git rm -rf . >/dev/null 2>&1 || true
+            git clean -fdx
+          fi
+
+          # Version-shaped tags, grouped per release line (major version ==
+          # year). Each year gets its own composite so an installed build only
+          # ever sees updates from its own line. Self-healing and accumulating:
+          # the just-pushed tag is already visible here.
+          TAGS="$(git ls-remote --tags origin | sed -E 's#.*refs/tags/##; /\^\{\}$/d')"
+          VERSIONS="$(for t in $TAGS; do v="${t#v}"; \
+            printf '%s\n' "$v" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+([.-][A-Za-z0-9_-]+)?$' && echo "$v"; \
+            done | sort -Vu)"
+          YEARS="$(for v in $VERSIONS; do echo "${v%%.*}"; done | sort -u)"
+
+          TS="$(date +%s)000"
+
+          # Drop any stale top-level composite from the earlier single-site layout.
+          rm -f compositeContent.xml compositeArtifacts.xml p2.index
+
+          for year in $YEARS; do
+            CHILDREN=""
+            COUNT=0
+            for v in $VERSIONS; do
+              [ "${v%%.*}" = "$year" ] || continue
+              CHILDREN="${CHILDREN}    <child location='releases/${v}'/>"$'\n'
+              COUNT=$((COUNT + 1))
+            done
+            mkdir -p "$year"
+
+            cat > "$year/compositeContent.xml" <<XML
+          <?xml version='1.0' encoding='UTF-8'?>
+          <?compositeMetadataRepository version='1.0.0'?>
+          <repository name="SPARTA Update Site ${year}" type='org.eclipse.equinox.internal.p2.metadata.repository.CompositeMetadataRepository' version='1.0.0'>
+            <properties size='1'>
+              <property name='p2.timestamp' value='${TS}'/>
+            </properties>
+            <children size='${COUNT}'>
+          ${CHILDREN}  </children>
+          </repository>
+          XML
+
+            cat > "$year/compositeArtifacts.xml" <<XML
+          <?xml version='1.0' encoding='UTF-8'?>
+          <?compositeArtifactRepository version='1.0.0'?>
+          <repository name="SPARTA Update Site ${year}" type='org.eclipse.equinox.internal.p2.artifact.repository.CompositeArtifactRepository' version='1.0.0'>
+            <properties size='1'>
+              <property name='p2.timestamp' value='${TS}'/>
+            </properties>
+            <children size='${COUNT}'>
+          ${CHILDREN}  </children>
+          </repository>
+          XML
+
+            cat > "$year/p2.index" <<'IDX'
+          version=1
+          metadata.repository.factory.order=compositeContent.xml,\!
+          artifact.repository.factory.order=compositeArtifacts.xml,\!
+          IDX
+          done
+
+          # Ship the server-side fetch helper + docs alongside the composite.
+          src="$GITHUB_WORKSPACE/releng/updatesite"
+          cp "$src/fetch-releases.sh" ./fetch-releases.sh
+          cp "$src/gh-pages-README.md" ./README.md
+          cp "$src/gh-pages.gitignore" ./.gitignore
+          chmod +x ./fetch-releases.sh
+
+          git add -A
+          if git commit -m "Publish composite update site for ${GITHUB_REF_NAME}"; then
+            git push origin gh-pages
+          else
+            echo "Composite already up to date."
+          fi

@@ -1,0 +1,5 @@
+# The per-year composite metadata (<year>/compositeContent.xml,
+# <year>/compositeArtifacts.xml, <year>/p2.index) and the tooling ARE committed
+# to this branch by CI. Only the extracted per-version p2 repositories are
+# fetched locally by fetch-releases.sh and must never be committed.
+releases/

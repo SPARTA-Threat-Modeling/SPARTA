@@ -1,0 +1,163 @@
+# GitLab CI for SPARTA
+#
+# The reactor build (root pom.xml) combines a Tycho/Eclipse-plugin build with
+# a standalone plain-Java build. `mvn verify` compiles everything, runs the
+# unit + Tycho-surefire tests, and produces the packaged artifacts (plugin
+# jars, features, the p2 update site and the standalone fat jars).
+#
+# Note: Tycho resolves a full Eclipse p2 target platform (eclipse-release,
+# VIATRA, Orbit, JustJ JRE) on the first build, so expect the initial pipeline
+# to be slow and to download a lot. The .m2 cache (including Tycho's p2 cache)
+# is persisted between runs to speed subsequent builds up.
+
+image: maven:3.9-eclipse-temurin-21
+
+variables:
+  # Keep the local repo (and Tycho's p2 cache under it) inside the project dir
+  # so it can be cached by GitLab between jobs/pipelines.
+  MAVEN_OPTS: >-
+    -Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository
+    -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=WARN
+  # -Declipse.p2.mirrors=false: download p2 artifacts straight from the canonical
+  # Eclipse repo instead of the mirror redirector (www.eclipse.org/downloads/
+  # download.php), which rate-limits CI (HTTP 429) and floods the log with retries.
+  MAVEN_CLI_OPTS: >-
+    --batch-mode
+    --errors
+    --show-version
+    --no-transfer-progress
+    -s $CI_PROJECT_DIR/.ci/settings.xml
+    -Declipse.p2.mirrors=false
+  # NOTE: MAVEN_REPO_PROJECT_ID (used by the `release` job below) must be
+  # provided as a CI/CD variable (Settings -> CI/CD -> Variables). It is the ID
+  # of the SEPARATE GitLab project that hosts the Maven package registry -- NOT
+  # $CI_PROJECT_ID. It is intentionally not defaulted here. For CI_JOB_TOKEN to
+  # publish there, that project must allow this project in its "CI/CD job token
+  # allowlist" (Settings -> CI/CD -> Job token permissions); otherwise swap the
+  # gitlab-maven server auth for a deploy token / PAT with write access.
+
+# Per-branch cache of the Maven local repository and Tycho's p2 cache.
+cache:
+  key: "$CI_COMMIT_REF_SLUG"
+  paths:
+    - .m2/repository/
+
+stages:
+  - verify
+
+# Provide Maven with credentials for the KU Leuven GitLab Maven package
+# registry referenced from the root pom. CI_JOB_TOKEN grants read access to
+# package registries the pipeline's project is allowed to see.
+before_script:
+  - mkdir -p .ci
+  - |
+    cat > .ci/settings.xml <<'EOF'
+    <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+      <servers>
+        <server>
+          <id>gitlab-maven</id>
+          <configuration>
+            <httpHeaders>
+              <property>
+                <name>Job-Token</name>
+                <value>${env.CI_JOB_TOKEN}</value>
+              </property>
+            </httpHeaders>
+          </configuration>
+        </server>
+      </servers>
+    </settings>
+    EOF
+
+verify:
+  stage: verify
+  script:
+    - mvn $MAVEN_CLI_OPTS verify
+  artifacts:
+    when: always
+    reports:
+      junit:
+        - "**/target/surefire-reports/TEST-*.xml"
+    # Keep the small, useful deliverables: the standalone runnable fat jars.
+    # The bulky outputs are deliberately excluded to stay under the artifact
+    # size limit (HTTP 413): the includeAllDependencies p2 update site and the
+    # bundle jars. Those are consumed from the GitHub composite update site and
+    # the Maven package registry respectively.
+    paths:
+      - "standalone/**/target/*-shaded.jar"
+    expire_in: 1 week
+  rules:
+    # Build on the default branch and for merge requests.
+    # Tags are handled by the `release` job below.
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+
+# Tag-driven release build. The git tag is the single source of truth for the
+# version: tycho-versions:set-version rewrites every pom, MANIFEST.MF,
+# feature.xml and the .product to the tag version before the build, and the
+# jgit build qualifier (configured in the root pom) is derived from the commit
+# timestamp -- so the packaged product carries a deterministic tag version.
+#
+# The `rules` gate ensures this only runs for OSGi-compatible version tags
+# (major.minor.micro, optional leading v, optional .qualifier). Tags for any
+# other purpose simply don't match, so no release job is created and nothing
+# fails.
+release:
+  stage: verify
+  script:
+    - VERSION="${CI_COMMIT_TAG#v}"
+    - YEAR="${VERSION%%.*}"
+    - mvn $MAVEN_CLI_OPTS tycho-versions:set-version -DnewVersion="$VERSION"
+    # Keep the per-year update-site URLs in sync with the release line (only the
+    # SPARTA /updates/<year> path; the legacy /updatesite/2025 site is untouched).
+    - sed -i -E "s#(downloads\.sparta\.distrinet-research\.be/updates/)[0-9]+#\1${YEAR}#g"
+      features/*/feature.xml
+      releng/be.kuleuven.cs.distrinet.sparta.product/*.product
+      releng/be.kuleuven.cs.distrinet.sparta.update/src/main/resources/index.html
+    # `deploy` runs test + package for the whole reactor and publishes the
+    # library + standalone (shaded) jars to the GitLab Maven registry. The
+    # releng modules skip the deploy plugin in their poms, so the p2 update site
+    # and product are not pushed to the registry. Auth uses the existing
+    # gitlab-maven server (CI_JOB_TOKEN Job-Token header).
+    - mvn $MAVEN_CLI_OPTS deploy
+      -DaltDeploymentRepository=gitlab-maven::${CI_API_V4_URL}/projects/${MAVEN_REPO_PROJECT_ID}/packages/maven
+    # Store the large deliverables (p2 update site + product zips) redundantly in
+    # GitLab. Job artifacts can't hold these (size limit / HTTP 413), so publish
+    # them to THIS project's generic package registry -- CI_JOB_TOKEN can always
+    # write to its own project's registry, so no allowlist setup is needed.
+    - |
+      GENERIC_BASE="${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic"
+      upload_generic() {  # <package-name> <file>
+        local name; name="$(basename "$2")"
+        echo "Uploading ${name} -> ${1}/${VERSION}"
+        curl --fail --silent --show-error \
+          --header "JOB-TOKEN: ${CI_JOB_TOKEN}" \
+          --upload-file "$2" \
+          "${GENERIC_BASE}/${1}/${VERSION}/${name}"
+      }
+      for f in releng/be.kuleuven.cs.distrinet.sparta.update/target/*.zip; do
+        [ -e "$f" ] || continue
+        upload_generic sparta-updatesite "$f"
+      done
+      for f in releng/be.kuleuven.cs.distrinet.sparta.product/target/products/*.zip; do
+        [ -e "$f" ] || continue
+        upload_generic sparta-product "$f"
+      done
+  artifacts:
+    when: always
+    reports:
+      junit:
+        - "**/target/surefire-reports/TEST-*.xml"
+    # Small deliverables kept as job artifacts: the standalone runnable fat jars.
+    # The bulky p2 update site and product zips go to the generic package
+    # registry instead (see the deploy script above) -- they exceed the artifact
+    # size limit. The update site is also distributed via the GitHub composite.
+    paths:
+      - "standalone/**/target/*-shaded.jar"
+    expire_in: 1 month
+  rules:
+    # Gate: only version-shaped tags (major.minor.micro[.qualifier], optional v).
+    # Other tags don't match, so no release job runs and nothing fails.
+    - if: '$CI_COMMIT_TAG =~ /^v?\d+\.\d+\.\d+(\.[A-Za-z0-9_-]+)?$/'

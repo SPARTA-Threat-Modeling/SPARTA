@@ -1,0 +1,66 @@
+# GitHub Actions CI for SPARTA (GitHub variant of .gitlab-ci.yml)
+#
+# `mvn verify` builds the Tycho/Eclipse-plugin reactor plus the standalone
+# plain-Java modules, runs the tests, and produces the packaged artifacts.
+# The first run resolves a full Eclipse p2 target platform, so it is slow and
+# downloads a lot; the ~/.m2 cache speeds subsequent runs up.
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# Cancel superseded runs on the same ref.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # -Declipse.p2.mirrors=false: download p2 artifacts straight from the canonical
+  # Eclipse repo instead of the mirror redirector (www.eclipse.org/downloads/
+  # download.php), which rate-limits CI (HTTP 429) and floods the log with retries.
+  MAVEN_CLI_OPTS: --batch-mode --errors --show-version --no-transfer-progress -Declipse.p2.mirrors=false
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      # The KU Leuven GitLab Maven registry referenced by the root pom is
+      # anonymously readable, so no settings.xml / credentials are needed here.
+      - name: Build, test and package
+        run: mvn $MAVEN_CLI_OPTS verify
+
+      # Surface test results in the run summary / PR checks.
+      - name: Publish test report
+        uses: dorny/test-reporter@v3
+        if: ${{ !cancelled() }}
+        with:
+          name: Test results
+          path: '**/target/surefire-reports/TEST-*.xml'
+          reporter: java-junit
+
+      # Ephemeral, browsable-from-the-run build outputs (see notes in chat:
+      # this is the "workflow artifact", distinct from release assets).
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v7
+        if: ${{ !cancelled() }}
+        with:
+          name: packages
+          path: |
+            **/target/*.jar
+            releng/**/target/*.zip
+            releng/**/target/products/*.zip
+            standalone/**/target/*-shaded.jar
+          if-no-files-found: warn
+          retention-days: 14

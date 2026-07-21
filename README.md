@@ -7,7 +7,7 @@ SPARTA will always elicit all the threats, but will recalculate the risk to take
 The SPARTA project consists of the following parts:
  
 * A standalone threat modeling tool that you can you can run locally. You can download this from the main [SPARTA website](https://sparta.distrinet-research.be/downloads/).
-* Eclipse-plugins that allow you to integrate it's functionality in other eclipse-based tools. For this you can use the [eclipse updatesite](https://downloads.sparta.distrinet-research.be/updatesite).
+* Eclipse-plugins that allow you to integrate it's functionality in other eclipse-based tools. For this you can use the [eclipse update site](https://downloads.sparta.distrinet-research.be/updates/2026/). Update sites are organised per release line (by year): the URL is `https://downloads.sparta.distrinet-research.be/updates/<year>/` (e.g. `.../updates/2026/`), so you can pick the line that matches your installation. A specific version is also available directly at `.../updates/<year>/releases/<version>/`.
 * Standalone libraries and runnable jars, so you can directly run the analysis on .sparta models. These are available from the [maven repository](https://maven.sparta.distrinet-research.be/).
 
 
