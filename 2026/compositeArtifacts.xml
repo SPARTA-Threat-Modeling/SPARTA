@@ -2,7 +2,7 @@
 <?compositeArtifactRepository version='1.0.0'?>
 <repository name="SPARTA Update Site 2026" type='org.eclipse.equinox.internal.p2.artifact.repository.CompositeArtifactRepository' version='1.0.0'>
   <properties size='1'>
-    <property name='p2.timestamp' value='1784750343000'/>
+    <property name='p2.timestamp' value='1784837694000'/>
   </properties>
   <children size='2'>
     <child location='releases/2026.1.0'/>
