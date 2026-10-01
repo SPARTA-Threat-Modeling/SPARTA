@@ -177,6 +177,12 @@ public class ThreatAnalysis extends ViewPart implements AnalysisListener {
 		makeActions();
 		hookDoubleClickAction();
 		contributeToActionBars();
+
+		// The service only notifies on the next load, so a view opened after an analysis
+		// already ran would stay empty; bind to the existing results now that the widgets exist.
+		if (ThreatAnalysisService.getInstance().hasResults()) {
+			analysisResultsAvailable();
+		}
 	}
 
 	private void setupTable(TableViewer viewer) {
