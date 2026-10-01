@@ -41,6 +41,11 @@ public class ThreatItemDiagramTemplate extends Template<Threat> {
 
 	@Override
 	public String instantiate(Threat x) {
+		if (x.getDataFlow() == null) {
+			// Element-based threat (e.g. STRIDE-per-element catalogs): no flow to draw,
+			// render a diagram containing only the threatened element instead.
+			return instantiateElementOnly(x);
+		}
 		return getTemplate().replace(SENDERTYPE, getTikzNode(x, x.getDataFlow().getSender(), getSender(x.getDataFlow())))
 				.replace(RECIPIENTTYPE, getTikzNode(x, x.getDataFlow().getRecipient(), getRecipient(x.getDataFlow())))
 				.replace(SENDERNAME, LaTeX.latexEscape(x.getDataFlowFromName()))
@@ -49,7 +54,20 @@ public class ThreatItemDiagramTemplate extends Template<Threat> {
 				.replace(FLOWHIGHLIGHT, "DataFlow".equals(x.getThreatenedElementTypeName()) ? "red" : "")
 				;
 	}
-	
+
+	private String instantiateElementOnly(Threat x) {
+		DFDElement element = x.getThreatenedElement();
+		if (element == null) {
+			return "";
+		}
+		return "\\begin{center}\n"
+				+ "\\begin{tikzpicture}\n"
+				+ "\\node[" + getTikzNode(x, element, element) + "] (element) [align=center] {"
+				+ LaTeX.latexEscape(x.getThreatenedElementName()) + "};\n"
+				+ "\\end{tikzpicture}\n"
+				+ "\\end{center}";
+	}
+
 	static String getTikzNode(Threat t, DFDElement e, DFDElement specificElement) {
 		String node = "";
 		if (e instanceof ExternalEntity) {
@@ -59,8 +77,9 @@ public class ThreatItemDiagramTemplate extends Template<Threat> {
 		} else if (e instanceof DataStore) {
 			node += "datastore";
 		}
-		
-		if (t.getThreatenedElement().equals(e) || t.getThreatenedElement().equals(specificElement)) {
+
+		DFDElement threatened = t.getThreatenedElement();
+		if (threatened != null && (threatened.equals(e) || threatened.equals(specificElement))) {
 			node += ", red";
 		}
 

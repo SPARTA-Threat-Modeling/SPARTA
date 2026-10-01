@@ -12,14 +12,17 @@ package be.kuleuven.cs.distrinet.sparta.core.tests;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import be.kuleuven.cs.distrinet.sparta.core.analysis.risk.SpartaRiskModel;
 import be.kuleuven.cs.distrinet.sparta.spartamodel.DataFlow;
 import be.kuleuven.cs.distrinet.sparta.spartamodel.DataStore;
 import be.kuleuven.cs.distrinet.sparta.spartamodel.ExternalEntity;
 import be.kuleuven.cs.distrinet.sparta.spartamodel.Process;
 import be.kuleuven.cs.distrinet.sparta.spartamodel.SpartaModelFactory;
+import be.kuleuven.cs.distrinet.sparta.spartamodel.ThreatType;
 
 /**
  * Tests for the pure string / identity helpers on {@link be.kuleuven.cs.distrinet.sparta.core.model.Threat}
@@ -30,6 +33,23 @@ import be.kuleuven.cs.distrinet.sparta.spartamodel.SpartaModelFactory;
 public class ThreatTest {
 
 	private static final SpartaModelFactory FACTORY = SpartaModelFactory.eINSTANCE;
+
+	@Test
+	public void riskIsNotCalculatedBeforeTheCalculationOrWithoutARiskModel() {
+		assertFalse(new SpartaRiskModel().isCalculated());
+		// StubThreat has no risk model at all.
+		assertFalse(new StubThreat(null, FACTORY.createProcess(), null).isRiskCalculated());
+	}
+
+	@Test
+	public void toStringDoesNotThrowForAnUncalculatedRisk() {
+		ThreatType type = FACTORY.createThreatType();
+		type.setName("Spoofing");
+		String text = new StubThreat(type, FACTORY.createProcess(), null).toString();
+
+		assertTrue(text, text.startsWith("Spoofing threat on "));
+		assertTrue(text, text.endsWith("(risk not calculated)"));
+	}
 
 	@Test
 	public void typeAbbreviationKeepsOnlyCapitalsAfterStrippingImpl() {

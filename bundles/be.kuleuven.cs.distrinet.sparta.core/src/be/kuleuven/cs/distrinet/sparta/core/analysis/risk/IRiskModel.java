@@ -43,6 +43,15 @@ public interface IRiskModel {
 	public void calculateRisk(Threat threat, RiskAssessmentLoopConfiguration loopConfiguration);
 
 	/**
+	 * Whether {@link #calculateRisk} has run, i.e. whether the getters below return values.
+	 * Callers that may see uncalculated threats check this rather than catching the
+	 * {@link IllegalStateException} the getters may throw.
+	 *
+	 * @return true once the risk has been calculated
+	 */
+	public boolean isCalculated();
+
+	/**
 	 * Get the vulnerability measured between 0 and 1.
 	 * 
 	 * @return the vulnerability

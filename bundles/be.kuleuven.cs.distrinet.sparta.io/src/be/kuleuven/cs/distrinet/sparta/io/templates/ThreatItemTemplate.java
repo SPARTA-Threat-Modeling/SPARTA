@@ -9,8 +9,10 @@
  */
 package be.kuleuven.cs.distrinet.sparta.io.templates;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 import be.kuleuven.cs.distrinet.sparta.core.model.Threat;
@@ -54,7 +56,18 @@ public class ThreatItemTemplate extends Template<Threat> {
 				.replace(DESCRIPTION, LaTeX.latexEscape(x.getDescription()))
 				.replace(ELEMENTS, els.stream().map(LaTeX::latexEscape).collect(Collectors.joining(", ")))
 				.replace(AFFECTED, LaTeX.latexEscape(x.getThreatenedElementName()))
-				.replace(RISK, "" + x.getRisk());
+				.replace(RISK, formatRisk(x));
+	}
+
+	private static String formatRisk(Threat threat) {
+		if (!threat.isRiskCalculated()) {
+			// The calculation is skipped for threats without a threatened element.
+			return "--";
+		}
+		NumberFormat nf = NumberFormat.getInstance(Locale.ROOT);
+		nf.setMaximumFractionDigits(4);
+		nf.setGroupingUsed(false);
+		return nf.format(threat.getRisk());
 	}
 
 	/**

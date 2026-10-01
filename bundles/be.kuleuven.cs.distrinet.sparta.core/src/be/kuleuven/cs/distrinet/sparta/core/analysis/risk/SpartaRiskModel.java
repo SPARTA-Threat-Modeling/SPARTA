@@ -260,8 +260,13 @@ public class SpartaRiskModel implements IRiskModel {
 	 * @param property the name of the requested risk figure, for the message
 	 * @throws IllegalStateException when the risk has not been calculated yet
 	 */
+	@Override
+	public boolean isCalculated() {
+		return risk != null;
+	}
+
 	private void requireCalculated(String property) {
-		if (risk == null) {
+		if (!isCalculated()) {
 			throw new IllegalStateException("risk not yet calculated for this threat: '" + property
 					+ "' is only available after calculateRisk(...) has run");
 		}

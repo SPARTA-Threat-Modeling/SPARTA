@@ -90,6 +90,7 @@ public class EngineIntegrationTest {
 					assertTrue("SLE must be finite", Double.isFinite(t.getSle()));
 					assertTrue("TEF must be finite", Double.isFinite(t.getTef()));
 					assertTrue("risk must be non-negative", t.getRisk() >= 0);
+					assertTrue("analysed threats report their risk as calculated", t.isRiskCalculated());
 					assertEquals("recorded mitigations must be the countermeasure selection",
 							RiskCalculation.mitigations(t.getDataFlow(), t.getThreatType(),
 									t.getThreatenedElement().getBound()),

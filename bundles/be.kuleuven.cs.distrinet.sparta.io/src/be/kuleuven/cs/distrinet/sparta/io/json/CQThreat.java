@@ -101,9 +101,16 @@ public class CQThreat {
 	 * @param taa
 	 */
 	public CQThreat(Threat t, ThreatAggregationAnalysis taa) {
-		this.description = ThreatTextWriter.fileNameSuggestion(t);
-		this.fingerprint = DigestUtils.md5Hex(ThreatTextWriter.fileNameSuggestion(t));
-		this.severity = Severity.values()[taa.categorize(t, Severity.values().length-1)];
+		String fileNameSuggestion = ThreatTextWriter.fileNameSuggestion(t);
+		this.description = fileNameSuggestion;
+		this.fingerprint = DigestUtils.md5Hex(fileNameSuggestion);
+		// Threats whose risk was not calculated (the calculation is skipped without a
+		// threatened element) default to the lowest severity. Clamp the category as well:
+		// categorize() divides by the maximum potential risk, so degenerate inputs (e.g. all
+		// potential risks 0.0) can produce out-of-range indices.
+		int category = t.isRiskCalculated() ? taa.categorize(t, Severity.values().length - 1) : 0;
+		category = Math.max(0, Math.min(category, Severity.values().length - 1));
+		this.severity = Severity.values()[category];
 		URI u = (t.getThreatenedElement() != null && t.getThreatenedElement().eResource() != null)
 				? t.getThreatenedElement().eResource().getURI()
 				: null;

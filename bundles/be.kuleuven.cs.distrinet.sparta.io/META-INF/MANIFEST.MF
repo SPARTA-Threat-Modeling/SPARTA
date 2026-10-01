@@ -22,4 +22,5 @@ Export-Package: be.kuleuven.cs.distrinet.sparta.io,
  be.kuleuven.cs.distrinet.sparta.io.convert,
  be.kuleuven.cs.distrinet.sparta.io.diagram,
  be.kuleuven.cs.distrinet.sparta.io.json,
+ be.kuleuven.cs.distrinet.sparta.io.templates,
  be.kuleuven.cs.distrinet.sparta.io.util

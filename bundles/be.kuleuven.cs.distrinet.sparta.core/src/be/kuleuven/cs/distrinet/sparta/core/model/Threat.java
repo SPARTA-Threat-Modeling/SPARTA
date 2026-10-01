@@ -96,6 +96,16 @@ public class Threat implements IThreat, IInteractionThreat {
 		return message;
 	}
 
+	/**
+	 * @return whether this threat's risk has been calculated, i.e. whether the risk getters
+	 *         ({@link #getRisk()}, {@link #getVulnerability()}, ...) return values instead of
+	 *         throwing. False when the calculation was skipped, see
+	 *         {@link #performRiskCalculation}.
+	 */
+	public boolean isRiskCalculated() {
+		return riskModel != null && riskModel.isCalculated();
+	}
+
 	@Override
 	public Double getVulnerability() {
 		return riskModel.getVulnerability()[1];
@@ -261,7 +271,12 @@ public class Threat implements IThreat, IInteractionThreat {
 
 	@Override
 	public String toString() {
-		return "" + threatType.getName() + " threat on " + threatenedElement + " with a risk of " + nf.format(getRisk())
+		String threat = "" + threatType.getName() + " threat on " + threatenedElement;
+		if (!isRiskCalculated()) {
+			// Must not throw: also used for logging and as the default description.
+			return threat + " (risk not calculated)";
+		}
+		return threat + " with a risk of " + nf.format(getRisk())
 				+ " (" + nf.format(getRisk_lower()) + "," + nf.format(getRisk_upper()) + ")";
 	}
 

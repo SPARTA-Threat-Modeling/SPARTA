@@ -42,6 +42,11 @@ public class StubRiskModel implements IRiskModel {
 	}
 
 	@Override
+	public boolean isCalculated() {
+		return true;
+	}
+
+	@Override
 	public double[] getVulnerability() {
 		return new double[] { 0.1, 0.2, 0.3 };
 	}

@@ -82,9 +82,11 @@ public class ThreatTextWriter extends ThreatWriter {
 	 * @return The suggested filename.
 	 */
 	public static String fileNameSuggestion(Threat threat) {
-		List<Function<Threat, ? extends Object>> fs = Arrays.asList(Threat::getThreatType, Threat::getThreatenedElement,
-				Threat::getDataFlow);
-		return fs.stream().map(f -> f.apply(threat)).map(ModelElement.class::cast).map(ModelElement::getName)
+		// Use the null-safe name accessors: element-based threats have no data flow,
+		// and the threatened element can be absent as well.
+		List<Function<Threat, String>> fs = Arrays.asList(Threat::getThreatTypeName,
+				Threat::getThreatenedElementName, Threat::getDataFlowName);
+		return fs.stream().map(f -> f.apply(threat))
 				.collect(Collectors.joining("_")).replaceAll("\\W+", " ") + ".txt";
 	}
 
