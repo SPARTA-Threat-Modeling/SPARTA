@@ -13,33 +13,29 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.handlers.HandlerUtil;
 
 import be.kuleuven.cs.distrinet.sparta.analysis.Activator;
-import be.kuleuven.cs.distrinet.sparta.analysis.views.ThreatAnalysis;
 import be.kuleuven.cs.distrinet.sparta.core.model.Threat;
 import be.kuleuven.cs.distrinet.sparta.io.ThreatExportColumns;
 
 /**
- * Exports the threats currently shown in the {@link ThreatAnalysis} view to a table file in
- * the root of the analysed model's project. Subclasses only provide the file name and the
- * writer, so the CSV and XLSX exports share the same columns
- * ({@link ThreatExportColumns#withMetadata()}) and user feedback.
+ * Exports the current analysis results to a table file in the root of the analysed model's
+ * project. Subclasses only provide the file name and the writer, so the CSV and XLSX
+ * exports share the same columns ({@link ThreatExportColumns#withMetadata()}) and user
+ * feedback.
  */
-public abstract class AbstractThreatTableExportHandler extends AbstractHandler {
+public abstract class AbstractThreatTableExportHandler extends AbstractAnalysisExportHandler {
 
 	/** @return the name of the file to create in the project root, e.g. {@code threats.csv} */
 	protected abstract String fileName();
@@ -53,11 +49,11 @@ public abstract class AbstractThreatTableExportHandler extends AbstractHandler {
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		final IWorkbenchWindow activeWorkbenchWindow = HandlerUtil.getActiveWorkbenchWindowChecked(event);
-		ThreatAnalysis ta = ThreatAnalysis.getInstance(activeWorkbenchWindow);
-		List<? extends Threat> threats = ta.getThreatList();
-
-		IProject project = ResourcesPlugin.getWorkspace().getRoot()
-				.getFile(new Path(ta.getLoadedResource().getURI().toPlatformString(true))).getProject();
+		if (!checkResultsAvailable(activeWorkbenchWindow.getShell())) {
+			return null;
+		}
+		List<? extends Threat> threats = analysedThreats();
+		IProject project = analysedProject();
 
 		IFile outFile = project.getFile(fileName());
 		boolean exported = false;

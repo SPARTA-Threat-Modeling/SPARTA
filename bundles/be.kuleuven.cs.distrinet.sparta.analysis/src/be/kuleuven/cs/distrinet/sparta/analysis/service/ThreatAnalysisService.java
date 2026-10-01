@@ -237,6 +237,15 @@ public class ThreatAnalysisService implements IPropertyListener {
 	public Resource getResource() {
 		return resource;
 	}
+
+	/**
+	 * @return {@code true} while analysis results are available, i.e. between a successful
+	 *         {@link #load(Resource)} and the next {@link #clear()}. Before the first load,
+	 *         after a clear, or after a failed load there is nothing to export.
+	 */
+	public boolean hasResults() {
+		return engine != null && ml != null && resource != null;
+	}
 	
 	public Map<ThreatPatternMatchMetadata,PatternParsingResults> parseResults() {
 		return parseResults;

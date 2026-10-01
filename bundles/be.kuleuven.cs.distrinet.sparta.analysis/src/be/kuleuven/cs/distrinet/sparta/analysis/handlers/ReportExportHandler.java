@@ -11,44 +11,37 @@ package be.kuleuven.cs.distrinet.sparta.analysis.handlers;
 
 import java.io.File;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.handlers.HandlerUtil;
 
 import be.kuleuven.cs.distrinet.sparta.analysis.Activator;
 import be.kuleuven.cs.distrinet.sparta.analysis.model.ObservableThreat;
 import be.kuleuven.cs.distrinet.sparta.analysis.service.ThreatAnalysisService;
 import be.kuleuven.cs.distrinet.sparta.io.ReportWriter;
 
-public class ReportExportHandler extends AbstractHandler {
+public class ReportExportHandler extends AbstractAnalysisExportHandler {
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-		List<ObservableThreat> threats = ThreatAnalysisService.getInstance().observableThreatList().stream().map(ObservableThreat.class::cast).collect(Collectors.toList());
-		
-		
-		IProject project = ResourcesPlugin.getWorkspace().getRoot()
-				.getFile(new Path(ThreatAnalysisService.getInstance().getResource().getURI().toPlatformString(true))).getProject();
-		
+		Shell shell = HandlerUtil.getActiveShell(event);
+		if (!checkResultsAvailable(shell)) {
+			return null;
+		}
+		List<ObservableThreat> threats = analysedThreats();
+		IProject project = analysedProject();
+
 		IFolder reportFolder = project.getFolder("report");
 		File path = reportFolder.getLocation().toFile();
-
-		IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-		Shell shell = window != null ? window.getShell() : null;
 
 		boolean exported = false;
 		try {
