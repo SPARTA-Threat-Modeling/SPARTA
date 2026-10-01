@@ -176,19 +176,42 @@ public class RiskCalculation {
 	private static List<CounterMeasure> getCounterMeasures(DataFlow flow, ThreatType tt,
 			List<RoleBinding> countermeasureBindings) {
 		return countermeasureBindings.parallelStream()
+				.filter(b -> b.getBinds() != null)
 				.flatMap(b -> b.getBinds().getSubjected().stream()
-						.filter( cm ->
-						(cm.getMitigates().stream().flatMap( att -> getAllLeaves(att).stream() ).collect(Collectors.toSet()).contains(tt))
-						||
-						! Collections.disjoint(cm.getMitigatedThreatTypeID(), getAllAncestors(tt).stream().map(att -> att.getId()).collect(Collectors.toList())))
-						)
-				.filter(cm -> (cm.getScope().isEmpty()
-						|| (!flow.getBound().isEmpty() && flow.getBound().stream()
-								.anyMatch(rb -> rb.getBinds() != null
-										&& cm.getScope().stream().anyMatch(r -> r.equals(rb.getBinds()))))))
+						.filter(cm -> mitigates(cm, tt) && isInScope(cm, flow)))
 				.collect(Collectors.toList());
 	}
-	
+
+	/**
+	 * Whether a countermeasure mitigates the given threat type: either it references the type
+	 * (or a composite containing it) through {@code mitigates}, or one of its
+	 * {@code mitigatedThreatTypeID}s is the id of the type or one of its super types.
+	 *
+	 * @param cm - the countermeasure
+	 * @param tt - the (leaf) threat type
+	 * @return true if cm mitigates tt
+	 */
+	public static boolean mitigates(CounterMeasure cm, ThreatType tt) {
+		return (cm.getMitigates().stream().flatMap( att -> getAllLeaves(att).stream() ).collect(Collectors.toSet()).contains(tt))
+				||
+				! Collections.disjoint(cm.getMitigatedThreatTypeID(), getAllAncestors(tt).stream().map(att -> att.getId()).collect(Collectors.toList()));
+	}
+
+	/**
+	 * Whether a countermeasure applies in the context of the given data flow: it has no scope,
+	 * or the flow is bound to one of the roles in its scope.
+	 *
+	 * @param cm   - the countermeasure
+	 * @param flow - the data flow the threat applies to (may be null)
+	 * @return true if cm applies to flow
+	 */
+	public static boolean isInScope(CounterMeasure cm, DataFlow flow) {
+		return cm.getScope().isEmpty()
+				|| (flow != null && !flow.getBound().isEmpty() && flow.getBound().stream()
+						.anyMatch(rb -> rb.getBinds() != null
+								&& cm.getScope().stream().anyMatch(r -> r.equals(rb.getBinds()))));
+	}
+
 
 	private static List<ThreatType> getAllLeaves(AbstractThreatType att) {
 		List<ThreatType> result = new ArrayList<ThreatType>();

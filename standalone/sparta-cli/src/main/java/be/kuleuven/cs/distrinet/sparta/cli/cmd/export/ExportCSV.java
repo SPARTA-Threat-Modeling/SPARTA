@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 
 import be.kuleuven.cs.distrinet.sparta.core.model.Threat;
 import be.kuleuven.cs.distrinet.sparta.io.ThreatCSVWriter;
+import be.kuleuven.cs.distrinet.sparta.io.ThreatExportColumns;
 
 /**
  * Support for exporting to CSV via the command line.
@@ -56,7 +57,7 @@ public class ExportCSV implements Exporter {
 		String csv = cmd.getOptionValue(csvoption.getLongOpt());
 
 		try (ThreatCSVWriter tw = new ThreatCSVWriter(
-				Files.newBufferedWriter(Paths.get(csv), StandardCharsets.UTF_8))) {
+				Files.newBufferedWriter(Paths.get(csv), StandardCharsets.UTF_8), ThreatExportColumns.withMetadata())) {
 			tw.writeHeader();
 			tw.write(results.toArray(new Threat[] {}));
 

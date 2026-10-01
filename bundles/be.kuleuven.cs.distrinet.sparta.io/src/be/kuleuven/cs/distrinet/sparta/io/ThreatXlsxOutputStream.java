@@ -91,10 +91,12 @@ public class ThreatXlsxOutputStream extends ThreatOutputStream {
 		for (String prop : getProperties().keySet()) {
 			Cell c = row.createCell(cellIdx++);
 			Object r = getProperties().get(prop).apply(threat);
-			if (r instanceof Double) {
-				c.setCellValue((double) r);
-			} else {
-				c.setCellValue("" + r);
+			if (r instanceof Number) {
+				c.setCellValue(((Number) r).doubleValue());
+			} else if (r instanceof Boolean) {
+				c.setCellValue((Boolean) r);
+			} else if (r != null) {
+				c.setCellValue(r.toString());
 			}
 		}
 	}

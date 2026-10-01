@@ -9,32 +9,30 @@
  */
 package be.kuleuven.cs.distrinet.sparta.analysis.handlers;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 import be.kuleuven.cs.distrinet.sparta.core.model.Threat;
-import be.kuleuven.cs.distrinet.sparta.io.ThreatCSVWriter;
 import be.kuleuven.cs.distrinet.sparta.io.ThreatExportColumns;
+import be.kuleuven.cs.distrinet.sparta.io.ThreatXlsxOutputStream;
 
-public class CSVExportHandler extends AbstractThreatTableExportHandler {
+public class XLSXExportHandler extends AbstractThreatTableExportHandler {
 
 	@Override
 	protected String fileName() {
-		return "threats.csv";
+		return "threats.xlsx";
 	}
 
 	@Override
 	protected String formatName() {
-		return "CSV";
+		return "XLSX";
 	}
 
 	@Override
 	protected void export(File file, Threat[] threats) throws IOException {
-		try (ThreatCSVWriter tw = new ThreatCSVWriter(new BufferedWriter(new FileWriter(file)),
+		try (ThreatXlsxOutputStream tw = new ThreatXlsxOutputStream(new FileOutputStream(file),
 				ThreatExportColumns.withMetadata())) {
-			tw.writeHeader();
 			tw.write(threats);
 		}
 	}

@@ -62,6 +62,10 @@
             name="Export Threats to CSV">
       </command>
       <command
+            id="be.kuleuven.cs.distrinet.sparta.analysis.xlsxexport"
+            name="Export Threats to XLSX">
+      </command>
+      <command
             id="be.kuleuven.cs.distrinet.sparta.analysis.reportExport"
             name="Export Threat Report">
       </command>
@@ -83,6 +87,10 @@
       <handler
             class="be.kuleuven.cs.distrinet.sparta.analysis.handlers.CSVExportHandler"
             commandId="be.kuleuven.cs.distrinet.sparta.analysis.csvexport">
+      </handler>
+      <handler
+            class="be.kuleuven.cs.distrinet.sparta.analysis.handlers.XLSXExportHandler"
+            commandId="be.kuleuven.cs.distrinet.sparta.analysis.xlsxexport">
       </handler>
       <handler
             class="be.kuleuven.cs.distrinet.sparta.analysis.handlers.ReportExportHandler"
@@ -114,6 +122,12 @@
                commandId="be.kuleuven.cs.distrinet.sparta.analysis.csvexport"
                icon="icons/export.png"
                label="Export threats"
+               style="push">
+         </command>
+         <command
+               commandId="be.kuleuven.cs.distrinet.sparta.analysis.xlsxexport"
+               icon="icons/export.png"
+               label="Export threats (XLSX)"
                style="push">
          </command>
          <command
@@ -157,6 +171,12 @@
                   style="push">
             </command>
             <command
+                  commandId="be.kuleuven.cs.distrinet.sparta.analysis.xlsxexport"
+                  icon="icons/export.png"
+                  label="Export Threats to &amp;XLSX"
+                  style="push">
+            </command>
+            <command
                   commandId="be.kuleuven.cs.distrinet.sparta.analysis.reportExport"
                   icon="icons/report.png"
                   label="Export Threat &amp;Report"
@@ -195,6 +215,12 @@
                   commandId="be.kuleuven.cs.distrinet.sparta.analysis.csvexport"
                   icon="icons/export.png"
                   tooltip="Export threats to CSV"
+                  style="push">
+            </command>
+            <command
+                  commandId="be.kuleuven.cs.distrinet.sparta.analysis.xlsxexport"
+                  icon="icons/export.png"
+                  tooltip="Export threats to XLSX"
                   style="push">
             </command>
             <command

@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import be.kuleuven.cs.distrinet.sparta.core.model.Threat;
+import be.kuleuven.cs.distrinet.sparta.io.ThreatExportColumns;
 import be.kuleuven.cs.distrinet.sparta.io.ThreatXlsxOutputStream;
 
 /**
@@ -50,7 +51,8 @@ public class ExportXLSX implements Exporter {
 
 		String xlsx = cmd.getOptionValue(xlsxoption.getLongOpt());
 
-		try (ThreatXlsxOutputStream tw = new ThreatXlsxOutputStream(new FileOutputStream(xlsx))) {
+		try (ThreatXlsxOutputStream tw = new ThreatXlsxOutputStream(new FileOutputStream(xlsx),
+				ThreatExportColumns.withMetadata())) {
 			tw.write(results.toArray(new Threat[] {}));
 
 		} catch (IOException e1) {
