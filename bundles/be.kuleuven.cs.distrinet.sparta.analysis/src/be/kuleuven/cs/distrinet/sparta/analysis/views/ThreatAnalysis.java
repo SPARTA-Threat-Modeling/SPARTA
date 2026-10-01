@@ -12,9 +12,7 @@ package be.kuleuven.cs.distrinet.sparta.analysis.views;
 
 import java.text.NumberFormat;
 import java.util.Comparator;
-import java.util.List;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import org.eclipse.core.databinding.beans.typed.PojoProperties;
 import org.eclipse.core.databinding.observable.ChangeEvent;
@@ -23,7 +21,6 @@ import org.eclipse.core.databinding.observable.list.AbstractObservableList;
 import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.property.Properties;
 import org.eclipse.core.databinding.property.value.IValueProperty;
-import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
@@ -50,8 +47,6 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.ISharedImages;
-import org.eclipse.ui.IWorkbenchPart;
-import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
@@ -275,11 +270,7 @@ public class ThreatAnalysis extends ViewPart implements AnalysisListener {
 	}
 
 
-	private Resource loadedResource;
-
-	public void load(Resource resource) {
-			this.loadedResource = resource;
-
+	private void load() {
 			ml = ThreatAnalysisService.getInstance().observableThreatList();
 
 			bind(
@@ -380,23 +371,6 @@ public class ThreatAnalysis extends ViewPart implements AnalysisListener {
 
 
 
-    public static ThreatAnalysis getInstance(IWorkbenchWindow activeWorkbenchWindow) {
-        IWorkbenchPart instance = null;
-        if (activeWorkbenchWindow != null && activeWorkbenchWindow.getActivePage() != null) {
-            instance = activeWorkbenchWindow.getActivePage().getActivePart();
-            if (!(instance instanceof ThreatAnalysis)) {
-                instance = activeWorkbenchWindow.getActivePage().findView(ID);
-            }
-        }
-        return (ThreatAnalysis) instance;
-    }
-
-    public List<? extends ObservableThreat> getThreatList() {
-    	return ml.stream().collect(Collectors.toList());
-    }
-    public Resource getLoadedResource() {
-    	return loadedResource;
-    }
 
 	private IChangeListener changeListener = new IChangeListener() {
 
@@ -434,7 +408,7 @@ public class ThreatAnalysis extends ViewPart implements AnalysisListener {
 		if (ml != null) {
 			ml.removeChangeListener(changeListener);
 		}
-		load(ThreatAnalysisService.getInstance().getResource());
+		load();
 		ml.addChangeListener(changeListener);
 
 	}
