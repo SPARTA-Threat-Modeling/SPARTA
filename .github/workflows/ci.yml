@@ -26,6 +26,13 @@ env:
 jobs:
   verify:
     runs-on: ubuntu-latest
+    # A cold p2 cache resolves the full Eclipse target platform, so allow
+    # headroom over the normal build time while still cutting off a hung run
+    # long before the 6-hour default.
+    timeout-minutes: 60
+    permissions:
+      contents: read    # checkout only
+      checks: write     # dorny/test-reporter creates a check run for the test report
     steps:
       - uses: actions/checkout@v7
 

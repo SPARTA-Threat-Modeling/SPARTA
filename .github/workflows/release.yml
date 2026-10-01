@@ -29,9 +29,14 @@ env:
 jobs:
   release:
     runs-on: ubuntu-latest
+    # Multi-platform Tycho product build; a cold p2 cache resolves the whole
+    # Eclipse target platform, so allow well beyond the ~normal build time
+    # while still cutting off a hung run long before the 6-hour default.
+    timeout-minutes: 90
     permissions:
       contents: write   # `gh release create` publishes the release + assets
       packages: write   # `mvn deploy` publishes library jars to GitHub Packages
+      checks: write     # dorny/test-reporter creates a check run for the test report
     steps:
       - uses: actions/checkout@v7
         with:
@@ -114,6 +119,9 @@ jobs:
           name: Test results
           path: '**/target/surefire-reports/TEST-*.xml'
           reporter: java-junit
+          # Never let a reporting hiccup (permissions, API flake) fail this
+          # step and block the release steps that follow it.
+          fail-on-error: false
 
       # Create the actual GitHub Release for the tag and attach the packaged
       # deliverables as release assets (permanent downloads on the Releases
