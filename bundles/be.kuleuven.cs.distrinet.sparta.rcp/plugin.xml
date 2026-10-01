@@ -11,7 +11,15 @@
             name="Security and Privacy Analysis through Risk-driven Threat Assessment">
          <property
                name="appName"
-               value="Security and Privacy Analysis through Risk-driven Threat Assessment">
+               value="SPARTA">
+         </property>
+         <property
+               name="aboutText"
+               value="%aboutText">
+         </property>
+         <property
+               name="aboutImage"
+               value="Splash_side.png">
          </property>
          <property
                name="windowImages"

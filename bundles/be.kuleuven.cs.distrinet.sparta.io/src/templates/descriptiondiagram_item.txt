@@ -1,2 +1,4 @@
 \subsection{$$DIAGRAM_TITLE$$}
 
+$$DIAGRAM_BODY$$
+

@@ -47,7 +47,7 @@ public class ThreatItemTemplate extends Template<Threat> {
 		els.add(x.getDataFlowToName());
 		
 		return getTemplate().replace(NAME, name)
-				.replace(LABEL, LaTeX.latexEscape(x.getThreatenedElementId()))
+				.replace(LABEL, labelSafe(x.getThreatenedElementId()))
 				.replace(ID, LaTeX.latexEscape(x.getThreatenedElementId()))
 				.replace(DIAGRAM, ThreatItemDiagramTemplate.fill(x))
 				.replace(TYPE, LaTeX.latexEscape(x.getThreatTypeName()))
@@ -56,5 +56,19 @@ public class ThreatItemTemplate extends Template<Threat> {
 				.replace(AFFECTED, LaTeX.latexEscape(x.getThreatenedElementName()))
 				.replace(RISK, "" + x.getRisk());
 	}
-	
+
+	/**
+	 * Turn an element id into a safe LaTeX/hyperref label. Labels must be plain (they end up
+	 * inside a {@code \csname ...\endcsname}), so - unlike body text - they must NOT be
+	 * LaTeX-escaped: an escaped {@code _} becomes the control sequence {@code \_}, which breaks
+	 * hyperref's anchor construction ("Missing \endcsname inserted"). Non-alphanumeric
+	 * characters (including the XMI-id underscores) are replaced with hyphens.
+	 */
+	private static String labelSafe(String id) {
+		if (id == null || id.isEmpty()) {
+			return "threat";
+		}
+		return "threat-" + id.replaceAll("[^A-Za-z0-9]+", "-");
+	}
+
 }

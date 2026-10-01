@@ -65,7 +65,7 @@ public class AbstractConditionItemProvider extends SecurityElementItemProvider {
 	 * This adds a property descriptor for the Title feature.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
+	 * @generated NOT
 	 */
 	protected void addTitlePropertyDescriptor(Object object) {
 		itemPropertyDescriptors.add
@@ -76,7 +76,7 @@ public class AbstractConditionItemProvider extends SecurityElementItemProvider {
 				 getString("_UI_PropertyDescriptor_description", "_UI_AbstractCondition_title_feature", "_UI_AbstractCondition_type"),
 				 SpartaModelPackage.Literals.ABSTRACT_CONDITION__TITLE,
 				 true,
-				 false,
+				 true,
 				 false,
 				 ItemPropertyDescriptor.GENERIC_VALUE_IMAGE,
 				 null,
@@ -87,7 +87,7 @@ public class AbstractConditionItemProvider extends SecurityElementItemProvider {
 	 * This adds a property descriptor for the Additional Info feature.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
+	 * @generated NOT
 	 */
 	protected void addAdditionalInfoPropertyDescriptor(Object object) {
 		itemPropertyDescriptors.add
@@ -98,7 +98,7 @@ public class AbstractConditionItemProvider extends SecurityElementItemProvider {
 				 getString("_UI_PropertyDescriptor_description", "_UI_AbstractCondition_additionalInfo_feature", "_UI_AbstractCondition_type"),
 				 SpartaModelPackage.Literals.ABSTRACT_CONDITION__ADDITIONAL_INFO,
 				 true,
-				 false,
+				 true,
 				 false,
 				 ItemPropertyDescriptor.GENERIC_VALUE_IMAGE,
 				 null,
@@ -109,7 +109,7 @@ public class AbstractConditionItemProvider extends SecurityElementItemProvider {
 	 * This adds a property descriptor for the Comments feature.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
+	 * @generated NOT
 	 */
 	protected void addCommentsPropertyDescriptor(Object object) {
 		itemPropertyDescriptors.add
@@ -120,7 +120,7 @@ public class AbstractConditionItemProvider extends SecurityElementItemProvider {
 				 getString("_UI_PropertyDescriptor_description", "_UI_AbstractCondition_comments_feature", "_UI_AbstractCondition_type"),
 				 SpartaModelPackage.Literals.ABSTRACT_CONDITION__COMMENTS,
 				 true,
-				 false,
+				 true,
 				 false,
 				 ItemPropertyDescriptor.GENERIC_VALUE_IMAGE,
 				 null,

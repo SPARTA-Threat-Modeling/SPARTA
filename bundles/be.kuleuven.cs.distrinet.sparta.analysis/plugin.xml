@@ -8,6 +8,10 @@
             name="ThreatAnalysis"
             id="be.kuleuven.cs.distrinet.sparta.analysis.analysisview">
       </category>
+      <category
+            name="Pattern Support"
+            id="be.kuleuven.cs.distrinet.sparta.analysis.patternview">
+      </category>
       <view
             name="ThreatAnalysis"
             inject="true"
@@ -51,15 +55,19 @@
       </command>
       <command
             id="be.kuleuven.cs.distrinet.sparta.analysis.clearengine"
-            name="Clear Engine">
+            name="Clear Analysis Engine">
       </command>
       <command
             id="be.kuleuven.cs.distrinet.sparta.analysis.csvexport"
-            name="CSV Export">
+            name="Export Threats to CSV">
       </command>
       <command
             id="be.kuleuven.cs.distrinet.sparta.analysis.reportExport"
-            name="Report Export">
+            name="Export Threat Report">
+      </command>
+      <command
+            id="be.kuleuven.cs.distrinet.sparta.analysis.editVqlPattern"
+            name="Edit VQL Pattern">
       </command>
    </extension>
    <extension
@@ -79,6 +87,10 @@
       <handler
             class="be.kuleuven.cs.distrinet.sparta.analysis.handlers.ReportExportHandler"
             commandId="be.kuleuven.cs.distrinet.sparta.analysis.reportExport">
+      </handler>
+      <handler
+            class="be.kuleuven.cs.distrinet.sparta.analysis.handlers.EditVqlPatternHandler"
+            commandId="be.kuleuven.cs.distrinet.sparta.analysis.editVqlPattern">
       </handler>
    </extension>
    <extension
@@ -111,6 +123,120 @@
                style="push">
          </command>
       </menuContribution>
+      <!--
+         Top-level "SPARTA" menu so the analysis actions are discoverable from
+         the main menu bar, not only the ThreatAnalysis view's local toolbar
+         (which disappears when the view is closed).
+      -->
+      <menuContribution
+            allPopups="false"
+            locationURI="menu:org.eclipse.ui.main.menu?after=additions">
+         <menu
+               id="be.kuleuven.cs.distrinet.sparta.analysis.menu"
+               label="&amp;SPARTA">
+            <command
+                  commandId="be.kuleuven.cs.distrinet.sparta.analysis.loadmodel"
+                  icon="icons/analyse.png"
+                  label="&amp;Load and Analyze Model"
+                  style="push">
+            </command>
+            <command
+                  commandId="be.kuleuven.cs.distrinet.sparta.analysis.clearengine"
+                  icon="icons/clear.png"
+                  label="&amp;Clear Analysis Engine"
+                  style="push">
+            </command>
+            <separator
+                  name="be.kuleuven.cs.distrinet.sparta.analysis.menu.export"
+                  visible="true">
+            </separator>
+            <command
+                  commandId="be.kuleuven.cs.distrinet.sparta.analysis.csvexport"
+                  icon="icons/export.png"
+                  label="Export Threats to &amp;CSV"
+                  style="push">
+            </command>
+            <command
+                  commandId="be.kuleuven.cs.distrinet.sparta.analysis.reportExport"
+                  icon="icons/report.png"
+                  label="Export Threat &amp;Report"
+                  style="push">
+            </command>
+         </menu>
+      </menuContribution>
+      <!--
+         SPARTA group on the main toolbar, so the run/clear/export actions are
+         always visible (icon buttons) regardless of whether the ThreatAnalysis
+         view is open. Grouped/labeled by workflow: Analyze -> Clear -> Export.
+      -->
+      <menuContribution
+            allPopups="false"
+            locationURI="toolbar:org.eclipse.ui.main.toolbar?after=additions">
+         <toolbar
+               id="be.kuleuven.cs.distrinet.sparta.analysis.toolbar"
+               label="SPARTA">
+            <command
+                  commandId="be.kuleuven.cs.distrinet.sparta.analysis.loadmodel"
+                  icon="icons/analyse.png"
+                  tooltip="Load and analyze the active SPARTA model"
+                  style="push">
+            </command>
+            <command
+                  commandId="be.kuleuven.cs.distrinet.sparta.analysis.clearengine"
+                  icon="icons/clear.png"
+                  tooltip="Clear the analysis engine"
+                  style="push">
+            </command>
+            <separator
+                  name="be.kuleuven.cs.distrinet.sparta.analysis.toolbar.export"
+                  visible="true">
+            </separator>
+            <command
+                  commandId="be.kuleuven.cs.distrinet.sparta.analysis.csvexport"
+                  icon="icons/export.png"
+                  tooltip="Export threats to CSV"
+                  style="push">
+            </command>
+            <command
+                  commandId="be.kuleuven.cs.distrinet.sparta.analysis.reportExport"
+                  icon="icons/report.png"
+                  tooltip="Export the threat report"
+                  style="push">
+            </command>
+         </toolbar>
+      </menuContribution>
+      <!--
+         Context-menu action to edit a ThreatPattern's VQL text with syntax
+         highlighting. Shown on any popup (e.g. the model tree editor) when the
+         selection is a ThreatPattern.
+      -->
+      <menuContribution
+            allPopups="true"
+            locationURI="popup:org.eclipse.ui.popup.any?after=additions">
+         <command
+               commandId="be.kuleuven.cs.distrinet.sparta.analysis.editVqlPattern"
+               label="Edit VQL Pattern…"
+               style="push">
+            <visibleWhen
+                  checkEnabled="false">
+               <iterate
+                     ifEmpty="false">
+                  <instanceof
+                        value="be.kuleuven.cs.distrinet.sparta.spartamodel.ThreatPattern">
+                  </instanceof>
+               </iterate>
+            </visibleWhen>
+         </command>
+      </menuContribution>
+   </extension>
+   <extension
+         point="org.eclipse.ui.bindings">
+      <key
+            commandId="be.kuleuven.cs.distrinet.sparta.analysis.loadmodel"
+            contextId="org.eclipse.ui.contexts.window"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+M3+A">
+      </key>
    </extension>
 
 </plugin>

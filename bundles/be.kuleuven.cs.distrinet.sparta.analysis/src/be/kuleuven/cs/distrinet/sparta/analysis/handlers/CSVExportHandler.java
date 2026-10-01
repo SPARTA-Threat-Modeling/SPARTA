@@ -18,8 +18,11 @@ import java.util.stream.Collectors;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
@@ -42,12 +45,13 @@ public class CSVExportHandler extends AbstractHandler {
 
 		IProject project = ResourcesPlugin.getWorkspace().getRoot()
 				.getFile(new Path(ta.getLoadedResource().getURI().toPlatformString(true))).getProject();
-		
-		
-		try (ThreatCSVWriter tw = new ThreatCSVWriter(new BufferedWriter(new FileWriter(project.getFile("threats.csv").getLocation().toFile())))) {
+
+		IFile csvFile = project.getFile("threats.csv");
+		boolean exported = false;
+		try (ThreatCSVWriter tw = new ThreatCSVWriter(new BufferedWriter(new FileWriter(csvFile.getLocation().toFile())))) {
 			tw.writeHeader();
 			tw.write(threats.toArray(new ObservableThreat[] {}));
-
+			exported = true;
 		} catch (IOException e1) {
 			Activator activator = Activator.getDefault();
 			if (activator != null) {
@@ -56,6 +60,17 @@ public class CSVExportHandler extends AbstractHandler {
 			}
 			MessageDialog.openError(activeWorkbenchWindow.getShell(), "CSV export failed",
 					"Could not write threats.csv: " + e1.getMessage());
+		}
+
+		if (exported) {
+			// Surface the new file in the workspace and tell the user where it landed.
+			try {
+				csvFile.refreshLocal(IResource.DEPTH_ZERO, null);
+			} catch (CoreException ignore) {
+				// non-fatal: the file is written, only the workspace view is stale
+			}
+			MessageDialog.openInformation(activeWorkbenchWindow.getShell(), "CSV export complete",
+					threats.size() + " threat(s) exported to:\n" + csvFile.getFullPath().toString());
 		}
 		return null;
 	}

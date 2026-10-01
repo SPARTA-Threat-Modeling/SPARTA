@@ -2,7 +2,7 @@
 <feature
       id="be.kuleuven.cs.distrinet.sparta.graphicalmodeling.feature"
       label="SPARTA Graphical Modeling Support"
-      version="2026.2.0"
+      version="2026.3.0"
       provider-name="DistriNet">
 
    <description>
@@ -296,5 +296,27 @@ No third-party beneficiary rights are created under this Agreement.
    <plugin
          id="be.kuleuven.cs.distrinet.sparta.design"
          version="0.0.0"/>
+
+   <!-- Sirius table representation runtime (ships as plugins; there is no table
+        feature in the Sirius 7.4.11 update site). Required for the EditionTable
+        representations added to sparta.odesign. -->
+   <plugin
+         id="org.eclipse.sirius.table.model"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+   <plugin
+         id="org.eclipse.sirius.table"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+   <plugin
+         id="org.eclipse.sirius.table.ui"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
 
 </feature>

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<description:Group xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:description="http://www.eclipse.org/sirius/description/1.1.0" xmlns:description_1="http://www.eclipse.org/sirius/diagram/description/1.1.0" xmlns:properties="http://www.eclipse.org/sirius/properties/1.0.0" xmlns:style="http://www.eclipse.org/sirius/diagram/description/style/1.1.0" xmlns:tool="http://www.eclipse.org/sirius/diagram/description/tool/1.1.0" xmlns:tool_1="http://www.eclipse.org/sirius/description/tool/1.1.0" xmlns:validation="http://www.eclipse.org/sirius/description/validation/1.1.0" name="secdfd" version="12.0.0.2017041100">
+<description:Group xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:description="http://www.eclipse.org/sirius/description/1.1.0" xmlns:description_1="http://www.eclipse.org/sirius/diagram/description/1.1.0" xmlns:properties="http://www.eclipse.org/sirius/properties/1.0.0" xmlns:style="http://www.eclipse.org/sirius/diagram/description/style/1.1.0" xmlns:tool="http://www.eclipse.org/sirius/diagram/description/tool/1.1.0" xmlns:tool_1="http://www.eclipse.org/sirius/description/tool/1.1.0" xmlns:validation="http://www.eclipse.org/sirius/description/validation/1.1.0" xmlns:table="http://www.eclipse.org/sirius/table/description/1.1.0" name="secdfd" version="12.0.0.2017041100">
   <ownedViewpoints name="DataFlowDiagram" modelFileExtension="uml ecore dfd sdfd security xmi xml sparta securitydfd">
+    <ownedJavaExtensions qualifiedClassName="be.kuleuven.cs.distrinet.sparta.design.Services"/>
     <validationSet>
       <ownedRules xsi:type="validation:SemanticValidationRule" name="DisconnectedElement" level="ERROR" message="aql:self.name.toUpperFirst()+' is disconnected.'" targetClass="spartamodel::DataFlowEntity">
         <audits auditExpression="aql:not (self.send->isEmpty() and self.receive->isEmpty())"/>
@@ -49,7 +50,7 @@
         <edgeMappings name="DataFlowEdge" sourceMapping="//@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DecompositionDiagram']/@defaultLayer/@containerMappings[name='DecomposedEntityNode']/@subNodeMappings[name='DDataStoreNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DecompositionDiagram']/@defaultLayer/@containerMappings[name='DecomposedEntityNode']/@subNodeMappings[name='DExternalEntityNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DecompositionDiagram']/@defaultLayer/@containerMappings[name='DecomposedEntityNode']/@subNodeMappings[name='DProcessNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DecompositionDiagram']/@defaultLayer/@containerMappings[name='DecomposedEntityNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DecompositionDiagram']/@defaultLayer/@nodeMappings[name='EDataStoreNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DecompositionDiagram']/@defaultLayer/@nodeMappings[name='EExternalEntityNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DecompositionDiagram']/@defaultLayer/@nodeMappings[name='EProcessNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DecompositionDiagram']/@defaultLayer/@containerMappings[name='DecomposedEntityNode']/@subContainerMappings[name='DDecomposedEntityNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DecompositionDiagram']/@defaultLayer/@containerMappings[name='DecomposedEntityNode']/@borderedNodeMappings[name='DRecipientSpecification'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DecompositionDiagram']/@defaultLayer/@containerMappings[name='DecomposedEntityNode']/@borderedNodeMappings[name='DSenderSpecification']" targetMapping="//@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DecompositionDiagram']/@defaultLayer/@containerMappings[name='DecomposedEntityNode']/@subNodeMappings[name='DDataStoreNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DecompositionDiagram']/@defaultLayer/@containerMappings[name='DecomposedEntityNode']/@subNodeMappings[name='DExternalEntityNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DecompositionDiagram']/@defaultLayer/@containerMappings[name='DecomposedEntityNode']/@subNodeMappings[name='DProcessNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DecompositionDiagram']/@defaultLayer/@containerMappings[name='DecomposedEntityNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DecompositionDiagram']/@defaultLayer/@nodeMappings[name='EExternalEntityNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DecompositionDiagram']/@defaultLayer/@nodeMappings[name='EDataStoreNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DecompositionDiagram']/@defaultLayer/@nodeMappings[name='EProcessNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DecompositionDiagram']/@defaultLayer/@containerMappings[name='DecomposedEntityNode']/@subContainerMappings[name='DDecomposedEntityNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DecompositionDiagram']/@defaultLayer/@containerMappings[name='DecomposedEntityNode']/@borderedNodeMappings[name='DRecipientSpecification'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DecompositionDiagram']/@defaultLayer/@containerMappings[name='DecomposedEntityNode']/@borderedNodeMappings[name='DSenderSpecification']" targetFinderExpression="aql:if self.recipientSpecifiedBy = null then self.recipient else self.recipientSpecifiedBy endif" sourceFinderExpression="aql:if self.senderSpecifiedBy = null then self.sender else self.senderSpecifiedBy endif" domainClass="spartamodel.DataFlow" useDomainElement="true">
           <style targetArrow="InputFillClosedArrow" sizeComputationExpression="2" endsCentering="Both">
             <strokeColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='black']"/>
-            <centerLabelStyleDescription showIcon="false" labelExpression="feature:name">
+            <centerLabelStyleDescription showIcon="false" labelExpression="feature:name" tooltipExpression="aql:self.name + (if self.eContainer(spartamodel::DFDModel).resource->filter(spartamodel::AttackerModel).attackerProfiles->exists(p | p.insider->includes(self)) then ' [insider threat]' else '' endif) + (if self.lossMagnitude->notEmpty() or self.estimates->notEmpty() then ' [loss estimated]' else '' endif)">
               <labelColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='black']"/>
             </centerLabelStyleDescription>
           </style>
@@ -121,7 +122,7 @@
       <validationSet/>
       <defaultLayer name="Default">
         <nodeMappings name="ExternalEntityNode" labelDirectEdit="//@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@toolSections.0/@ownedTools[name='Edit%20Name']" semanticCandidatesExpression="aql:self.containedElements->select(el | el.oclIsKindOf(spartamodel::DataFlowEntity) and el.containedElements->isEmpty())" domainClass="spartamodel.ExternalEntity">
-          <style xsi:type="style:SquareDescription" borderSizeComputationExpression="2" showIcon="false" labelPosition="node" resizeKind="NSEW" width="10" height="3">
+          <style xsi:type="style:SquareDescription" borderSizeComputationExpression="2" showIcon="false" tooltipExpression="aql:self.name + (if self.eContainer(spartamodel::DFDModel).resource->filter(spartamodel::AttackerModel).attackerProfiles->exists(p | p.insider->includes(self)) then ' [insider threat]' else '' endif) + (if self.lossMagnitude->notEmpty() or self.estimates->notEmpty() then ' [loss estimated]' else '' endif)" labelPosition="node" resizeKind="NSEW" width="10" height="3">
             <borderColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='black']"/>
             <labelFormat>bold</labelFormat>
             <labelColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='black']"/>
@@ -129,14 +130,14 @@
           </style>
         </nodeMappings>
         <nodeMappings name="ProcessNode" labelDirectEdit="//@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@toolSections.0/@ownedTools[name='Edit%20Name']" semanticCandidatesExpression="aql:self.containedElements->select(el | el.oclIsKindOf(spartamodel::DataFlowEntity) and el.containedElements->isEmpty())" domainClass="spartamodel.Process">
-          <style xsi:type="style:EllipseNodeDescription" borderSizeComputationExpression="1" showIcon="false" labelPosition="node" resizeKind="NSEW" horizontalDiameterComputationExpression="8" verticalDiameterComputationExpression="8">
+          <style xsi:type="style:EllipseNodeDescription" borderSizeComputationExpression="1" showIcon="false" tooltipExpression="aql:self.name + (if self.eContainer(spartamodel::DFDModel).resource->filter(spartamodel::AttackerModel).attackerProfiles->exists(p | p.insider->includes(self)) then ' [insider threat]' else '' endif) + (if self.lossMagnitude->notEmpty() or self.estimates->notEmpty() then ' [loss estimated]' else '' endif)" labelPosition="node" resizeKind="NSEW" horizontalDiameterComputationExpression="8" verticalDiameterComputationExpression="8">
             <borderColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='black']"/>
             <labelColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='black']"/>
             <color xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='white']"/>
           </style>
         </nodeMappings>
         <nodeMappings name="DataStoreNode" labelDirectEdit="//@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@toolSections.0/@ownedTools[name='Edit%20Name']" semanticCandidatesExpression="aql:self.containedElements->select(el | el.oclIsKindOf(spartamodel::DataFlowEntity) and el.containedElements->isEmpty())" domainClass="spartamodel.DataStore">
-          <style xsi:type="style:WorkspaceImageDescription" showIcon="false" sizeComputationExpression="5" labelPosition="node" resizeKind="NSEW" workspacePath="be.kuleuven.cs.distrinet.sparta.design/images/DS.svg">
+          <style xsi:type="style:WorkspaceImageDescription" showIcon="false" tooltipExpression="aql:self.name + (if self.eContainer(spartamodel::DFDModel).resource->filter(spartamodel::AttackerModel).attackerProfiles->exists(p | p.insider->includes(self)) then ' [insider threat]' else '' endif) + (if self.lossMagnitude->notEmpty() or self.estimates->notEmpty() then ' [loss estimated]' else '' endif)" sizeComputationExpression="5" labelPosition="node" resizeKind="NSEW" workspacePath="be.kuleuven.cs.distrinet.sparta.design/images/DS.svg">
             <borderColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='black']"/>
             <labelColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='black']"/>
           </style>
@@ -144,7 +145,7 @@
         <edgeMappings name="DataFlowEdge" labelDirectEdit="//@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@toolSections.0/@ownedTools[name='Edit%20Name']" sourceMapping="//@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@nodeMappings[name='DataStoreNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@nodeMappings[name='ExternalEntityNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@nodeMappings[name='ProcessNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@containerMappings[name='DecomposedEntityNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@containerMappings[name='DecomposedEntityNode']/@borderedNodeMappings[name='DRecipientSpecification'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@containerMappings[name='DecomposedEntityNode']/@borderedNodeMappings[name='DSenderSpecification']" targetMapping="//@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@nodeMappings[name='DataStoreNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@nodeMappings[name='ExternalEntityNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@nodeMappings[name='ProcessNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@containerMappings[name='DecomposedEntityNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@containerMappings[name='DecomposedEntityNode']/@borderedNodeMappings[name='DSenderSpecification'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@containerMappings[name='DecomposedEntityNode']/@borderedNodeMappings[name='DRecipientSpecification']" targetFinderExpression="aql:if self.recipientSpecifiedBy = null then self.recipient else self.recipientSpecifiedBy endif" sourceFinderExpression="aql:if self.senderSpecifiedBy = null then self.sender else self.senderSpecifiedBy endif" domainClass="spartamodel.DataFlow" useDomainElement="true" reconnections="//@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@toolSections.0/@ownedTools[name='changeSender'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@toolSections.0/@ownedTools[name='changeRecipient']">
           <style targetArrow="InputFillClosedArrow" sizeComputationExpression="2" endsCentering="Both">
             <strokeColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='black']"/>
-            <centerLabelStyleDescription showIcon="false" labelExpression="feature:name">
+            <centerLabelStyleDescription showIcon="false" labelExpression="feature:name" tooltipExpression="aql:self.name + (if self.eContainer(spartamodel::DFDModel).resource->filter(spartamodel::AttackerModel).attackerProfiles->exists(p | p.insider->includes(self)) then ' [insider threat]' else '' endif) + (if self.lossMagnitude->notEmpty() or self.estimates->notEmpty() then ' [loss estimated]' else '' endif)">
               <labelColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='black']"/>
             </centerLabelStyleDescription>
           </style>
@@ -469,7 +470,7 @@
         </toolSections>
       </defaultLayer>
       <additionalLayers name="SecurityView" activeByDefault="true">
-        <edgeMappings name="RoleBindingBindsTo" sourceMapping="//@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@additionalLayers[name='SecurityView']/@containerMappings[name='SolutionNode']/@borderedNodeMappings[name='RoleBindingBorder']" targetMapping="//@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@edgeMappings[name='DataFlowEdge'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@nodeMappings[name='DataStoreNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@nodeMappings[name='ExternalEntityNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@nodeMappings[name='ProcessNode']" targetFinderExpression="aql:self.bindsTo">
+        <edgeMappings name="RoleBindingBindsTo" deletionDescription="//@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@additionalLayers[name='SecurityView']/@toolSections.0/@ownedTools[name='unassignRoleBindingEdge']" sourceMapping="//@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@additionalLayers[name='SecurityView']/@containerMappings[name='SolutionNode']/@borderedNodeMappings[name='RoleBindingBorder']" targetMapping="//@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@edgeMappings[name='DataFlowEdge'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@nodeMappings[name='DataStoreNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@nodeMappings[name='ExternalEntityNode'] //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@nodeMappings[name='ProcessNode']" targetFinderExpression="aql:self.bindsTo">
           <style sizeComputationExpression="2">
             <strokeColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='gray']"/>
             <centerLabelStyleDescription>
@@ -478,13 +479,13 @@
           </style>
         </edgeMappings>
         <containerMappings name="SolutionNode" label="SolutionNode" labelDirectEdit="//@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@toolSections.0/@ownedTools[name='Edit%20Name']" semanticCandidatesExpression="aql:self.containedElements" domainClass="spartamodel.Solution">
-          <borderedNodeMappings name="RoleBindingBorder" semanticCandidatesExpression="aql:self.eAllContents()" domainClass="spartamodel.RoleBinding">
+          <borderedNodeMappings name="RoleBindingBorder" labelDirectEdit="//@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@toolSections.0/@ownedTools[name='Edit%20Name']" deletionDescription="//@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@additionalLayers[name='SecurityView']/@toolSections.0/@ownedTools[name='deleteOrUnassignRoleBinding']" semanticCandidatesExpression="aql:self.eAllContents()" domainClass="spartamodel.RoleBinding">
             <style xsi:type="style:SquareDescription" showIcon="false" labelPosition="node" resizeKind="NSEW" width="5">
               <borderColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='black']"/>
               <labelColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='black']"/>
               <color xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='gray']"/>
             </style>
-            <conditionnalStyles predicateExpression="aql:self.bindsTo == null">
+            <conditionnalStyles predicateExpression="aql:self.bindsTo->isEmpty()">
               <style xsi:type="style:SquareDescription" labelSize="12" showIcon="false" tooltipExpression="aql:'unassigned role: ' + self.name" labelPosition="node" resizeKind="NSEW">
                 <borderColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='black']"/>
                 <labelColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='black']"/>
@@ -492,7 +493,14 @@
               </style>
             </conditionnalStyles>
           </borderedNodeMappings>
-          <style xsi:type="style:FlatContainerStyleDescription" borderSizeComputationExpression="1" showIcon="false" labelAlignment="LEFT">
+          <borderedNodeMappings name="CounterMeasureBorder" semanticCandidatesExpression="aql:self.securitypattern.countermeasure" domainClass="spartamodel.CounterMeasure">
+            <style xsi:type="style:SquareDescription" showIcon="false" labelPosition="node" resizeKind="NSEW" width="6" tooltipExpression="aql:'Countermeasure: ' + self.name + ' - mitigates ' + (self.mitigates->size() + self.mitigatedThreatTypeID->size()) + ' threat type(s)'">
+              <borderColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='black']"/>
+              <labelColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='black']"/>
+              <color xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='light_green']"/>
+            </style>
+          </borderedNodeMappings>
+          <style xsi:type="style:FlatContainerStyleDescription" borderSizeComputationExpression="1" showIcon="false" tooltipExpression="aql:'Mitigates ' + (self.securitypattern.countermeasure.mitigates->asSet()->size() + self.securitypattern.countermeasure.mitigatedThreatTypeID->asSet()->size()) + ' threat type(s); ' + self.rolebinding->select(rb | rb.bindsTo->notEmpty())->size() + ' of ' + self.rolebinding->size() + ' role(s) bound'" labelAlignment="LEFT">
             <borderColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='black']"/>
             <labelColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='black']"/>
             <backgroundColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='white']"/>
@@ -573,6 +581,50 @@
               </firstModelOperations>
             </initialOperation>
           </ownedTools>
+          <ownedTools xsi:type="tool:DeleteElementDescription" name="deleteOrUnassignRoleBinding" forceRefresh="true">
+            <element name="element"/>
+            <elementView name="elementView"/>
+            <containerView name="containerView"/>
+            <initialOperation>
+              <!-- Delete on a role-binding square: if it is bound, clear bindsTo
+                   (unassign, keep the binding as an orange square); if it is
+                   already unassigned, remove the binding. wasBound captures the
+                   original state so the two branches stay mutually exclusive. -->
+              <firstModelOperations xsi:type="tool_1:ChangeContext" browseExpression="var:element">
+                <subModelOperations xsi:type="tool_1:Let" variableName="wasBound" valueExpression="aql:self.bindsTo->notEmpty()">
+                  <subModelOperations xsi:type="tool_1:If" conditionExpression="aql:wasBound">
+                    <!-- bindsTo is multi-valued; empty the list by removing each
+                         target (a plain Unset of the whole feature does not clear
+                         a many-reference). Iterate a snapshot so we don't mutate
+                         the collection we're iterating. -->
+                    <subModelOperations xsi:type="tool_1:For" expression="aql:element.bindsTo->asOrderedSet()" iteratorName="boundAsset">
+                      <subModelOperations xsi:type="tool_1:ChangeContext" browseExpression="var:element">
+                        <subModelOperations xsi:type="tool_1:Unset" featureName="bindsTo" elementExpression="aql:boundAsset"/>
+                      </subModelOperations>
+                    </subModelOperations>
+                  </subModelOperations>
+                  <subModelOperations xsi:type="tool_1:If" conditionExpression="aql:not wasBound">
+                    <subModelOperations xsi:type="tool_1:RemoveElement"/>
+                  </subModelOperations>
+                </subModelOperations>
+              </firstModelOperations>
+            </initialOperation>
+          </ownedTools>
+          <ownedTools xsi:type="tool:DeleteElementDescription" name="unassignRoleBindingEdge" forceRefresh="true">
+            <element name="element"/>
+            <elementView name="elementView"/>
+            <containerView name="containerView"/>
+            <initialOperation>
+              <!-- Deleting the binds-to edge unassigns the role binding (clears
+                   bindsTo) but keeps the binding. bindsTo is multi-valued, so it
+                   is emptied element-by-element, not via a whole-feature Unset. -->
+              <firstModelOperations xsi:type="tool_1:ChangeContext" browseExpression="var:element">
+                <subModelOperations xsi:type="tool_1:If" conditionExpression="aql:self.oclIsKindOf(spartamodel::RoleBinding)">
+                  <subModelOperations xsi:type="tool_1:Unset" featureName="bindsTo" elementExpression="aql:elementView.targetNode.target"/>
+                </subModelOperations>
+              </firstModelOperations>
+            </initialOperation>
+          </ownedTools>
         </toolSections>
         <decorationDescriptionsSet/>
       </additionalLayers>
@@ -586,6 +638,43 @@
           </vsmElementCustomizations>
         </customization>
       </additionalLayers>
+      <additionalLayers name="LossEstimates" label="Loss Estimates" activeByDefault="true">
+        <customization>
+          <vsmElementCustomizations xsi:type="description:VSMElementCustomization" predicateExpression="aql:self.lossMagnitude->notEmpty() or self.estimates->notEmpty()">
+            <featureCustomizations xsi:type="description:EAttributeCustomization" appliedOn="//@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@nodeMappings[name='ExternalEntityNode']/@style //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@nodeMappings[name='ProcessNode']/@style //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@nodeMappings[name='DataStoreNode']/@style" attributeName="labelExpression" value="aql:self.name + ' [loss ' + (if self.estimates->notEmpty() then self.estimates->first().probable.toString() else self.lossMagnitude->first().value.probable.toString() endif) + ']'"/>
+            <featureCustomizations xsi:type="description:EReferenceCustomization" appliedOn="//@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@nodeMappings[name='ExternalEntityNode']/@style //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@nodeMappings[name='ProcessNode']/@style //@ownedViewpoints[name='DataFlowDiagram']/@ownedRepresentations[name='DataFlowDiagram']/@defaultLayer/@nodeMappings[name='DataStoreNode']/@style" referenceName="borderColor">
+              <value href="environment:/viewpoint#//@systemColors/@entries[name='red']"/>
+            </featureCustomizations>
+          </vsmElementCustomizations>
+        </customization>
+      </additionalLayers>
+    </ownedRepresentations>
+    <ownedRepresentations xsi:type="table:EditionTableDescription" name="Attacker Profiles" titleExpression="aql:'Attacker profiles'" domainClass="spartamodel.AttackerModel">
+      <metamodel href="../../be.kuleuven.cs.distrinet.sparta.spartamodel/model/spartamodel.ecore#/"/>
+      <ownedColumnMappings name="name" headerLabelExpression="Name" featureName="name"/>
+      <ownedColumnMappings name="enabled" headerLabelExpression="Enabled" featureName="enabled"/>
+      <ownedColumnMappings name="tc_min" headerLabelExpression="Threat cap. (min)" featureName="minimum" featureParentExpression="aql:self.threatCapability"/>
+      <ownedColumnMappings name="tc_prob" headerLabelExpression="Threat cap. (prob.)" featureName="probable" featureParentExpression="aql:self.threatCapability"/>
+      <ownedColumnMappings name="tc_max" headerLabelExpression="Threat cap. (max)" featureName="maximum" featureParentExpression="aql:self.threatCapability"/>
+      <ownedColumnMappings name="tc_conf" headerLabelExpression="Threat cap. (conf.)" featureName="confidence" featureParentExpression="aql:self.threatCapability"/>
+      <ownedColumnMappings name="pa_min" headerLabelExpression="Prob. of action (min)" featureName="minimum" featureParentExpression="aql:self.probabilityOfAction"/>
+      <ownedColumnMappings name="pa_prob" headerLabelExpression="Prob. of action (prob.)" featureName="probable" featureParentExpression="aql:self.probabilityOfAction"/>
+      <ownedColumnMappings name="pa_max" headerLabelExpression="Prob. of action (max)" featureName="maximum" featureParentExpression="aql:self.probabilityOfAction"/>
+      <ownedColumnMappings name="pa_conf" headerLabelExpression="Prob. of action (conf.)" featureName="confidence" featureParentExpression="aql:self.probabilityOfAction"/>
+      <ownedColumnMappings name="cf_min" headerLabelExpression="Contact freq. (min)" featureName="minimum" featureParentExpression="aql:self.contactFrequency"/>
+      <ownedColumnMappings name="cf_prob" headerLabelExpression="Contact freq. (prob.)" featureName="probable" featureParentExpression="aql:self.contactFrequency"/>
+      <ownedColumnMappings name="cf_max" headerLabelExpression="Contact freq. (max)" featureName="maximum" featureParentExpression="aql:self.contactFrequency"/>
+      <ownedColumnMappings name="cf_conf" headerLabelExpression="Contact freq. (conf.)" featureName="confidence" featureParentExpression="aql:self.contactFrequency"/>
+      <ownedLineMappings name="profile" semanticCandidatesExpression="feature:attackerProfiles" domainClass="spartamodel.AttackerProfile" headerLabelExpression="aql:self.name"/>
+    </ownedRepresentations>
+    <ownedRepresentations xsi:type="table:EditionTableDescription" name="Threat Type Catalog" titleExpression="aql:'Threat type catalog'" domainClass="spartamodel.ThreatTypeCatalog">
+      <metamodel href="../../be.kuleuven.cs.distrinet.sparta.spartamodel/model/spartamodel.ecore#/"/>
+      <ownedColumnMappings name="name" headerLabelExpression="Name" featureName="name"/>
+      <ownedColumnMappings name="id" headerLabelExpression="ID" featureName="id"/>
+      <ownedColumnMappings name="title" headerLabelExpression="Title" featureName="title"/>
+      <ownedColumnMappings name="enabled" headerLabelExpression="Enabled" featureName="enabled"/>
+      <ownedColumnMappings name="description" headerLabelExpression="Description" featureName="description"/>
+      <ownedLineMappings name="threatType" semanticCandidatesExpression="aql:self.eAllContents(spartamodel::AbstractThreatType)" domainClass="spartamodel.AbstractThreatType" headerLabelExpression="aql:self.name"/>
     </ownedRepresentations>
   </ownedViewpoints>
 </description:Group>

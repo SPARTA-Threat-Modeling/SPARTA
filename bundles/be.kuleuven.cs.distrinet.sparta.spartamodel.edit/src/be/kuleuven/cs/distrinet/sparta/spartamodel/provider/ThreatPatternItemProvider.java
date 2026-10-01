@@ -67,7 +67,7 @@ public class ThreatPatternItemProvider extends ModelElementItemProvider {
 	 * This adds a property descriptor for the Long Description feature.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
+	 * @generated NOT
 	 */
 	protected void addLongDescriptionPropertyDescriptor(Object object) {
 		itemPropertyDescriptors.add
@@ -78,7 +78,7 @@ public class ThreatPatternItemProvider extends ModelElementItemProvider {
 				 getString("_UI_PropertyDescriptor_description", "_UI_ThreatPattern_longDescription_feature", "_UI_ThreatPattern_type"),
 				 SpartaModelPackage.Literals.THREAT_PATTERN__LONG_DESCRIPTION,
 				 true,
-				 false,
+				 true,
 				 false,
 				 ItemPropertyDescriptor.GENERIC_VALUE_IMAGE,
 				 null,
@@ -89,7 +89,7 @@ public class ThreatPatternItemProvider extends ModelElementItemProvider {
 	 * This adds a property descriptor for the Patterns feature.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
+	 * @generated NOT
 	 */
 	protected void addPatternsPropertyDescriptor(Object object) {
 		itemPropertyDescriptors.add
@@ -100,7 +100,7 @@ public class ThreatPatternItemProvider extends ModelElementItemProvider {
 				 getString("_UI_PropertyDescriptor_description", "_UI_ThreatPattern_patterns_feature", "_UI_ThreatPattern_type"),
 				 SpartaModelPackage.Literals.THREAT_PATTERN__PATTERNS,
 				 true,
-				 false,
+				 true,
 				 false,
 				 ItemPropertyDescriptor.GENERIC_VALUE_IMAGE,
 				 null,

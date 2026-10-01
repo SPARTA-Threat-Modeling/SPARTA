@@ -17,6 +17,7 @@ public class SPARTAPerspective implements IPerspectiveFactory {
 
 	private static final String PROJECT_EXPLORER = "org.eclipse.ui.navigator.ProjectExplorer";
 	private static final String THREAT_ANALYSIS = "be.kuleuven.cs.distrinet.sparta.analysis.views.ThreatAnalysis";
+	private static final String PATTERN_SUPPORT = "be.kuleuven.cs.distrinet.sparta.analysis.views.PatternSupport";
 	private static final String PROPERTY_SHEET = "org.eclipse.ui.views.PropertySheet";
 	private static final String PROBLEM_VIEW = "org.eclipse.ui.views.ProblemView";
 
@@ -28,8 +29,11 @@ public class SPARTAPerspective implements IPerspectiveFactory {
 		// Project Explorer on the left of the editor area.
 		layout.addView(PROJECT_EXPLORER, IPageLayout.LEFT, 0.15f, editorArea);
 
-		// Threat Analysis on the right of the editor area.
-		layout.addView(THREAT_ANALYSIS, IPageLayout.RIGHT, 0.66f, editorArea);
+		// Threat Analysis and Pattern Support stacked on the right of the editor
+		// area (Pattern Support shows VQL pattern-parsing issues).
+		IFolderLayout right = layout.createFolder("right", IPageLayout.RIGHT, 0.66f, editorArea);
+		right.addView(THREAT_ANALYSIS);
+		right.addView(PATTERN_SUPPORT);
 
 		// Property Sheet and Problems stacked in a folder below the editor area.
 		IFolderLayout bottom = layout.createFolder("bottom", IPageLayout.BOTTOM, 0.75f, editorArea);

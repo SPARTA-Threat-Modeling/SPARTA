@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: SPARTA Analysis
 Bundle-SymbolicName: be.kuleuven.cs.distrinet.sparta.analysis;singleton:=true
-Bundle-Version: 2026.2.0
+Bundle-Version: 2026.3.0
 Bundle-Activator: be.kuleuven.cs.distrinet.sparta.analysis.Activator
 Bundle-Vendor: DistriNet
 Require-Bundle: org.eclipse.ui,
@@ -34,10 +34,12 @@ Require-Bundle: org.eclipse.ui,
  be.kuleuven.cs.distrinet.sparta.spartamodel.editor;bundle-version="2026.1.0",
  com.google.inject,
  be.kuleuven.cs.distrinet.sparta.core;bundle-version="2026.1.0",
- be.kuleuven.cs.distrinet.sparta.io;bundle-version="2026.1.0",
+ be.kuleuven.cs.distrinet.sparta.io;bundle-version="2026.3.0",
  org.apache.commons.math3;bundle-version="3.6.1",
  org.eclipse.collections;bundle-version="10.4.0",
- org.eclipse.xtext
+ org.eclipse.xtext,
+ org.eclipse.emf.edit,
+ org.eclipse.jface.text
 Require-Capability: osgi.ee;filter:="(&(osgi.ee=JavaSE)(version=21))"
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .

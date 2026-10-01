@@ -22,21 +22,39 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 
 import be.kuleuven.cs.distrinet.sparta.core.model.Threat;
+import be.kuleuven.cs.distrinet.sparta.io.diagram.AirdLayout;
+import be.kuleuven.cs.distrinet.sparta.io.diagram.DfdTikzGenerator;
+import be.kuleuven.cs.distrinet.sparta.io.templates.DescriptionDiagramItemTemplate;
+import be.kuleuven.cs.distrinet.sparta.io.templates.DescriptionDiagramsTemplate;
 import be.kuleuven.cs.distrinet.sparta.io.templates.DescriptionTemplate;
 import be.kuleuven.cs.distrinet.sparta.io.templates.IntroductionTemplate;
 import be.kuleuven.cs.distrinet.sparta.io.templates.ReportTemplate;
 import be.kuleuven.cs.distrinet.sparta.io.templates.Template;
 import be.kuleuven.cs.distrinet.sparta.io.templates.ThreatCatalog;
 import be.kuleuven.cs.distrinet.sparta.io.templates.ThreatsTemplate;
+import be.kuleuven.cs.distrinet.sparta.io.util.LaTeX;
+import be.kuleuven.cs.distrinet.sparta.spartamodel.DFDModel;
 
 public class ReportWriter {
 
 	private List<? extends Threat> threats;
 	private ResourceSet model;
 	private File aird;
+
+	/**
+	 * Optionally supply the Sirius {@code .aird} representations file so the System-description
+	 * chapter can include the Data Flow Diagram, reusing the layout the user arranged. Headless:
+	 * the file is read as plain XML (see {@link AirdLayout}), so this works in the standalone CLI
+	 * as well as the RCP. When {@code null} or unreadable, the diagram is simply omitted.
+	 */
+	public void setAird(File aird) {
+		this.aird = aird;
+	}
 
 
 	/**
@@ -115,8 +133,49 @@ public class ReportWriter {
 
 		output(fw, DescriptionTemplate.fill());
 
+		String diagrams = buildDiagramSection();
+		if (diagrams != null) {
+			output(fw, "\n");
+			output(fw, diagrams);
+		}
+	}
 
+	/**
+	 * Build the "Diagrams" section for the System-description chapter: the Data Flow Diagram
+	 * rendered as TikZ, reusing the {@code .aird} layout. Returns {@code null} when there is no
+	 * model, no {@code .aird}, or nothing positioned to draw - in which case the section is
+	 * simply omitted.
+	 */
+	private String buildDiagramSection() {
+		DFDModel dfd = findDFDModel();
+		if (dfd == null) {
+			return null;
+		}
+		AirdLayout layout = AirdLayout.parse(aird);
+		String tikz = DfdTikzGenerator.generate(dfd, layout);
+		if (tikz == null) {
+			return null;
+		}
+		String rawTitle = layout.title();
+		if (rawTitle == null || rawTitle.isBlank()) {
+			rawTitle = dfd.getName() != null && !dfd.getName().isBlank() ? dfd.getName() : "Data Flow Diagram";
+		}
+		String item = DescriptionDiagramItemTemplate.fill(LaTeX.latexEscape(rawTitle), tikz);
+		return DescriptionDiagramsTemplate.fill(item);
+	}
 
+	private DFDModel findDFDModel() {
+		if (model == null) {
+			return null;
+		}
+		for (Resource resource : model.getResources()) {
+			for (EObject root : resource.getContents()) {
+				if (root instanceof DFDModel) {
+					return (DFDModel) root;
+				}
+			}
+		}
+		return null;
 	}
 
 	public void writeThreatCatalogToFile(BufferedWriter fw) throws IOException {

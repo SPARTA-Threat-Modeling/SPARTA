@@ -68,7 +68,7 @@ public class ThreatTypeCatalogItemProvider extends SpartaResourceItemProvider {
 	 * This adds a property descriptor for the Imports feature.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
+	 * @generated NOT
 	 */
 	protected void addImportsPropertyDescriptor(Object object) {
 		itemPropertyDescriptors.add
@@ -79,7 +79,7 @@ public class ThreatTypeCatalogItemProvider extends SpartaResourceItemProvider {
 				 getString("_UI_PropertyDescriptor_description", "_UI_ThreatTypeCatalog_imports_feature", "_UI_ThreatTypeCatalog_type"),
 				 SpartaModelPackage.Literals.THREAT_TYPE_CATALOG__IMPORTS,
 				 true,
-				 false,
+				 true,
 				 false,
 				 ItemPropertyDescriptor.GENERIC_VALUE_IMAGE,
 				 null,
@@ -90,7 +90,7 @@ public class ThreatTypeCatalogItemProvider extends SpartaResourceItemProvider {
 	 * This adds a property descriptor for the Helper Patterns feature.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
+	 * @generated NOT
 	 */
 	protected void addHelperPatternsPropertyDescriptor(Object object) {
 		itemPropertyDescriptors.add
@@ -101,7 +101,7 @@ public class ThreatTypeCatalogItemProvider extends SpartaResourceItemProvider {
 				 getString("_UI_PropertyDescriptor_description", "_UI_ThreatTypeCatalog_helperPatterns_feature", "_UI_ThreatTypeCatalog_type"),
 				 SpartaModelPackage.Literals.THREAT_TYPE_CATALOG__HELPER_PATTERNS,
 				 true,
-				 false,
+				 true,
 				 false,
 				 ItemPropertyDescriptor.GENERIC_VALUE_IMAGE,
 				 null,

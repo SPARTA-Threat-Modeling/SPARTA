@@ -92,7 +92,7 @@ public class AbstractThreatTypeItemProvider extends SecurityElementItemProvider 
 	 * This adds a property descriptor for the Title feature.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
+	 * @generated NOT
 	 */
 	protected void addTitlePropertyDescriptor(Object object) {
 		itemPropertyDescriptors.add
@@ -103,7 +103,7 @@ public class AbstractThreatTypeItemProvider extends SecurityElementItemProvider 
 				 getString("_UI_PropertyDescriptor_description", "_UI_AbstractThreatType_title_feature", "_UI_AbstractThreatType_type"),
 				 SpartaModelPackage.Literals.ABSTRACT_THREAT_TYPE__TITLE,
 				 true,
-				 false,
+				 true,
 				 false,
 				 ItemPropertyDescriptor.GENERIC_VALUE_IMAGE,
 				 null,
@@ -114,7 +114,7 @@ public class AbstractThreatTypeItemProvider extends SecurityElementItemProvider 
 	 * This adds a property descriptor for the Additional Info feature.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
+	 * @generated NOT
 	 */
 	protected void addAdditionalInfoPropertyDescriptor(Object object) {
 		itemPropertyDescriptors.add
@@ -125,7 +125,7 @@ public class AbstractThreatTypeItemProvider extends SecurityElementItemProvider 
 				 getString("_UI_PropertyDescriptor_description", "_UI_AbstractThreatType_additionalInfo_feature", "_UI_AbstractThreatType_type"),
 				 SpartaModelPackage.Literals.ABSTRACT_THREAT_TYPE__ADDITIONAL_INFO,
 				 true,
-				 false,
+				 true,
 				 false,
 				 ItemPropertyDescriptor.GENERIC_VALUE_IMAGE,
 				 null,
@@ -136,7 +136,7 @@ public class AbstractThreatTypeItemProvider extends SecurityElementItemProvider 
 	 * This adds a property descriptor for the Comments feature.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
+	 * @generated NOT
 	 */
 	protected void addCommentsPropertyDescriptor(Object object) {
 		itemPropertyDescriptors.add
@@ -147,7 +147,7 @@ public class AbstractThreatTypeItemProvider extends SecurityElementItemProvider 
 				 getString("_UI_PropertyDescriptor_description", "_UI_AbstractThreatType_comments_feature", "_UI_AbstractThreatType_type"),
 				 SpartaModelPackage.Literals.ABSTRACT_THREAT_TYPE__COMMENTS,
 				 true,
-				 false,
+				 true,
 				 false,
 				 ItemPropertyDescriptor.GENERIC_VALUE_IMAGE,
 				 null,

@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: SPARTA IO
 Bundle-SymbolicName: be.kuleuven.cs.distrinet.sparta.io
-Bundle-Version: 2026.2.0
+Bundle-Version: 2026.3.0
 Bundle-Vendor: DistriNet
 Automatic-Module-Name: be.kuleuven.cs.distrinet.sparta.io
 Require-Capability: osgi.ee;filter:="(&(osgi.ee=JavaSE)(version=21))"
@@ -20,5 +20,6 @@ Require-Bundle: be.kuleuven.cs.distrinet.sparta.threatanalysis,
  org.eclipse.core.runtime;bundle-version="3.32.0"
 Export-Package: be.kuleuven.cs.distrinet.sparta.io,
  be.kuleuven.cs.distrinet.sparta.io.convert,
+ be.kuleuven.cs.distrinet.sparta.io.diagram,
  be.kuleuven.cs.distrinet.sparta.io.json,
  be.kuleuven.cs.distrinet.sparta.io.util
