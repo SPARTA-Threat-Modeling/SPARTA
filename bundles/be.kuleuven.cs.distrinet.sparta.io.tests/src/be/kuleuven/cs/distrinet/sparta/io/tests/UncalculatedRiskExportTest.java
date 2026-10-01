@@ -9,15 +9,12 @@
  */
 package be.kuleuven.cs.distrinet.sparta.io.tests;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
 import be.kuleuven.cs.distrinet.sparta.core.analysis.risk.SpartaRiskModel;
-import be.kuleuven.cs.distrinet.sparta.io.json.CQThreat;
-import be.kuleuven.cs.distrinet.sparta.io.json.CQThreat.Severity;
 import be.kuleuven.cs.distrinet.sparta.io.templates.ThreatItemTemplate;
 import be.kuleuven.cs.distrinet.sparta.spartamodel.Process;
 import be.kuleuven.cs.distrinet.sparta.spartamodel.SpartaModelFactory;
@@ -51,11 +48,5 @@ public class UncalculatedRiskExportTest {
 		String item = ThreatItemTemplate.fill(uncalculatedThreat());
 
 		assertTrue(item, item.contains("\\item[Risk] --"));
-	}
-
-	@Test
-	public void codeQualityThreatDefaultsToTheLowestSeverity() {
-		// The aggregation analysis is only consulted for calculated risks.
-		assertEquals(Severity.values()[0], new CQThreat(uncalculatedThreat(), null).getSeverity());
 	}
 }

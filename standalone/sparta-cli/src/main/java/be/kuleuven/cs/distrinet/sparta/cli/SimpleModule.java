@@ -16,7 +16,6 @@ import be.kuleuven.cs.distrinet.sparta.cli.cmd.About;
 import be.kuleuven.cs.distrinet.sparta.cli.cmd.GenericCliCmd;
 import be.kuleuven.cs.distrinet.sparta.cli.cmd.Help;
 import be.kuleuven.cs.distrinet.sparta.cli.cmd.Version;
-import be.kuleuven.cs.distrinet.sparta.cli.cmd.export.ExportCQR;
 import be.kuleuven.cs.distrinet.sparta.cli.cmd.export.ExportCSV;
 import be.kuleuven.cs.distrinet.sparta.cli.cmd.export.ExportReport;
 import be.kuleuven.cs.distrinet.sparta.cli.cmd.export.ExportStatistics;
@@ -45,7 +44,6 @@ class SimpleModule extends AbstractModule {
 	    exportBinder.addBinding().to(ExportXLSX.class);
 	    exportBinder.addBinding().to(ExportTXT.class);
 	    exportBinder.addBinding().to(ExportStatistics.class);
-	    exportBinder.addBinding().to(ExportCQR.class);
 	    exportBinder.addBinding().to(ExportReport.class);
 	    exportBinder.addBinding().to(SubmitToSpartaServer.class);
 	}

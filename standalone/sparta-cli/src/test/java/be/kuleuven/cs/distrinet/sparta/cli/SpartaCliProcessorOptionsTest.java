@@ -23,7 +23,6 @@ import org.junit.Test;
 import be.kuleuven.cs.distrinet.sparta.cli.cmd.About;
 import be.kuleuven.cs.distrinet.sparta.cli.cmd.GenericCliCmd;
 import be.kuleuven.cs.distrinet.sparta.cli.cmd.Version;
-import be.kuleuven.cs.distrinet.sparta.cli.cmd.export.ExportCQR;
 import be.kuleuven.cs.distrinet.sparta.cli.cmd.export.ExportCSV;
 import be.kuleuven.cs.distrinet.sparta.cli.cmd.export.ExportStatistics;
 import be.kuleuven.cs.distrinet.sparta.cli.cmd.export.ExportTXT;
@@ -48,7 +47,7 @@ public class SpartaCliProcessorOptionsTest {
 	private static Options optionsWithAllCommands() {
 		Set<GenericCliCmd> gens = new HashSet<>(Arrays.asList(new About(), new Version()));
 		Set<Exporter> exporters = new HashSet<>(Arrays.asList(new ExportCSV(), new ExportTXT(), new ExportXLSX(),
-				new ExportCQR(), new ExportStatistics(), new SubmitToSpartaServer()));
+				new ExportStatistics(), new SubmitToSpartaServer()));
 		return new SpartaCliProcessor(gens, exporters).getOptions();
 	}
 
@@ -71,7 +70,7 @@ public class SpartaCliProcessorOptionsTest {
 	public void allRenamedOptionsAreAvailableByTheirLongName() {
 		Options options = optionsWithAllCommands();
 		for (String longOpt : new String[] { "about", "version", "outcsv", "outtxt", "outxlsx",
-				"codequalityreport", "outstatistics", "token", "server", "commitid" }) {
+				"outstatistics", "token", "server", "commitid" }) {
 			assertTrue("long option --" + longOpt + " should be registered", options.hasOption(longOpt));
 		}
 	}
@@ -79,7 +78,7 @@ public class SpartaCliProcessorOptionsTest {
 	@Test
 	public void multiLetterShortOptionsAreGone() {
 		Options options = optionsWithAllCommands();
-		for (String shortOpt : new String[] { "ab", "ve", "oc", "ot", "ox", "cqr", "os", "st", "su", "sc" }) {
+		for (String shortOpt : new String[] { "ab", "ve", "oc", "ot", "ox", "os", "st", "su", "sc" }) {
 			assertFalse("ambiguity-prone multi-letter short option -" + shortOpt + " must not be advertised",
 					options.hasOption(shortOpt));
 		}
