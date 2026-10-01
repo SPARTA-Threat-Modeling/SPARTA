@@ -448,7 +448,19 @@ public class ThreatAnalysis extends ViewPart implements AnalysisListener {
 		}
 		if (viewer != null && !viewer.getTable().isDisposed()) {
 			viewer.setInput(null);
+			resetSummary();
 		}
+	}
+
+	/** Restore the header to its state before any analysis, so cleared results leave no stale figures. */
+	private void resetSummary() {
+		countLabel.setText(empty);
+		riskRedurLabel.setText(riskRedur);
+		progressBar.setSelection(0);
+		mitigatedRisk.setText(empty);
+		residualRisk.setText(empty);
+		totalRisk.setText(empty);
+		sleRisk.setText(empty);
 	}
 
 	@Override
