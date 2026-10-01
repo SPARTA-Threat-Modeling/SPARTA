@@ -15,7 +15,15 @@ import be.kuleuven.cs.distrinet.sparta.core.model.Threat;
 /**
  * Risk model interface. The different parts of the risk return double[] arrays
  * as a set of samples may be returned.
- * 
+ * <p>
+ * Index convention: every {@code double[]} returned by the getters below is a
+ * three-element interval where index {@code 0} is the lower bound, index
+ * {@code 1} is the expected value, and index {@code 2} is the upper bound.
+ * <p>
+ * The getters are only meaningful after {@link #calculateRisk} has run;
+ * implementations may throw an {@link IllegalStateException} when a value is
+ * requested before the risk has been calculated.
+ *
  * @author Laurens
  *
  */

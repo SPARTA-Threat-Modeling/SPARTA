@@ -247,33 +247,55 @@ public class SpartaRiskModel implements IRiskModel {
 		return result;
 	}
 
+	/**
+	 * Fail fast with a descriptive exception (instead of an opaque NPE at the call
+	 * site) when a risk figure is read before {@code calculateRisk} has run. This
+	 * also covers threats whose calculation was skipped because they have no
+	 * threatened element (see {@code Threat#performRiskCalculation}).
+	 *
+	 * @param property the name of the requested risk figure, for the message
+	 * @throws IllegalStateException when the risk has not been calculated yet
+	 */
+	private void requireCalculated(String property) {
+		if (risk == null) {
+			throw new IllegalStateException("risk not yet calculated for this threat: '" + property
+					+ "' is only available after calculateRisk(...) has run");
+		}
+	}
+
 	@Override
 	public double[] getVulnerability() {
+		requireCalculated("vulnerability");
 		return this.vulnerability;
 	}
 
 	@Override
 	public double[] getRisk() {
+		requireCalculated("risk");
 		return this.risk;
 	}
 
 	@Override
 	public double getPotentialRisk() {
+		requireCalculated("potential risk");
 		return potentialRisk;
 	}
 
 	@Override
 	public double[] getSle() {
+		requireCalculated("single loss event");
 		return sle;
 	}
 
 	@Override
 	public double[] getTef() {
+		requireCalculated("threat event frequency");
 		return tef;
 	}
 
 	@Override
 	public double[] getLef() {
+		requireCalculated("loss event frequency");
 		return lef;
 	}
 

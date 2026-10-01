@@ -80,13 +80,7 @@ public class PatternThreat extends Threat {
 			return;
 		}
 
-		String type = "";
-		type += typeAbbreviation(dataFlow.getSender());
-		type += dataFlow.getSender() != null && dataFlow.getSender().equals(threatenedElement) ? "*" : "";
-		type += "-DF" + (dataFlow.equals(threatenedElement) ? "*" : "") + "->";
-		type += typeAbbreviation(dataFlow.getRecipient());
-		type += dataFlow.getRecipient() != null && dataFlow.getRecipient().equals(threatenedElement) ? "*" : "";
-		matchType = type;
+		matchType = buildMatchTypeLabel();
 	}
 
 

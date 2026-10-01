@@ -132,16 +132,15 @@ public class Engine implements AutoCloseable {
 	 * @return The list of threats found in the model provided to the engine.
 	 */
 	public List<Threat> runAnalysis(ResourceSet rs) {
-		// Custom patterns in the ResourceSet
+		// Custom patterns in the ResourceSet (elicitation only)
 		Map<ThreatPatternMatchMetadata,PatternParsingResults> parseResults = new PatternProcessor(this).parsePatterns(rs);
 		List<Threat> threats = runAnalysis(parseResults);
 
-		// Default patterns
-		threats.addAll(runAnalysis(getPatternMatchers()));
+		// Default patterns (elicitation only)
+		threats.addAll(elicitThreats(getPatternMatchers()));
 
-		// Risk
-		loopConfiguration.setUpLoopParameters(this);
-		threats.forEach(t -> t.performRiskCalculation(loopConfiguration));
+		// Risk: exactly one Monte-Carlo risk pass over all elicited threats
+		calculateRisk(threats);
 
 		return threats;
 	}
@@ -149,28 +148,51 @@ public class Engine implements AutoCloseable {
 	/**
 	 * Run the threat analysis using a custom set of pattern matchers.
 	 * Each of the functions will be applied on the query engine to obtain the pattern matchers.
-	 * The resulting pattern matches will be converted into {@link Threat}s provided in the results.
+	 * The resulting pattern matches will be converted into {@link Threat}s provided in the results,
+	 * each with its risk calculated exactly once.
 	 * @param matchers the pattern matchers to apply on the viatra query engine. These are actually functions that, when applied on a ViatraQueryEngine, return a ViatraQueryMatcher.
 	 * @return The resulting list of {@link Threat}s found in the provided model.
 	 */
 	public List<Threat> runAnalysis(List<Function<ViatraQueryEngine,ViatraQueryMatcher<? extends IPatternMatch>>> matchers) {
-		loopConfiguration.setUpLoopParameters(this);
+		List<Threat> threats = elicitThreats(matchers);
+		calculateRisk(threats);
+		return threats;
+	}
+
+	/**
+	 * Elicit threats using the given pattern matchers, without calculating any risk.
+	 * @param matchers the pattern matchers to apply on the viatra query engine.
+	 * @return the elicited {@link Threat}s, risk not yet calculated.
+	 */
+	private List<Threat> elicitThreats(List<Function<ViatraQueryEngine,ViatraQueryMatcher<? extends IPatternMatch>>> matchers) {
 		final ArrayList<Threat> threats = new ArrayList<>();
 		matchers.stream().map(f -> f.apply(vqe))
 		.forEach(vqm -> {
 			vqm.streamAllMatches().map(Threat::new).forEach(threats::add);
 
-		}); 
-		threats.forEach(t -> t.performRiskCalculation(loopConfiguration));
+		});
 		return threats;
+	}
+
+	/**
+	 * Run the single risk-calculation pass: (re)populate this engine's loop
+	 * configuration from the model and perform the Monte-Carlo risk calculation
+	 * once for each of the given threats.
+	 * @param threats the threats to calculate the risk for.
+	 */
+	private void calculateRisk(List<Threat> threats) {
+		loopConfiguration.setUpLoopParameters(this);
+		threats.forEach(t -> t.performRiskCalculation(loopConfiguration));
 	}
 	
 	/**
 	 * Run the threat analysis using a custom set of parsed patterns.
 	 * Matchers are extracted from the parsed patterns and applied on the query engine to obtain the pattern matches
 	 * The resulting pattern matches will be converted into {@link Threat}s provided in the results.
+	 * Note: this is elicitation only - the returned threats have no risk calculated yet; callers must
+	 * drive the risk calculation themselves (as {@link #runAnalysis(ResourceSet)} does).
 	 * @param parseResults The collection of parsed patterns.
-	 * @return The resulting list of {@link Threat}s found in the provided model.
+	 * @return The resulting list of {@link Threat}s found in the provided model, risk not yet calculated.
 	 */
 	public List<Threat> runAnalysis(Map<ThreatPatternMatchMetadata,PatternParsingResults> parseResults) {
 

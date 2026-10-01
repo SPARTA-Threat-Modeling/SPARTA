@@ -204,19 +204,35 @@ public class Threat implements IThreat, IInteractionThreat {
 		}
 		threatType = getThreatTypeElement();
 
+		matchType = buildMatchTypeLabel();
+	}
+
+	/**
+	 * Build the match-type label describing the shape of the matched interaction,
+	 * e.g. {@code "P-DF*->EE"}: the sender and recipient type abbreviations around
+	 * the data flow, with {@code *} marking the threatened element. Requires
+	 * {@link #dataFlow} and {@link #threatenedElement} to be set.
+	 *
+	 * @return the match-type label
+	 */
+	protected String buildMatchTypeLabel() {
 		String type = "";
 		type += typeAbbreviation(dataFlow.getSender());
 		type += dataFlow.getSender() != null && dataFlow.getSender().equals(threatenedElement) ? "*" : "";
 		type += "-DF" + (dataFlow.equals(threatenedElement) ? "*" : "") + "->";
 		type += typeAbbreviation(dataFlow.getRecipient());
 		type += dataFlow.getRecipient() != null && dataFlow.getRecipient().equals(threatenedElement) ? "*" : "";
-		matchType = type;
+		return type;
 	}
 
 	/**
 	 * Perform Risk calculation
-	 * 
+	 *
 	 * Overall formula: LEF x LM
+	 *
+	 * When the threat has no threatened element the calculation is skipped; any
+	 * subsequent read of a risk figure then throws an {@link IllegalStateException}
+	 * (see {@link SpartaRiskModel}) rather than an opaque NullPointerException.
 	 */
 	public void performRiskCalculation(RiskAssessmentLoopConfiguration loopConfiguration) {
 		if (threatenedElement == null)
