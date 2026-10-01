@@ -16,12 +16,12 @@ import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.edit.command.SetCommand;
+import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
 import org.eclipse.emf.edit.domain.EditingDomain;
-import org.eclipse.emf.edit.domain.IEditingDomainProvider;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.handlers.HandlerUtil;
 
 import be.kuleuven.cs.distrinet.sparta.analysis.vql.VqlPatternEditDialog;
@@ -31,9 +31,15 @@ import be.kuleuven.cs.distrinet.sparta.spartamodel.ThreatTypeCatalog;
 
 /**
  * Opens the {@link VqlPatternEditDialog} on the selected {@link ThreatPattern} and, on OK,
- * writes the edited pattern list back through the tree editor's {@link EditingDomain}
- * (so the change is undoable and marks the editor dirty). Falls back to a direct model
- * edit if no editing domain is available.
+ * writes the edited pattern list back through the {@link EditingDomain} that owns the
+ * pattern, so the change is undoable and marks the owner dirty.
+ *
+ * <p>The domain is resolved from the pattern itself rather than from the active editor: the
+ * command is offered on any popup (e.g. the Model Explorer, with no or an unrelated editor
+ * active), and catalogs opened in a Sirius session belong to that session's transactional
+ * domain, whose command stack wraps the edit in the required write transaction. Patterns with
+ * no owning domain are not edited, since a direct mutation would either fail outside a
+ * transaction or never be saved.
  */
 public class EditVqlPatternHandler extends AbstractHandler {
 
@@ -46,13 +52,19 @@ public class EditVqlPatternHandler extends AbstractHandler {
 		}
 		ThreatPattern pattern = (ThreatPattern) first;
 
-		EditingDomain domain = null;
-		IEditorPart editor = HandlerUtil.getActiveEditor(event);
-		if (editor instanceof IEditingDomainProvider) {
-			domain = ((IEditingDomainProvider) editor).getEditingDomain();
+		Shell shell = HandlerUtil.getActiveShell(event);
+		// Resolve the domain before opening the dialog so the user does not lose their edits.
+		EditingDomain domain = AdapterFactoryEditingDomain.getEditingDomainFor(pattern);
+		if (domain == null) {
+			MessageDialog.openError(shell, "Cannot edit VQL pattern",
+					"The pattern is not open in an editor or modeling session. Open its catalog and try again.");
+			return null;
+		}
+		if (pattern.eResource() != null && domain.isReadOnly(pattern.eResource())) {
+			MessageDialog.openError(shell, "Cannot edit VQL pattern", "The pattern's catalog is read-only.");
+			return null;
 		}
 
-		Shell shell = HandlerUtil.getActiveShell(event);
 		VqlPatternEditDialog dialog = new VqlPatternEditDialog(shell, pattern.getName(), buildContext(pattern),
 				pattern.getPatterns());
 		if (dialog.open() != Window.OK) {
@@ -60,14 +72,16 @@ public class EditVqlPatternHandler extends AbstractHandler {
 		}
 
 		List<String> newPatterns = dialog.getResult();
-		if (domain != null) {
-			Command cmd = SetCommand.create(domain, pattern, SpartaModelPackage.Literals.THREAT_PATTERN__PATTERNS,
-					newPatterns);
-			domain.getCommandStack().execute(cmd);
-		} else {
-			pattern.getPatterns().clear();
-			pattern.getPatterns().addAll(newPatterns);
+		if (newPatterns.equals(pattern.getPatterns())) {
+			return null;
 		}
+		Command cmd = SetCommand.create(domain, pattern, SpartaModelPackage.Literals.THREAT_PATTERN__PATTERNS,
+				newPatterns);
+		if (!cmd.canExecute()) {
+			MessageDialog.openError(shell, "Cannot edit VQL pattern", "The edited patterns could not be applied.");
+			return null;
+		}
+		domain.getCommandStack().execute(cmd);
 		return null;
 	}
 
