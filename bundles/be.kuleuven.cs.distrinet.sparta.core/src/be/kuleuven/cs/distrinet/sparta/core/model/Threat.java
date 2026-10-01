@@ -168,6 +168,22 @@ public class Threat implements IThreat, IInteractionThreat {
 	}
 
 	/**
+	 * Human-readable model type name of an element: the simple class name with the
+	 * EMF-generated {@code "Impl"} suffix stripped, e.g. {@code ProcessImpl ->
+	 * "Process"}. Names that do not end in {@code "Impl"} are returned unchanged.
+	 *
+	 * @param element the model element (must not be null)
+	 * @return the simple class name without a trailing {@code "Impl"}
+	 */
+	public static String simpleTypeName(Object element) {
+		String name = element.getClass().getSimpleName();
+		if (name.endsWith("Impl")) {
+			name = name.substring(0, name.length() - 4);
+		}
+		return name;
+	}
+
+	/**
 	 * Abbreviated element type for match-type labels, e.g. {@code ProcessImpl -> "P"},
 	 * {@code DataStoreImpl -> "DS"}, {@code ExternalEntityImpl -> "EE"}. Null-safe
 	 * ({@code "?"} for an unresolved reference).
@@ -176,11 +192,7 @@ public class Threat implements IThreat, IInteractionThreat {
 		if (element == null) {
 			return "?";
 		}
-		String name = element.getClass().getSimpleName();
-		if (name.endsWith("Impl")) {
-			name = name.substring(0, name.length() - 4);
-		}
-		return name.replaceAll("[^A-Z]", "");
+		return simpleTypeName(element).replaceAll("[^A-Z]", "");
 	}
 
 	private void setupBindings() {
@@ -260,7 +272,7 @@ public class Threat implements IThreat, IInteractionThreat {
 
 	@Override
 	public String getThreatenedElementTypeName() {
-		return this.getThreatenedElement() != null ? this.getThreatenedElement().getClass().getSimpleName().substring(0, this.getThreatenedElement().getClass().getSimpleName().length()-4) : "";
+		return this.getThreatenedElement() != null ? simpleTypeName(this.getThreatenedElement()) : "";
 	}
 	
 	@Override

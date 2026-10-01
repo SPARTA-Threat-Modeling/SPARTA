@@ -43,6 +43,21 @@ public class ThreatPatternConversionTest {
 		}
 	}
 
+	/** Returns a fixed replacement value for every token, mimicking an element name lookup. */
+	private static final class FixedNameConversion extends ThreatPatternConversion {
+		private final String name;
+
+		FixedNameConversion(String name) {
+			super(null, null);
+			this.name = name;
+		}
+
+		@Override
+		protected String processMatch(MatchResult mr) {
+			return name;
+		}
+	}
+
 	private final EchoConversion conversion = new EchoConversion();
 
 	@Test
@@ -88,5 +103,35 @@ public class ThreatPatternConversionTest {
 		assertEquals("<$$>", conversion.processAndReplaceParams("<$$>"));
 		assertEquals("<$ $>", conversion.processAndReplaceParams("<$ $>"));
 		assertEquals("<$a.$>", conversion.processAndReplaceParams("<$a.$>"));
+	}
+
+	@Test
+	public void elementNameContainingDollarSignIsSubstitutedLiterally() {
+		// '$1' in a replacement used to be interpreted as a regex group reference by
+		// appendReplacement and threw IllegalArgumentException: Illegal group reference.
+		assertEquals("Data flows from shop$1cart onward.",
+				new FixedNameConversion("shop$1cart").processAndReplaceParams("Data flows from <$sender$> onward."));
+	}
+
+	@Test
+	public void elementNameContainingBackslashIsSubstitutedLiterally() {
+		assertEquals("Stored in C:\\data\\store.",
+				new FixedNameConversion("C:\\data\\store").processAndReplaceParams("Stored in <$store$>."));
+	}
+
+	@Test
+	public void missingParameterYieldsUnknownMarkerInsteadOfThrowing() {
+		// The base implementation (no processMatch override) cannot resolve any parameter
+		// here, so the placeholder must degrade to a visible marker rather than throw.
+		ThreatPatternConversion base = new ThreatPatternConversion(null, null);
+		assertEquals("Threat at <unknown: missing>.",
+				base.processAndReplaceParams("Threat at <$missing$>."));
+	}
+
+	@Test
+	public void missingParameterTypeAttributeAlsoYieldsUnknownMarker() {
+		ThreatPatternConversion base = new ThreatPatternConversion(null, null);
+		assertEquals("Element of type <unknown: missing>.",
+				base.processAndReplaceParams("Element of type <$missing.type$>."));
 	}
 }
