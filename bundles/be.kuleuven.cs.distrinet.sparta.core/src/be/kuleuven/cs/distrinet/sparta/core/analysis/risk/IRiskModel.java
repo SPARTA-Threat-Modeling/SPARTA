@@ -9,6 +9,9 @@
  */
 package be.kuleuven.cs.distrinet.sparta.core.analysis.risk;
 
+import java.util.List;
+
+import be.kuleuven.cs.distrinet.sparta.core.analysis.Mitigation;
 import be.kuleuven.cs.distrinet.sparta.core.analysis.RiskAssessmentLoopConfiguration;
 import be.kuleuven.cs.distrinet.sparta.core.model.Threat;
 
@@ -80,5 +83,13 @@ public interface IRiskModel {
 	 * @return the loss event frequency
 	 */
 	public double[] getLef();
+
+	/**
+	 * Get the countermeasures that were applied to reduce the vulnerability, with the role
+	 * bindings they apply through.
+	 *
+	 * @return the mitigations, empty when none apply
+	 */
+	public List<Mitigation> getMitigations();
 
 }

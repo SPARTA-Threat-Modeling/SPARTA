@@ -11,10 +11,12 @@ package be.kuleuven.cs.distrinet.sparta.core.model;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.List;
 
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.viatra.query.runtime.api.IPatternMatch;
 
+import be.kuleuven.cs.distrinet.sparta.core.analysis.Mitigation;
 import be.kuleuven.cs.distrinet.sparta.core.analysis.RiskAssessmentLoopConfiguration;
 import be.kuleuven.cs.distrinet.sparta.core.analysis.risk.IRiskModel;
 import be.kuleuven.cs.distrinet.sparta.core.analysis.risk.SpartaRiskModel;
@@ -135,6 +137,14 @@ public class Threat implements IThreat, IInteractionThreat {
 
 	public Double getLef() {
 		return riskModel.getLef()[1];
+	}
+
+	/**
+	 * @return the countermeasures the risk calculation applied to this threat, with the role
+	 *         bindings (and hence solutions) they apply through
+	 */
+	public List<Mitigation> getMitigations() {
+		return riskModel.getMitigations();
 	}
 
 	protected String getElementName(String propertyName) {

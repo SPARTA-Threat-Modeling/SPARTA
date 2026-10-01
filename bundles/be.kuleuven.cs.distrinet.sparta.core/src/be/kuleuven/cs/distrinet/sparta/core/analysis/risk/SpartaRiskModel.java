@@ -17,6 +17,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import be.kuleuven.cs.distrinet.sparta.core.analysis.BetaPERT;
+import be.kuleuven.cs.distrinet.sparta.core.analysis.Mitigation;
 import be.kuleuven.cs.distrinet.sparta.core.analysis.RiskAssessmentLoopConfiguration;
 import be.kuleuven.cs.distrinet.sparta.core.analysis.RiskCalculation;
 import be.kuleuven.cs.distrinet.sparta.core.analysis.StatsUtil;
@@ -58,6 +59,8 @@ public class SpartaRiskModel implements IRiskModel {
 	protected double[] tef;
 	protected double[] lef;
 
+	protected List<Mitigation> mitigations;
+
 	@Override
 	public void calculateRisk(Threat threat, RiskAssessmentLoopConfiguration loopConfiguration) {
 		calculateRisk(threat, loopConfiguration, DEFAULT_SAMPLES);
@@ -69,6 +72,7 @@ public class SpartaRiskModel implements IRiskModel {
 		List<RoleBinding> countermeasureBindings = threatenedElement.getBound();
 		DataFlow dataFlow = threat.getDataFlow();
 		ThreatType threatType = threat.getThreatType();
+		mitigations = List.copyOf(RiskCalculation.mitigations(dataFlow, threatType, countermeasureBindings));
 
 		/*
 		 * Overall formula LEF x LM LEF = TEF x vuln TEF = CF x ProbAct CF ~
@@ -297,6 +301,12 @@ public class SpartaRiskModel implements IRiskModel {
 	public double[] getLef() {
 		requireCalculated("loss event frequency");
 		return lef;
+	}
+
+	@Override
+	public List<Mitigation> getMitigations() {
+		requireCalculated("mitigations");
+		return mitigations;
 	}
 
 }

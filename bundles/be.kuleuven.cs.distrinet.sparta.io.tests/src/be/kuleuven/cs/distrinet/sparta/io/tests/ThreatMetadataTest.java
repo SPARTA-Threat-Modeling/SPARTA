@@ -10,9 +10,6 @@
 package be.kuleuven.cs.distrinet.sparta.io.tests;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -24,17 +21,15 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
+import be.kuleuven.cs.distrinet.sparta.core.analysis.Mitigation;
 import be.kuleuven.cs.distrinet.sparta.io.ThreatCSVWriter;
 import be.kuleuven.cs.distrinet.sparta.io.ThreatExportColumns;
 import be.kuleuven.cs.distrinet.sparta.io.ThreatMetadata;
-import be.kuleuven.cs.distrinet.sparta.spartamodel.AbstractThreatType;
-import be.kuleuven.cs.distrinet.sparta.spartamodel.Asset;
 import be.kuleuven.cs.distrinet.sparta.spartamodel.CounterMeasure;
 import be.kuleuven.cs.distrinet.sparta.spartamodel.DFDModel;
 import be.kuleuven.cs.distrinet.sparta.spartamodel.DataFlow;
 import be.kuleuven.cs.distrinet.sparta.spartamodel.DataFlowEntity;
 import be.kuleuven.cs.distrinet.sparta.spartamodel.ExternalEntity;
-import be.kuleuven.cs.distrinet.sparta.spartamodel.OrCompositeThreatType;
 import be.kuleuven.cs.distrinet.sparta.spartamodel.Process;
 import be.kuleuven.cs.distrinet.sparta.spartamodel.Role;
 import be.kuleuven.cs.distrinet.sparta.spartamodel.RoleBinding;
@@ -44,14 +39,18 @@ import be.kuleuven.cs.distrinet.sparta.spartamodel.SpartaModelFactory;
 import be.kuleuven.cs.distrinet.sparta.spartamodel.ThreatType;
 import be.kuleuven.cs.distrinet.sparta.spartamodel.TrustBoundaryContainer;
 
+/**
+ * Tests for the export formatting in {@link ThreatMetadata} and the metadata columns. The
+ * structure and the countermeasure selection themselves are tested in core
+ * ({@code DfdStructureTest}, {@code MitigationsTest}); here the mitigations come from a
+ * {@link StubRiskModel}, as if recorded by the risk calculation.
+ */
 public class ThreatMetadataTest {
 
 	private static final SpartaModelFactory FACTORY = SpartaModelFactory.eINSTANCE;
 
 	// Model: root > [ EE "User", TB "DMZ" > [ TB "Backend" > [ Process "API" > [ Process "Worker" ] ] ] ]
 	private ExternalEntity user;
-	private TrustBoundaryContainer dmz;
-	private TrustBoundaryContainer backend;
 	private Process api;
 	private Process worker;
 	private ThreatType type;
@@ -61,9 +60,9 @@ public class ThreatMetadataTest {
 		DFDModel model = FACTORY.createDFDModel();
 		user = FACTORY.createExternalEntity();
 		user.setName("User");
-		dmz = FACTORY.createTrustBoundaryContainer();
+		TrustBoundaryContainer dmz = FACTORY.createTrustBoundaryContainer();
 		dmz.setName("DMZ");
-		backend = FACTORY.createTrustBoundaryContainer();
+		TrustBoundaryContainer backend = FACTORY.createTrustBoundaryContainer();
 		backend.setName("Backend");
 		api = FACTORY.createProcess();
 		api.setName("API");
@@ -88,111 +87,42 @@ public class ThreatMetadataTest {
 		return flow;
 	}
 
-	private StubThreat threatOn(DataFlow flow) {
-		return new StubThreat(type, flow, flow, new StubRiskModel());
+	private StubThreat threatOn(DataFlow flow, Mitigation... mitigations) {
+		return new StubThreat(type, flow, flow, new StubRiskModel(Arrays.asList(mitigations)));
 	}
 
 	@Test
-	public void flowFromRootIntoNestedBoundariesCrossesAndReportsDepthRange() {
-		StubThreat threat = threatOn(flow("login", api, user));
-
-		assertTrue(ThreatMetadata.crossesTrustBoundary(threat));
-		assertEquals(Integer.valueOf(0), ThreatMetadata.minTrustBoundaryDepth(threat));
-		assertEquals(Integer.valueOf(2), ThreatMetadata.maxTrustBoundaryDepth(threat));
-		assertSame(backend, ThreatMetadata.parent(api));
-		assertNull(ThreatMetadata.parent(user));
+	public void trustBoundaryPathListsEnclosingBoundariesOutermostFirst() {
 		assertEquals("DMZ > Backend", ThreatMetadata.trustBoundaryPath(api));
+		assertEquals("DMZ > Backend", ThreatMetadata.trustBoundaryPath(worker));
 		assertEquals("", ThreatMetadata.trustBoundaryPath(user));
 	}
 
 	@Test
-	public void flowWithinSameBoundariesDoesNotCrossEvenWhenParentsDiffer() {
-		// Worker's parent is a process, not a boundary: still the same two trust boundaries.
-		StubThreat threat = threatOn(flow("job", worker, api));
-
-		assertFalse(ThreatMetadata.crossesTrustBoundary(threat));
-		assertEquals(Integer.valueOf(2), ThreatMetadata.minTrustBoundaryDepth(threat));
-		assertEquals(Integer.valueOf(2), ThreatMetadata.maxTrustBoundaryDepth(threat));
-		assertSame(api, ThreatMetadata.parent(worker));
-	}
-
-	@Test
-	public void elementThreatWithoutFlowUsesThreatenedElementAndLeavesCrossingEmpty() {
-		StubThreat threat = new StubThreat(type, worker, null, new StubRiskModel());
-
-		assertNull(ThreatMetadata.crossesTrustBoundary(threat));
-		assertEquals(Integer.valueOf(2), ThreatMetadata.minTrustBoundaryDepth(threat));
-		assertEquals(Integer.valueOf(2), ThreatMetadata.maxTrustBoundaryDepth(threat));
-	}
-
-	@Test
-	public void onlySolutionsMitigatingTheThreatTypeOnTheThreatenedElementAreReported() {
-		DataFlow login = flow("login", api, user);
-		ThreatType tampering = FACTORY.createThreatType();
-		tampering.setName("Tampering");
-
-		bind(solution("auth-1", type("Authentication")), countermeasure(type, null), login);
-		bind(solution("sig-1", type("Signing")), countermeasure(tampering, null), login);
-		// Bound to the sender, not the threatened element: not used by the risk model either.
-		bind(solution("auth-2", type("Other Authentication")), countermeasure(type, null), api);
-
-		assertEquals(Arrays.asList("Authentication"), new ArrayList<>(ThreatMetadata.solutionNames(threatOn(login))));
-	}
-
-	@Test
-	public void mitigationIsMatchedThroughCompositesAndSuperTypeIds() {
-		OrCompositeThreatType spoofingFamily = FACTORY.createOrCompositeThreatType();
-		spoofingFamily.setName("Spoofing family");
-		spoofingFamily.setId("SPOOF");
-		spoofingFamily.getSubThreatTypes().add(type);
-		DataFlow login = flow("login", api, user);
-
-		bind(solution("via-ref", type("By Composite Reference")), countermeasure(spoofingFamily, null), login);
-		CounterMeasure byId = countermeasure(null, null);
-		byId.getMitigatedThreatTypeID().add("SPOOF");
-		bind(solution("via-id", type("By Super Type Id")), byId, login);
-		CounterMeasure otherId = countermeasure(null, null);
-		otherId.getMitigatedThreatTypeID().add("TAMPER");
-		bind(solution("unrelated", type("Unrelated Id")), otherId, login);
-
-		assertEquals(Arrays.asList("By Composite Reference", "By Super Type Id"),
-				new ArrayList<>(ThreatMetadata.solutionNames(threatOn(login))));
-	}
-
-	@Test
-	public void scopedCountermeasuresOnlyCountWhenTheFlowIsBoundToTheScope() {
-		DataFlow login = flow("login", api, user);
-		DataFlow other = flow("other", api, user);
-		Role channel = FACTORY.createRole();
-		Solution tls = solution("tls-1", type("Secure Channel"));
-		bind(tls, countermeasure(type, channel), login, other);
-		bindRole(tls, channel, login);
-
-		assertEquals(Arrays.asList("Secure Channel"), new ArrayList<>(ThreatMetadata.solutionNames(threatOn(login))));
-		assertTrue(ThreatMetadata.solutionNames(threatOn(other)).isEmpty());
-	}
-
-	@Test
-	public void untypedSolutionFallsBackToItsOwnNameAndDuplicatesCollapse() {
-		DataFlow login = flow("login", api, user);
+	public void solutionsAreNamedByTypeFallingBackToTheirOwnNameAndDuplicatesCollapse() {
 		SolutionType auth = type("Authentication");
-		bind(solution("auth-1", auth), countermeasure(type, null), login);
-		bind(solution("auth-2", auth), countermeasure(type, null), login);
-		bind(solution("untyped", null), countermeasure(type, null), login);
+		StubThreat threat = threatOn(flow("login", api, user),
+				mitigation(solution("auth-1", auth)),
+				mitigation(solution("auth-2", auth)),
+				mitigation(solution("untyped", null)));
 
-		assertEquals(Arrays.asList("Authentication", "untyped"),
-				new ArrayList<>(ThreatMetadata.solutionNames(threatOn(login))));
+		assertEquals(Arrays.asList("Authentication", "untyped"), new ArrayList<>(ThreatMetadata.solutionNames(threat)));
+		assertEquals("Authentication, untyped", ThreatMetadata.solutions(threat));
+	}
+
+	@Test
+	public void mitigationsOutsideASolutionAreNotNamed() {
+		assertTrue(ThreatMetadata.solutionNames(threatOn(flow("login", api, user), mitigation(null))).isEmpty());
 	}
 
 	@Test
 	public void csvWithMetadataAppendsColumnsAfterDefaults() throws IOException {
-		DataFlow login = flow("login", api, user);
-		bind(solution("auth-1", type("Authentication")), countermeasure(type, null), login);
+		StubThreat threat = threatOn(flow("login", api, user), mitigation(solution("auth-1", type("Authentication"))));
 
 		StringWriter sw = new StringWriter();
 		try (ThreatCSVWriter writer = new ThreatCSVWriter(sw, ThreatExportColumns.withMetadata())) {
 			writer.writeHeader();
-			writer.write(threatOn(login));
+			writer.write(threat);
 		}
 		String[] lines = sw.toString().split("\\R");
 		List<String> header = Arrays.asList(lines[0].split(";"));
@@ -222,28 +152,16 @@ public class ThreatMetadataTest {
 		return s;
 	}
 
-	private static CounterMeasure countermeasure(AbstractThreatType mitigates, Role scope) {
-		CounterMeasure cm = FACTORY.createCounterMeasure();
-		if (mitigates != null) {
-			cm.getMitigates().add(mitigates);
-		}
-		if (scope != null) {
-			cm.getScope().add(scope);
-		}
-		return cm;
-	}
-
-	/** Bind a new role, subject to {@code cm}, of {@code solution} to the given assets. */
-	private static void bind(Solution solution, CounterMeasure cm, Asset... assets) {
+	/** A mitigation through a new role binding of {@code solution} ({@code null}: no solution). */
+	private static Mitigation mitigation(Solution solution) {
 		Role role = FACTORY.createRole();
+		CounterMeasure cm = FACTORY.createCounterMeasure();
 		role.getSubjected().add(cm);
-		bindRole(solution, role, assets);
-	}
-
-	private static void bindRole(Solution solution, Role role, Asset... assets) {
 		RoleBinding rb = FACTORY.createRoleBinding();
 		rb.setBinds(role);
-		solution.getRolebinding().add(rb);
-		rb.getBindsTo().addAll(Arrays.asList(assets));
+		if (solution != null) {
+			solution.getRolebinding().add(rb);
+		}
+		return new Mitigation(rb, cm);
 	}
 }

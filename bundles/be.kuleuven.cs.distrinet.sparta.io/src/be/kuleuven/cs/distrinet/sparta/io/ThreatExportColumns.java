@@ -12,6 +12,7 @@ package be.kuleuven.cs.distrinet.sparta.io;
 import java.util.LinkedHashMap;
 import java.util.function.Function;
 
+import be.kuleuven.cs.distrinet.sparta.core.model.DfdStructure;
 import be.kuleuven.cs.distrinet.sparta.core.model.Threat;
 
 /**
@@ -43,16 +44,17 @@ public final class ThreatExportColumns {
 
 	/**
 	 * The {@link #defaults() default} columns followed by structural metadata from
-	 * {@link ThreatMetadata}: trust-boundary crossing and nesting depth, the parents and
-	 * enclosing trust boundaries of both flow endpoints, and the solution types mitigating the threat.
+	 * {@link DfdStructure} (trust-boundary crossing and nesting depth, the parents and
+	 * enclosing trust boundaries of both flow endpoints) and the solution types whose
+	 * countermeasures the risk calculation applied, formatted by {@link ThreatMetadata}.
 	 */
 	public static LinkedHashMap<String, Function<Threat, ? extends Object>> withMetadata() {
 		LinkedHashMap<String, Function<Threat, ? extends Object>> properties = defaults();
-		properties.put("Crosses Trust Boundary", ThreatMetadata::crossesTrustBoundary);
-		properties.put("Trust Boundary Depth (min)", ThreatMetadata::minTrustBoundaryDepth);
-		properties.put("Trust Boundary Depth (max)", ThreatMetadata::maxTrustBoundaryDepth);
-		properties.put("Flow From Parent", t -> ThreatMetadata.parent(t.getDataFlowFrom()));
-		properties.put("Flow To Parent", t -> ThreatMetadata.parent(t.getDataFlowTo()));
+		properties.put("Crosses Trust Boundary", DfdStructure::crossesTrustBoundary);
+		properties.put("Trust Boundary Depth (min)", DfdStructure::minTrustBoundaryDepth);
+		properties.put("Trust Boundary Depth (max)", DfdStructure::maxTrustBoundaryDepth);
+		properties.put("Flow From Parent", t -> DfdStructure.parent(t.getDataFlowFrom()));
+		properties.put("Flow To Parent", t -> DfdStructure.parent(t.getDataFlowTo()));
 		properties.put("Flow From Trust Boundaries", t -> ThreatMetadata.trustBoundaryPath(t.getDataFlowFrom()));
 		properties.put("Flow To Trust Boundaries", t -> ThreatMetadata.trustBoundaryPath(t.getDataFlowTo()));
 		properties.put("Mitigating Solutions", ThreatMetadata::solutions);

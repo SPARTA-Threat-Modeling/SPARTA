@@ -9,6 +9,9 @@
  */
 package be.kuleuven.cs.distrinet.sparta.io.tests;
 
+import java.util.List;
+
+import be.kuleuven.cs.distrinet.sparta.core.analysis.Mitigation;
 import be.kuleuven.cs.distrinet.sparta.core.analysis.RiskAssessmentLoopConfiguration;
 import be.kuleuven.cs.distrinet.sparta.core.analysis.risk.IRiskModel;
 import be.kuleuven.cs.distrinet.sparta.core.model.Threat;
@@ -20,6 +23,18 @@ import be.kuleuven.cs.distrinet.sparta.core.model.Threat;
  * …) and indices [0]/[2] for the bounds.
  */
 public class StubRiskModel implements IRiskModel {
+
+	private final List<Mitigation> mitigations;
+
+	/** A risk model without mitigations. */
+	public StubRiskModel() {
+		this(List.of());
+	}
+
+	/** A risk model reporting the given mitigations, as if the risk calculation applied them. */
+	public StubRiskModel(List<Mitigation> mitigations) {
+		this.mitigations = List.copyOf(mitigations);
+	}
 
 	@Override
 	public void calculateRisk(Threat threat, RiskAssessmentLoopConfiguration loopConfiguration) {
@@ -54,5 +69,10 @@ public class StubRiskModel implements IRiskModel {
 	@Override
 	public double[] getLef() {
 		return new double[] { 0.4, 0.8, 1.2 };
+	}
+
+	@Override
+	public List<Mitigation> getMitigations() {
+		return mitigations;
 	}
 }

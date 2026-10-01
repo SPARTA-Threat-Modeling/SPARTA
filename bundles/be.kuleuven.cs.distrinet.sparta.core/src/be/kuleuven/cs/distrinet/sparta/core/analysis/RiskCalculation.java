@@ -175,10 +175,28 @@ public class RiskCalculation {
 
 	private static List<CounterMeasure> getCounterMeasures(DataFlow flow, ThreatType tt,
 			List<RoleBinding> countermeasureBindings) {
-		return countermeasureBindings.parallelStream()
+		return mitigations(flow, tt, countermeasureBindings).stream().map(Mitigation::counterMeasure)
+				.collect(Collectors.toList());
+	}
+
+	/**
+	 * The countermeasures that reduce the vulnerability of a threat, each with the role binding
+	 * it applies through: those subjected to a bound role that {@link #mitigates} the threat
+	 * type and are {@link #isInScope in scope} of the flow. This is the single definition of
+	 * the selection used by the vulnerability calculation; it does not depend on the attacker
+	 * (an insider attacker ignores them, see {@link #calculateVulnerabilityArray}).
+	 *
+	 * @param flow                   - the data flow the threat applies to (may be null)
+	 * @param tt                     - the threat type
+	 * @param countermeasureBindings - the role bindings on the threatened element
+	 * @return the mitigations, in binding order
+	 */
+	public static List<Mitigation> mitigations(DataFlow flow, ThreatType tt, List<RoleBinding> countermeasureBindings) {
+		return countermeasureBindings.stream()
 				.filter(b -> b.getBinds() != null)
 				.flatMap(b -> b.getBinds().getSubjected().stream()
-						.filter(cm -> mitigates(cm, tt) && isInScope(cm, flow)))
+						.filter(cm -> mitigates(cm, tt) && isInScope(cm, flow))
+						.map(cm -> new Mitigation(b, cm)))
 				.collect(Collectors.toList());
 	}
 

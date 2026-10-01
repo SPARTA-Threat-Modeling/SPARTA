@@ -9,6 +9,7 @@
  */
 package be.kuleuven.cs.distrinet.sparta.core.tests;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -28,6 +29,7 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.junit.Test;
 
 import be.kuleuven.cs.distrinet.sparta.core.Engine;
+import be.kuleuven.cs.distrinet.sparta.core.analysis.RiskCalculation;
 import be.kuleuven.cs.distrinet.sparta.core.model.Threat;
 import be.kuleuven.cs.distrinet.sparta.spartamodel.SpartaModelPackage;
 import be.kuleuven.cs.distrinet.sparta.spartamodel.util.SpartaModelResourceFactoryImpl;
@@ -88,6 +90,10 @@ public class EngineIntegrationTest {
 					assertTrue("SLE must be finite", Double.isFinite(t.getSle()));
 					assertTrue("TEF must be finite", Double.isFinite(t.getTef()));
 					assertTrue("risk must be non-negative", t.getRisk() >= 0);
+					assertEquals("recorded mitigations must be the countermeasure selection",
+							RiskCalculation.mitigations(t.getDataFlow(), t.getThreatType(),
+									t.getThreatenedElement().getBound()),
+							t.getMitigations());
 				}
 			} finally {
 				engine.dispose();
