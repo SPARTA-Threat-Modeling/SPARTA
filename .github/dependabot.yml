@@ -1,0 +1,29 @@
+# Dependabot configuration for SPARTA.
+#
+# - github-actions: keeps the SHA-pinned actions in .github/workflows fresh
+#   (Dependabot understands `uses: owner/repo@<sha> # vX.Y.Z` pins and bumps
+#   both the SHA and the version comment).
+# - maven (/): the Tycho reactor root. Most of the Eclipse/Tycho graph is
+#   resolved from p2 repositories that Dependabot cannot see, but the plugin
+#   versions declared in the poms (tycho, jacoco, javadoc, ...) are covered.
+# - maven (/standalone): the plain-Java half with its centralized
+#   third-party dependencyManagement -- this is where most library bumps land.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+
+  - package-ecosystem: maven
+    directory: "/"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+
+  - package-ecosystem: maven
+    directory: "/standalone"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5

@@ -107,15 +107,11 @@ verify:
 release:
   stage: verify
   script:
+    # VERSION is still needed by the generic-package uploads further down.
     - VERSION="${CI_COMMIT_TAG#v}"
-    - YEAR="${VERSION%%.*}"
-    - mvn $MAVEN_CLI_OPTS tycho-versions:set-version -DnewVersion="$VERSION"
-    # Keep the per-year update-site URLs in sync with the release line (only the
-    # SPARTA /updates/<year> path; the legacy /updatesite/2025 site is untouched).
-    - sed -i -E "s#(downloads\.sparta\.distrinet-research\.be/updates/)[0-9]+#\1${YEAR}#g"
-      features/*/feature.xml
-      releng/be.kuleuven.cs.distrinet.sparta.product/*.product
-      releng/be.kuleuven.cs.distrinet.sparta.update/src/main/resources/index.html
+    # Shared with the GitHub release workflow: rewrites the reactor to the tag
+    # version and keeps the per-year update-site URLs in sync.
+    - bash releng/scripts/prepare-release.sh "$CI_COMMIT_TAG"
     # `deploy` runs test + package for the whole reactor and publishes the
     # library + standalone (shaded) jars to the GitLab Maven registry. The
     # releng modules skip the deploy plugin in their poms, so the p2 update site

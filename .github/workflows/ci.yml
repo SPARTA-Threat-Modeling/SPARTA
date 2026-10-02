@@ -34,10 +34,13 @@ jobs:
       contents: read    # checkout only
       checks: write     # dorny/test-reporter creates a check run for the test report
     steps:
-      - uses: actions/checkout@v7
+      # Third-party and GitHub-owned actions are pinned to full commit SHAs
+      # (supply-chain hardening: tags are mutable, SHAs are not). Dependabot
+      # keeps the pins fresh via the trailing version comments.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Set up JDK 21
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
         with:
           distribution: temurin
           java-version: '21'
@@ -50,7 +53,7 @@ jobs:
 
       # Surface test results in the run summary / PR checks.
       - name: Publish test report
-        uses: dorny/test-reporter@v3
+        uses: dorny/test-reporter@a43b3a5f7366b97d083190328d2c652e1a8b6aa2 # v3.0.0
         if: ${{ !cancelled() }}
         with:
           name: Test results
@@ -60,7 +63,7 @@ jobs:
       # Ephemeral, browsable-from-the-run build outputs (see notes in chat:
       # this is the "workflow artifact", distinct from release assets).
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: ${{ !cancelled() }}
         with:
           name: packages
