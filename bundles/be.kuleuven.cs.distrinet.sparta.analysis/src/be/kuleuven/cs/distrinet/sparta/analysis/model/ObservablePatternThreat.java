@@ -35,16 +35,8 @@ public class ObservablePatternThreat extends ObservableThreat {
 		super(x, new SpartaRiskModel(), loopConfiguration);
 		this.metadata = meta;
 		this.conversion = new ThreatPatternConversion(meta.getThreatPattern(), x);
-		this.risk.setValue(0d);
-		this.potentialRisk.setValue(0d);
-		this.risk_lower.setValue(0d);
-		this.risk_upper.setValue(0d);
-		this.vulnerability.setValue(0d);
-		this.vulnerability_lower.setValue(0d);
-		this.vulnerability_upper.setValue(0d);
-		this.lef.setValue(0d);
-		this.tef.setValue(0d);
-		this.sle.setValue(0d);
+		// The numeric values start at 0d via their field initialisers, so no
+		// realm-bound setValue calls are needed here.
 		setupBindings(dbc);
 
 	}
@@ -91,12 +83,12 @@ public class ObservablePatternThreat extends ObservableThreat {
 		setThreatTypeName(conversion.processAndReplaceParams(metadata.getThreatAncestor().getName()));
 		threatType = metadata.getThreatType();
 		threatenedElement = conversion.getThreatLocation();
-		threatenedElementName.setValue(threatenedElement.getName());
+		setOnRealm(threatenedElementName, threatenedElement.getName());
 		dataFlow = conversion.getDataFlow();
 		if (dataFlow != null) {
-			flowName.setValue(dataFlow.getName());
+			setOnRealm(flowName, dataFlow.getName());
 		} else {
-			flowName.setValue("");
+			setOnRealm(flowName, "");
 		}
 		try {
 			performRiskCalculation(loopConfiguration);

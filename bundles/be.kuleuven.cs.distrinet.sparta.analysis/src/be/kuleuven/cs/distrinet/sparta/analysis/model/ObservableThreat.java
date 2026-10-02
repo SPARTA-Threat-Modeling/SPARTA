@@ -14,10 +14,13 @@ import java.text.NumberFormat;
 import java.util.Locale;
 
 import org.eclipse.core.databinding.DataBindingContext;
+import org.eclipse.core.databinding.observable.Realm;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.observable.value.WritableValue;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.databinding.swt.DisplayRealm;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.viatra.addon.databinding.runtime.adapter.MatcherProperties;
 import org.eclipse.viatra.query.runtime.api.IPatternMatch;
 
@@ -31,29 +34,65 @@ import be.kuleuven.cs.distrinet.sparta.spartamodel.DataFlow;
 /**
  * Observable threat which contains the threat data to enable automatic updating
  * in SPARTA's threat analysis views.
- * 
+ *
+ * <p>Threading model: all {@link WritableValue}s are explicitly bound to the
+ * SWT display realm (rather than the constructing thread's default realm,
+ * which only exists on the display thread), so instances can be constructed
+ * on any thread. In the normal flow the ThreatAnalysisService builds its
+ * databinding graph on the UI thread, so conversion - and therefore
+ * construction and the initial value population - happens on the realm; VIATRA
+ * may however deliver later match updates on other threads, so every value
+ * mutation goes through {@link #setOnRealm(WritableValue, Object)}, which
+ * applies it directly when on the realm and via {@code Realm.asyncExec}
+ * otherwise. Getters are meant for the UI thread (JFace bindings and label
+ * providers).
+ *
  * @author Laurens
  *
  */
 public class ObservableThreat extends Threat {
 
-	protected WritableValue<String> threatenedElementName = new WritableValue<String>();
-	protected WritableValue<String> threatName = new WritableValue<String>();
-	protected WritableValue<String> threatTypeName = new WritableValue<String>();
-	protected WritableValue<String> flowName = new WritableValue<String>();
-	protected WritableValue<String> message = new WritableValue<String>();
+	protected WritableValue<String> threatenedElementName = new WritableValue<String>(uiRealm(), null, null);
+	protected WritableValue<String> threatName = new WritableValue<String>(uiRealm(), null, null);
+	protected WritableValue<String> threatTypeName = new WritableValue<String>(uiRealm(), null, null);
+	protected WritableValue<String> flowName = new WritableValue<String>(uiRealm(), null, null);
+	protected WritableValue<String> message = new WritableValue<String>(uiRealm(), null, null);
 
-	protected WritableValue<Double> vulnerability = new WritableValue<Double>();
-	protected WritableValue<Double> vulnerability_lower = new WritableValue<Double>();
-	protected WritableValue<Double> vulnerability_upper = new WritableValue<Double>();
-	protected WritableValue<Double> risk = new WritableValue<Double>();
-	protected WritableValue<Double> risk_lower = new WritableValue<Double>();
-	protected WritableValue<Double> risk_upper = new WritableValue<Double>();
-	protected WritableValue<Double> potentialRisk = new WritableValue<Double>();
+	protected WritableValue<Double> vulnerability = new WritableValue<Double>(uiRealm(), 0d, null);
+	protected WritableValue<Double> vulnerability_lower = new WritableValue<Double>(uiRealm(), 0d, null);
+	protected WritableValue<Double> vulnerability_upper = new WritableValue<Double>(uiRealm(), 0d, null);
+	protected WritableValue<Double> risk = new WritableValue<Double>(uiRealm(), 0d, null);
+	protected WritableValue<Double> risk_lower = new WritableValue<Double>(uiRealm(), 0d, null);
+	protected WritableValue<Double> risk_upper = new WritableValue<Double>(uiRealm(), 0d, null);
+	protected WritableValue<Double> potentialRisk = new WritableValue<Double>(uiRealm(), 0d, null);
 
-	protected WritableValue<Double> sle = new WritableValue<Double>();
-	protected WritableValue<Double> tef = new WritableValue<Double>();
-	protected WritableValue<Double> lef = new WritableValue<Double>();
+	protected WritableValue<Double> sle = new WritableValue<Double>(uiRealm(), 0d, null);
+	protected WritableValue<Double> tef = new WritableValue<Double>(uiRealm(), 0d, null);
+	protected WritableValue<Double> lef = new WritableValue<Double>(uiRealm(), 0d, null);
+
+	/** @return the realm of the SWT display thread, on which all values live. */
+	private static Realm uiRealm() {
+		return DisplayRealm.getRealm(Display.getDefault());
+	}
+
+	/**
+	 * Apply a value mutation on the observable's realm: directly when already
+	 * running on it, asynchronously otherwise (e.g. VIATRA delivering a match
+	 * update on a non-UI thread). Off-realm callers get eventual consistency;
+	 * the realm serialises all mutations and change notifications.
+	 */
+	protected static <T> void setOnRealm(WritableValue<T> observable, T value) {
+		Realm realm = observable.getRealm();
+		if (realm.isCurrent()) {
+			observable.setValue(value);
+		} else {
+			realm.asyncExec(() -> {
+				if (!observable.isDisposed()) {
+					observable.setValue(value);
+				}
+			});
+		}
+	}
 	/** Loop configuration owned by the analysing engine; used to drive the risk calculation. */
 	protected RiskAssessmentLoopConfiguration loopConfiguration;
 	protected String sender = "";
@@ -107,16 +146,8 @@ public class ObservableThreat extends Threat {
 	public ObservableThreat(DataBindingContext dbc, IPatternMatch x, RiskAssessmentLoopConfiguration loopConfiguration) {
 		super(x);
 		this.loopConfiguration = loopConfiguration;
-		this.risk.setValue(0d);
-		this.potentialRisk.setValue(0d);
-		this.risk_lower.setValue(0d);
-		this.risk_upper.setValue(0d);
-		this.vulnerability.setValue(0d);
-		this.vulnerability_lower.setValue(0d);
-		this.vulnerability_upper.setValue(0d);
-		this.lef.setValue(0d);
-		this.tef.setValue(0d);
-		this.sle.setValue(0d);
+		// The numeric values start at 0d via their field initialisers, so no
+		// realm-bound setValue calls are needed here.
 		setupBindings(dbc);
 		processMatch();
 
@@ -177,11 +208,11 @@ public class ObservableThreat extends Threat {
 	}
 
 	public void setThreat(String threat) {
-		this.threatName.setValue(threat);
+		setOnRealm(threatName, threat);
 	}
 
 	public void setThreatTypeName(String threat) {
-		this.threatTypeName.setValue(threat);
+		setOnRealm(threatTypeName, threat);
 	}
 	
 	public String getFlow() {
@@ -189,7 +220,7 @@ public class ObservableThreat extends Threat {
 	}
 
 	public void setFlow(String flow) {
-		this.flowName.setValue(flow);
+		setOnRealm(flowName, flow);
 	}
 
 	public String getMessage() {
@@ -197,7 +228,7 @@ public class ObservableThreat extends Threat {
 	}
 
 	public void setMessage(String message) {
-		this.message.setValue(message);
+		setOnRealm(this.message, message);
 	}
 
 	public String getVulnerabilityString() {
@@ -205,7 +236,7 @@ public class ObservableThreat extends Threat {
 	}
 
 	public void setVulnerability(double vulnerability) {
-		this.vulnerability.setValue(vulnerability);
+		setOnRealm(this.vulnerability, vulnerability);
 	}
 
 	public String getVulnerability_lowerString() {
@@ -213,7 +244,7 @@ public class ObservableThreat extends Threat {
 	}
 
 	public void setVulnerability_lower(double vulnerability_lower) {
-		this.vulnerability_lower.setValue(vulnerability_lower);
+		setOnRealm(this.vulnerability_lower, vulnerability_lower);
 	}
 
 	public String getVulnerability_upperString() {
@@ -221,7 +252,7 @@ public class ObservableThreat extends Threat {
 	}
 
 	public void setVulnerability_upper(double vulnerability_upper) {
-		this.vulnerability_upper.setValue(vulnerability_upper);
+		setOnRealm(this.vulnerability_upper, vulnerability_upper);
 	}
 
 	public String getRiskString() {
@@ -229,7 +260,7 @@ public class ObservableThreat extends Threat {
 	}
 
 	public void setRisk(double risk) {
-		this.risk.setValue(risk);
+		setOnRealm(this.risk, risk);
 	}
 
 	public String getPotentialRiskString() {
@@ -237,7 +268,7 @@ public class ObservableThreat extends Threat {
 	}
 
 	public void setPotentialRisk(double risk) {
-		this.potentialRisk.setValue(risk);
+		setOnRealm(potentialRisk, risk);
 	}
 
 	public String getRisk_lowerString() {
@@ -245,7 +276,7 @@ public class ObservableThreat extends Threat {
 	}
 
 	public void setRisk_lower(double risk) {
-		this.risk_lower.setValue(risk);
+		setOnRealm(risk_lower, risk);
 	}
 
 	public String getRisk_upperString() {
@@ -253,7 +284,7 @@ public class ObservableThreat extends Threat {
 	}
 
 	public void setRisk_upper(double risk) {
-		this.risk_upper.setValue(risk);
+		setOnRealm(risk_upper, risk);
 	}
 
 	public String getSleString() {
@@ -261,7 +292,7 @@ public class ObservableThreat extends Threat {
 	}
 
 	public void setSle(double sle) {
-		this.sle.setValue(sle);
+		setOnRealm(this.sle, sle);
 	}
 
 	public String getTefString() {
@@ -269,7 +300,7 @@ public class ObservableThreat extends Threat {
 	}
 
 	public void setTef(double tef) {
-		this.tef.setValue(tef);
+		setOnRealm(this.tef, tef);
 	}
 
 	public String getLefString() {
@@ -277,7 +308,7 @@ public class ObservableThreat extends Threat {
 	}
 
 	public void setLef(double lef) {
-		this.lef.setValue(lef);
+		setOnRealm(this.lef, lef);
 	}
 
 	public double getRiskAsDouble() {
@@ -367,15 +398,15 @@ public class ObservableThreat extends Threat {
 	@Override
 	public void performRiskCalculation(RiskAssessmentLoopConfiguration loopConfiguration) {
 		super.performRiskCalculation(loopConfiguration);
-		this.risk.setValue(super.getRisk());
-		this.risk_lower.setValue(super.getRisk_lower());
-		this.risk_upper.setValue(super.getRisk_upper());
-		this.potentialRisk.setValue(super.getPotentialRisk());
-		this.sle.setValue(super.getSle());
-		this.vulnerability.setValue(super.getVulnerability());
-		this.vulnerability_lower.setValue(super.getVulnerability_lower());
-		this.vulnerability_upper.setValue(super.getVulnerability_upper());
-		this.lef.setValue(super.getLef());
+		setOnRealm(risk, super.getRisk());
+		setOnRealm(risk_lower, super.getRisk_lower());
+		setOnRealm(risk_upper, super.getRisk_upper());
+		setOnRealm(potentialRisk, super.getPotentialRisk());
+		setOnRealm(sle, super.getSle());
+		setOnRealm(vulnerability, super.getVulnerability());
+		setOnRealm(vulnerability_lower, super.getVulnerability_lower());
+		setOnRealm(vulnerability_upper, super.getVulnerability_upper());
+		setOnRealm(lef, super.getLef());
 	}
 
 	public String getDescription() {

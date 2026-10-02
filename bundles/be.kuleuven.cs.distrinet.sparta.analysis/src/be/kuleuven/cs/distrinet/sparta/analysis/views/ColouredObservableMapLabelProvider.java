@@ -149,7 +149,21 @@ public class ColouredObservableMapLabelProvider extends ObservableMapLabelProvid
 
 	@Override
 	public void handleChange(ChangeEvent event) {
-		fireLabelProviderChanged(new LabelProviderChangedEvent(this));
+		// Like handleListChange: VIATRA may deliver this event off the SWT UI
+		// thread, while fireLabelProviderChanged reaches into the viewer
+		// widgets; marshal it onto the observable's realm (the display thread).
+		event.getObservable().getRealm().asyncExec(new Runnable() {
+
+			@Override
+			public void run() {
+				if (event.getObservable().isDisposed()) {
+					return;
+				}
+				fireLabelProviderChanged(new LabelProviderChangedEvent(ColouredObservableMapLabelProvider.this));
+
+			}
+
+		});
 	}
 
 	@Override
