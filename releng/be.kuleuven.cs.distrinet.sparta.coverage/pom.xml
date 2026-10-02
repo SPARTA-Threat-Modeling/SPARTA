@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>be.kuleuven.cs.distrinet.sparta.coverage</artifactId>
+	<packaging>pom</packaging>
+	<name>SPARTA Coverage Report</name>
+	<parent>
+		<groupId>be.kuleuven.cs.distrinet.sparta</groupId>
+		<artifactId>be.kuleuven.cs.distrinet.sparta.releng</artifactId>
+		<version>2026.3.0</version>
+	</parent>
+
+	<!-- Coverage of the production bundles. The tests run in the separate
+		eclipse-test-plugin bundles, so each test bundle's own jacoco report only
+		covers its test classes. report-aggregate instead combines the exec files of
+		the test bundles below with the classes and sources of the production
+		bundles, into target/site/jacoco-aggregate. Add a bundle here when it gets
+		tests (production bundle with compile scope, its test bundle with test
+		scope). -->
+	<dependencies>
+		<dependency>
+			<groupId>be.kuleuven.cs.distrinet.sparta</groupId>
+			<artifactId>be.kuleuven.cs.distrinet.sparta.spartamodel</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>be.kuleuven.cs.distrinet.sparta</groupId>
+			<artifactId>be.kuleuven.cs.distrinet.sparta.queries</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>be.kuleuven.cs.distrinet.sparta</groupId>
+			<artifactId>be.kuleuven.cs.distrinet.sparta.core</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>be.kuleuven.cs.distrinet.sparta</groupId>
+			<artifactId>be.kuleuven.cs.distrinet.sparta.io</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>be.kuleuven.cs.distrinet.sparta</groupId>
+			<artifactId>be.kuleuven.cs.distrinet.sparta.analysis</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>be.kuleuven.cs.distrinet.sparta</groupId>
+			<artifactId>be.kuleuven.cs.distrinet.sparta.threatanalysis</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>be.kuleuven.cs.distrinet.sparta</groupId>
+			<artifactId>be.kuleuven.cs.distrinet.sparta.core.tests</artifactId>
+			<version>${project.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>be.kuleuven.cs.distrinet.sparta</groupId>
+			<artifactId>be.kuleuven.cs.distrinet.sparta.io.tests</artifactId>
+			<version>${project.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>be.kuleuven.cs.distrinet.sparta</groupId>
+			<artifactId>be.kuleuven.cs.distrinet.sparta.analysis.tests</artifactId>
+			<version>${project.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>be.kuleuven.cs.distrinet.sparta</groupId>
+			<artifactId>be.kuleuven.cs.distrinet.sparta.threatanalysis.tests</artifactId>
+			<version>${project.version}</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>jacoco-report-aggregate</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>report-aggregate</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<!-- Build-only module: nothing to publish. -->
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-deploy-plugin</artifactId>
+				<version>2.7</version>
+				<configuration>
+					<skip>true</skip>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>

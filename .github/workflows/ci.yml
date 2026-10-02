@@ -84,6 +84,10 @@ jobs:
         if: ${{ !cancelled() }}
         with:
           name: jacoco-coverage
-          path: '**/target/site/jacoco/**'
+          # The aggregate covers the production bundles; the per-module reports
+          # of the eclipse-test-plugin bundles only cover the test classes.
+          path: |
+            releng/be.kuleuven.cs.distrinet.sparta.coverage/target/site/jacoco-aggregate/**
+            standalone/*/target/site/jacoco/**
           if-no-files-found: warn
           retention-days: 14

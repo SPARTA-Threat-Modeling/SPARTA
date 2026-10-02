@@ -19,5 +19,6 @@
 	<modules>
 		<module>be.kuleuven.cs.distrinet.sparta.update</module>
 		<module>be.kuleuven.cs.distrinet.sparta.product</module>
+		<module>be.kuleuven.cs.distrinet.sparta.coverage</module>
 	</modules>
 </project>
