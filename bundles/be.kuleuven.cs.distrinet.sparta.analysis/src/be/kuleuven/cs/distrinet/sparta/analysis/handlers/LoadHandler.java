@@ -83,20 +83,15 @@ public class LoadHandler extends AbstractHandler {
 	}
 
 	/**
-	 * Analyse the resource and report a failure to the user. On success the service starts
-	 * listening to {@code editor} (if any), so later edits refresh the results.
+	 * Start analysing the resource. The analysis runs in a background job, which reports its own
+	 * failures and, once it succeeded, attaches {@code editor} (if any) so later edits refresh
+	 * the results. A model that cannot be analysed at all is refused right away; that is
+	 * reported here.
 	 */
 	private static void load(Shell shell, Resource resource, IEditorPart editor) {
-		ThreatAnalysisService service = ThreatAnalysisService.getInstance();
-		IStatus status = service.load(resource);
+		IStatus status = ThreatAnalysisService.getInstance().load(resource, editor);
 		if (!status.isOK()) {
 			ErrorDialog.openError(shell, TITLE, "The model could not be analysed.", status);
-			return;
-		}
-		// Attach after load(): load() tears down the previous state via clear(),
-		// which detaches the previously tracked editor.
-		if (editor != null) {
-			service.attachEditor(editor);
 		}
 	}
 
