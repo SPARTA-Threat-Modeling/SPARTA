@@ -12,6 +12,7 @@ package be.kuleuven.cs.distrinet.sparta.analysis.model;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Locale;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.observable.Realm;
@@ -47,6 +48,13 @@ import be.kuleuven.cs.distrinet.sparta.spartamodel.DataFlow;
  * otherwise. Getters are meant for the UI thread (JFace bindings and label
  * providers).
  *
+ * <p>Because off-realm mutations are queued while on-realm ones apply
+ * immediately, a value written from both sides could otherwise be overwritten
+ * by an older queued write. The risk figures of one
+ * {@link #performRiskCalculation risk calculation} are therefore published
+ * together, and a queued publication is dropped once a newer calculation has
+ * been published.
+ *
  * @author Laurens
  *
  */
@@ -70,10 +78,26 @@ public class ObservableThreat extends Threat {
 	protected WritableValue<Double> tef = new WritableValue<Double>(uiRealm(), 0d, null);
 	protected WritableValue<Double> lef = new WritableValue<Double>(uiRealm(), 0d, null);
 
-	/** @return the realm of the SWT display thread, on which all values live. */
+	/** The display realm, looked up once (the workbench has a single display). */
+	private static volatile Realm cachedUiRealm;
+
+	/**
+	 * @return the realm of the SWT display thread, on which all values live. Note that
+	 *         {@link Display#getDefault()} creates a display bound to the calling thread if none
+	 *         exists yet, so instances must not be created before the workbench display (e.g. in
+	 *         headless code).
+	 */
 	private static Realm uiRealm() {
-		return DisplayRealm.getRealm(Display.getDefault());
+		Realm realm = cachedUiRealm;
+		if (realm == null) {
+			realm = DisplayRealm.getRealm(Display.getDefault());
+			cachedUiRealm = realm;
+		}
+		return realm;
 	}
+
+	/** Incremented per risk calculation; see {@link #performRiskCalculation}. */
+	private final AtomicLong riskGeneration = new AtomicLong();
 
 	/**
 	 * Apply a value mutation on the observable's realm: directly when already
@@ -93,6 +117,7 @@ public class ObservableThreat extends Threat {
 			});
 		}
 	}
+
 	/** Loop configuration owned by the analysing engine; used to drive the risk calculation. */
 	protected RiskAssessmentLoopConfiguration loopConfiguration;
 	protected String sender = "";
@@ -398,15 +423,39 @@ public class ObservableThreat extends Threat {
 	@Override
 	public void performRiskCalculation(RiskAssessmentLoopConfiguration loopConfiguration) {
 		super.performRiskCalculation(loopConfiguration);
-		setOnRealm(risk, super.getRisk());
-		setOnRealm(risk_lower, super.getRisk_lower());
-		setOnRealm(risk_upper, super.getRisk_upper());
-		setOnRealm(potentialRisk, super.getPotentialRisk());
-		setOnRealm(sle, super.getSle());
-		setOnRealm(vulnerability, super.getVulnerability());
-		setOnRealm(vulnerability_lower, super.getVulnerability_lower());
-		setOnRealm(vulnerability_upper, super.getVulnerability_upper());
-		setOnRealm(lef, super.getLef());
+		// Snapshot this calculation's figures and publish them in one realm runnable, so
+		// they are applied together, and only if no newer calculation was published since
+		// (an older off-realm publication may still be queued when an on-realm one runs).
+		Double newRisk = super.getRisk();
+		Double newRiskLower = super.getRisk_lower();
+		Double newRiskUpper = super.getRisk_upper();
+		Double newPotentialRisk = super.getPotentialRisk();
+		Double newSle = super.getSle();
+		Double newVulnerability = super.getVulnerability();
+		Double newVulnerabilityLower = super.getVulnerability_lower();
+		Double newVulnerabilityUpper = super.getVulnerability_upper();
+		Double newLef = super.getLef();
+		long generation = riskGeneration.incrementAndGet();
+		Runnable publish = () -> {
+			if (generation != riskGeneration.get() || risk.isDisposed()) {
+				return;
+			}
+			risk.setValue(newRisk);
+			risk_lower.setValue(newRiskLower);
+			risk_upper.setValue(newRiskUpper);
+			potentialRisk.setValue(newPotentialRisk);
+			sle.setValue(newSle);
+			vulnerability.setValue(newVulnerability);
+			vulnerability_lower.setValue(newVulnerabilityLower);
+			vulnerability_upper.setValue(newVulnerabilityUpper);
+			lef.setValue(newLef);
+		};
+		Realm realm = risk.getRealm();
+		if (realm.isCurrent()) {
+			publish.run();
+		} else {
+			realm.asyncExec(publish);
+		}
 	}
 
 	public String getDescription() {

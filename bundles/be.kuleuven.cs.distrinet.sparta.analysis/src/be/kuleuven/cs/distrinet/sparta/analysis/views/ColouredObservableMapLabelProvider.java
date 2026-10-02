@@ -11,6 +11,7 @@ package be.kuleuven.cs.distrinet.sparta.analysis.views;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.core.databinding.observable.ChangeEvent;
 import org.eclipse.core.databinding.observable.IChangeListener;
@@ -53,6 +54,11 @@ public class ColouredObservableMapLabelProvider extends ObservableMapLabelProvid
 	private final Map<ColorTriple, Color> colormap = new HashMap<>();
 
 	private IObservableList<? extends ObservableThreat> input;
+
+	/** Set while a refresh is queued, so a burst of list changes triggers a single refresh. */
+	private final AtomicBoolean refreshPending = new AtomicBoolean();
+
+	private volatile boolean disposed;
 
 	private double minValue = 0;
 	private double medValue = 1000;
@@ -132,42 +138,38 @@ public class ColouredObservableMapLabelProvider extends ObservableMapLabelProvid
 
 	@Override
 	public void handleListChange(ListChangeEvent<? extends ObservableThreat> event) {
-		event.getObservableList().getRealm().asyncExec(new Runnable() {
-
-			@Override
-			public void run() {
-				if (event.getObservable().isDisposed()) {
-					return;
-				}
-				calcRiskBoundaries(event.getObservableList());
-				fireLabelProviderChanged(new LabelProviderChangedEvent(ColouredObservableMapLabelProvider.this));
-
-			}
-
-		});
+		scheduleRefresh();
 	}
 
 	@Override
 	public void handleChange(ChangeEvent event) {
-		// Like handleListChange: VIATRA may deliver this event off the SWT UI
-		// thread, while fireLabelProviderChanged reaches into the viewer
-		// widgets; marshal it onto the observable's realm (the display thread).
-		event.getObservable().getRealm().asyncExec(new Runnable() {
+		// Every list change also fires this generic event; it shares the one refresh.
+		scheduleRefresh();
+	}
 
-			@Override
-			public void run() {
-				if (event.getObservable().isDisposed()) {
-					return;
-				}
-				fireLabelProviderChanged(new LabelProviderChangedEvent(ColouredObservableMapLabelProvider.this));
-
+	/**
+	 * Recalculate the colour boundaries and refresh the labels on the input's realm (the
+	 * display thread): VIATRA may deliver list changes on other threads, while the refresh
+	 * reaches into the viewer widgets. Changes arriving while a refresh is queued share it,
+	 * instead of each queueing a full-table refresh of its own.
+	 */
+	private void scheduleRefresh() {
+		if (input == null || !refreshPending.compareAndSet(false, true)) {
+			return;
+		}
+		input.getRealm().asyncExec(() -> {
+			refreshPending.set(false);
+			if (disposed || input.isDisposed()) {
+				return;
 			}
-
+			calcRiskBoundaries(input);
+			fireLabelProviderChanged(new LabelProviderChangedEvent(ColouredObservableMapLabelProvider.this));
 		});
 	}
 
 	@Override
 	public void dispose() {
+		disposed = true;
 		if (input != null && !input.isDisposed()) {
 			input.removeListChangeListener(this);
 			input.removeChangeListener(this);

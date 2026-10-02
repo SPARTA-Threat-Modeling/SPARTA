@@ -35,8 +35,6 @@ public class ObservablePatternThreat extends ObservableThreat {
 		super(x, new SpartaRiskModel(), loopConfiguration);
 		this.metadata = meta;
 		this.conversion = new ThreatPatternConversion(meta.getThreatPattern(), x);
-		// The numeric values start at 0d via their field initialisers, so no
-		// realm-bound setValue calls are needed here.
 		setupBindings(dbc);
 
 	}
