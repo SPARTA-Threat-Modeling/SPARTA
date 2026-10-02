@@ -11,9 +11,7 @@ package be.kuleuven.cs.distrinet.sparta.io;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.text.NumberFormat;
 import java.util.LinkedHashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -34,7 +32,7 @@ import be.kuleuven.cs.distrinet.sparta.spartamodel.ModelElement;
 public abstract class ThreatWriter extends Writer {
 
 	protected final Writer writer;
-	private final LinkedHashMap<String, Function<Threat, ? extends Object>> properties = new LinkedHashMap<>();
+	private final LinkedHashMap<String, Function<Threat, ? extends Object>> properties;
 
 	/**
 	 * Create a new ThreatWriter to provided support for writing out a default set
@@ -51,31 +49,16 @@ public abstract class ThreatWriter extends Writer {
 	 * of threat properties to text-based files. If any of the provided functions
 	 * return a {@link ModelElement}, the {@link ThreatWriter} will attempt to
 	 * retrieve the name of the element when writing it to the output writer.
-	 * 
+	 * Double-valued properties are formatted as locale-invariant, grouping-free
+	 * strings (see {@link ThreatProperties#forText(Map)}).
+	 *
 	 * @param writer     a writer
 	 * @param properties a set of functions, which applied to a threat provide the
 	 *                   property to write out
 	 */
 	public ThreatWriter(Writer writer, Map<String, Function<Threat, ? extends Object>> properties) {
 		this.writer = writer;
-		if (properties != null) {
-			this.properties.putAll(properties);
-		} else {
-			this.properties.putAll(ThreatExportColumns.defaults());
-		}
-		for (String key : this.properties.keySet()) {
-			this.properties.compute(key, (k, v) -> {
-				return v.andThen(o -> ((o instanceof ModelElement) ? ((ModelElement) o).getName() : o));
-			});
-		}
-		final NumberFormat nf = NumberFormat.getInstance(Locale.ROOT);
-		nf.setMaximumFractionDigits(4);
-		for (String key : this.properties.keySet()) {
-			this.properties.compute(key, (k, v) -> {
-				return v.andThen(o -> ((o instanceof Double) ? nf.format(o) : o));
-			});
-		}
-
+		this.properties = ThreatProperties.forText(properties);
 	}
 
 	/**

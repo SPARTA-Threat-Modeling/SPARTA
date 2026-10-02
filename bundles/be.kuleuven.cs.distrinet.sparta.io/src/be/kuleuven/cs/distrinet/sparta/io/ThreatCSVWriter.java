@@ -65,14 +65,17 @@ public class ThreatCSVWriter extends ThreatWriter {
 	 */
 	@Override
 	public void write(Threat threat) throws IOException {
-		write(getProperties().entrySet().stream().map(Entry::getValue).map(f -> f.apply(threat)).map(x -> Objects.toString(x,"")).map(this::wrap)
+		write(getProperties().entrySet().stream().map(Entry::getValue).map(f -> f.apply(threat))
+				.map(x -> Objects.toString(x, "")).map(ThreatCSVWriter::escapeFieldValue)
 				.collect(Collectors.joining(";")));
 		newLine();
 	}
-	
-	private String wrap(String arg) {
-		return escapeField(arg);
-	}
+
+	/**
+	 * Characters that make a spreadsheet application interpret a CSV field as a
+	 * formula (OWASP CSV-injection trigger characters).
+	 */
+	private static final String FORMULA_TRIGGERS = "=+-@\t\r";
 
 	/**
 	 * Escape a single CSV field: wrap it in double quotes and double any embedded
@@ -88,13 +91,40 @@ public class ThreatCSVWriter extends ThreatWriter {
 	}
 
 	/**
+	 * Escape a single CSV <em>data</em> field: applies the RFC&nbsp;4180 quoting
+	 * of {@link #escapeField(String)} plus the OWASP CSV-injection mitigation - a
+	 * value starting with {@code =}, {@code +}, {@code -}, {@code @}, tab or
+	 * carriage return is prefixed with a single quote {@code '} so a spreadsheet
+	 * application treats it as text instead of executing it as a formula.
+	 *
+	 * <p>
+	 * The guard is deliberately applied uniformly: a negative-looking value such
+	 * as {@code -5} also becomes {@code '-5}, because {@code -} is a formula
+	 * trigger ({@code -5+cmd|...} attacks) and safety takes precedence. This does
+	 * not affect the default numeric columns in practice: risks and
+	 * vulnerabilities are non-negative, pre-formatted strings. Headers, whose
+	 * names the exporter controls, are escaped with {@link #escapeField(String)}
+	 * only.
+	 *
+	 * @param arg the raw field value (may be {@code null}, treated as empty).
+	 * @return the quoted, escaped and formula-guarded field.
+	 */
+	public static String escapeFieldValue(String arg) {
+		String value = (arg == null) ? "" : arg;
+		if (!value.isEmpty() && FORMULA_TRIGGERS.indexOf(value.charAt(0)) >= 0) {
+			value = "'" + value;
+		}
+		return escapeField(value);
+	}
+
+	/**
 	 * Write a csv header based on the provided set of property names in
 	 * {@link ThreatCSVWriter#ThreatCSVWriter(Writer, Map)}
-	 * 
+	 *
 	 * @throws IOException If an I/O error occurs
 	 */
 	public void writeHeader() throws IOException {
-		write(getProperties().keySet().stream().map(this::wrap).collect(Collectors.joining(";")));
+		write(getProperties().keySet().stream().map(ThreatCSVWriter::escapeField).collect(Collectors.joining(";")));
 		newLine();
 	}
 

@@ -116,4 +116,14 @@ public class ThreatXlsxOutputStream extends ThreatOutputStream {
 		this.outputStream.write(arg0);
 	}
 
+	/**
+	 * Delegate bulk writes directly to the underlying stream. Without this
+	 * override the workbook bytes would funnel byte-by-byte through
+	 * {@link OutputStream#write(byte[], int, int)}'s default implementation.
+	 */
+	@Override
+	public void write(byte[] b, int off, int len) throws IOException {
+		this.outputStream.write(b, off, len);
+	}
+
 }

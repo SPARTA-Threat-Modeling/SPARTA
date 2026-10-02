@@ -29,7 +29,7 @@ import be.kuleuven.cs.distrinet.sparta.spartamodel.ModelElement;
 public abstract class ThreatOutputStream extends OutputStream {
 
 	protected final OutputStream outputStream;
-	private final LinkedHashMap<String, Function<Threat, ? extends Object>> properties = new LinkedHashMap<>();
+	private final LinkedHashMap<String, Function<Threat, ? extends Object>> properties;
 
 	/**
 	 * Create a new {@link ThreatOutputStream} that writes to out.
@@ -44,26 +44,18 @@ public abstract class ThreatOutputStream extends OutputStream {
 	 * Create a new {@link ThreatOutputStream} that writes to out. If any of the
 	 * provided functions return a {@link ModelElement}, the {@link ThreatWriter}
 	 * will attempt to retrieve the name of the element when writing it to the
-	 * output writer.
-	 * 
-	 * 
+	 * output writer. Unlike the text-based {@link ThreatWriter} hierarchy, Double
+	 * values are deliberately left raw so subclasses can emit typed (numeric)
+	 * cells (see {@link ThreatProperties#forTypedOutput(Map)}).
+	 *
+	 *
 	 * @param out        the {@link OutputStream} to use.
 	 * @param properties a set of functions, which applied to a threat provide the
 	 *                   property to write out
 	 */
 	public ThreatOutputStream(OutputStream out, Map<String, Function<Threat, ? extends Object>> properties) {
 		this.outputStream = out;
-		if (properties != null) {
-			this.properties.putAll(properties);
-		} else {
-			this.properties.putAll(ThreatExportColumns.defaults());
-		}
-		for (String key : this.properties.keySet()) {
-			this.properties.compute(key, (k, v) -> {
-				return v.andThen(o -> ((o instanceof ModelElement) ? ((ModelElement) o).getName() : o));
-			});
-		}
-
+		this.properties = ThreatProperties.forTypedOutput(properties);
 	}
 
 	@Override

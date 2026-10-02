@@ -13,6 +13,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 import be.kuleuven.cs.distrinet.sparta.core.model.Threat;
 import be.kuleuven.cs.distrinet.sparta.io.ThreatCSVWriter;
@@ -32,7 +33,7 @@ public class CSVExportHandler extends AbstractThreatTableExportHandler {
 
 	@Override
 	protected void export(File file, Threat[] threats) throws IOException {
-		try (ThreatCSVWriter tw = new ThreatCSVWriter(new BufferedWriter(new FileWriter(file)),
+		try (ThreatCSVWriter tw = new ThreatCSVWriter(new BufferedWriter(new FileWriter(file, StandardCharsets.UTF_8)),
 				ThreatExportColumns.withMetadata())) {
 			tw.writeHeader();
 			tw.write(threats);
