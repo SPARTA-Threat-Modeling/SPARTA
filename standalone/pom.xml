@@ -169,6 +169,27 @@
 	</dependencyManagement>
 
 	<build>
+		<plugins>
+			<!-- Coverage for the plain-Java half. The root pom's inherited
+				prepare-agent execution targets tycho.testArgLine (which plain
+				surefire ignores), so add a second execution here that uses jacoco's
+				default `argLine` property, which maven-surefire picks up
+				automatically. The root's inherited `report` execution then renders
+				target/site/jacoco from the produced exec file at verify. -->
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>${jacoco.version}</version>
+				<executions>
+					<execution>
+						<id>jacoco-prepare-agent-standalone</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
 		<pluginManagement>
 			<plugins>
 				<!--

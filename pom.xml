@@ -36,6 +36,7 @@
 		<tycho-extras.version>4.0.13</tycho-extras.version>
 		<maven-compiler.version>3.13.0</maven-compiler.version>
 		<viatra.version>2.9.1</viatra.version>
+		<jacoco.version>0.8.15</jacoco.version>
 		<javadoc.skip>true</javadoc.skip>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<eclipse-release>2025-06</eclipse-release>
@@ -49,6 +50,39 @@
 	
 	<build>
 		<plugins>
+			<!-- Coverage measurement. prepare-agent writes the -javaagent flag into
+				the tycho.testArgLine property, which tycho-surefire picks up by
+				convention (its argLine parameter maps to that property), so the
+				eclipse-test-plugin modules run instrumented. The standalone parent
+				adds a second prepare-agent execution targeting plain surefire's
+				argLine property. `report` renders target/site/jacoco (XML + HTML)
+				wherever an exec file was produced. That only covers the module's own
+				classes, which for an eclipse-test-plugin are the tests themselves; the
+				production-bundle coverage is the report-aggregate in
+				releng/be.kuleuven.cs.distrinet.sparta.coverage. -->
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>${jacoco.version}</version>
+				<executions>
+					<execution>
+						<id>jacoco-prepare-agent-tycho</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+						<configuration>
+							<propertyName>tycho.testArgLine</propertyName>
+						</configuration>
+					</execution>
+					<execution>
+						<id>jacoco-report</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>

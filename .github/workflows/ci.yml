@@ -74,3 +74,16 @@ jobs:
             standalone/**/target/*-shaded.jar
           if-no-files-found: warn
           retention-days: 14
+
+      # Per-module JaCoCo coverage reports (XML + HTML), produced by the
+      # jacoco-maven-plugin wired into both build halves (tycho-surefire via
+      # tycho.testArgLine, plain surefire via argLine). Measurement only --
+      # no external coverage service, no gates.
+      - name: Upload coverage reports
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: ${{ !cancelled() }}
+        with:
+          name: jacoco-coverage
+          path: '**/target/site/jacoco/**'
+          if-no-files-found: warn
+          retention-days: 14
