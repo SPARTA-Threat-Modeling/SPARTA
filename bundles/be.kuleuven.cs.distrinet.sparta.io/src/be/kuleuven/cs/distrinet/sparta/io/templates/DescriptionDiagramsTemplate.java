@@ -9,19 +9,21 @@
  */
 package be.kuleuven.cs.distrinet.sparta.io.templates;
 
+import java.util.Map;
+
 /** The "Diagrams" section wrapping one or more diagram items. */
 public class DescriptionDiagramsTemplate extends Template<Object> {
 
 	private static final String ITEM = "$$DIAGRAM_ITEM$$";
 
-	protected DescriptionDiagramsTemplate() {
+	private DescriptionDiagramsTemplate() {
 		super("descriptiondiagrams.txt");
 	}
 
 	public static final DescriptionDiagramsTemplate INSTANCE = new DescriptionDiagramsTemplate();
 
 	public static String fill(String items) {
-		return INSTANCE.getTemplate().replace(ITEM, items == null ? "" : items);
+		return TemplateUtils.substitute(INSTANCE.getTemplate(), Map.of(ITEM, items == null ? "" : items));
 	}
 
 	@Override

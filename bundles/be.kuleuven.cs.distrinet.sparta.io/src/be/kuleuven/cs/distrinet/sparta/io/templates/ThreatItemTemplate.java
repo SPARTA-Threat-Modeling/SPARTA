@@ -13,13 +13,14 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import be.kuleuven.cs.distrinet.sparta.core.model.Threat;
 import be.kuleuven.cs.distrinet.sparta.io.util.LaTeX;
 
 public class ThreatItemTemplate extends Template<Threat> {
-	public ThreatItemTemplate() {
+	private ThreatItemTemplate() {
 		super("threat_item.txt");
 	}
 
@@ -42,21 +43,22 @@ public class ThreatItemTemplate extends Template<Threat> {
 
 	@Override
 	public String instantiate(Threat x) {
-		String name = LaTeX.latexEscape(x.getThreatName());
 		List<String> els = new ArrayList<>();
 		els.add(x.getDataFlowFromName());
 		els.add(x.getDataFlowName());
 		els.add(x.getDataFlowToName());
-		
-		return getTemplate().replace(NAME, name)
-				.replace(LABEL, labelSafe(x.getThreatenedElementId()))
-				.replace(ID, LaTeX.latexEscape(x.getThreatenedElementId()))
-				.replace(DIAGRAM, ThreatItemDiagramTemplate.fill(x))
-				.replace(TYPE, LaTeX.latexEscape(x.getThreatTypeName()))
-				.replace(DESCRIPTION, LaTeX.latexEscape(x.getDescription()))
-				.replace(ELEMENTS, els.stream().map(LaTeX::latexEscape).collect(Collectors.joining(", ")))
-				.replace(AFFECTED, LaTeX.latexEscape(x.getThreatenedElementName()))
-				.replace(RISK, formatRisk(x));
+
+		return TemplateUtils.substitute(getTemplate(), Map.of(
+				NAME, LaTeX.latexEscape(x.getThreatName()),
+				// Labels must not be LaTeX-escaped, see labelSafe.
+				LABEL, labelSafe(x.getThreatenedElementId()),
+				ID, LaTeX.latexEscape(x.getThreatenedElementId()),
+				DIAGRAM, ThreatItemDiagramTemplate.fill(x),
+				TYPE, LaTeX.latexEscape(x.getThreatTypeName()),
+				DESCRIPTION, LaTeX.latexEscape(x.getDescription()),
+				ELEMENTS, els.stream().map(LaTeX::latexEscape).collect(Collectors.joining(", ")),
+				AFFECTED, LaTeX.latexEscape(x.getThreatenedElementName()),
+				RISK, formatRisk(x)));
 	}
 
 	private static String formatRisk(Threat threat) {

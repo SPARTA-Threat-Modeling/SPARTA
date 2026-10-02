@@ -15,6 +15,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
+import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
@@ -31,16 +32,18 @@ import be.kuleuven.cs.distrinet.sparta.io.diagram.AirdLayout;
 import be.kuleuven.cs.distrinet.sparta.io.diagram.DfdTikzGenerator;
 import be.kuleuven.cs.distrinet.sparta.io.templates.DescriptionDiagramItemTemplate;
 import be.kuleuven.cs.distrinet.sparta.io.templates.DescriptionDiagramsTemplate;
-import be.kuleuven.cs.distrinet.sparta.io.templates.DescriptionTemplate;
-import be.kuleuven.cs.distrinet.sparta.io.templates.IntroductionTemplate;
-import be.kuleuven.cs.distrinet.sparta.io.templates.ReportTemplate;
+import be.kuleuven.cs.distrinet.sparta.io.templates.StaticTemplate;
 import be.kuleuven.cs.distrinet.sparta.io.templates.Template;
-import be.kuleuven.cs.distrinet.sparta.io.templates.ThreatCatalog;
 import be.kuleuven.cs.distrinet.sparta.io.templates.ThreatsTemplate;
 import be.kuleuven.cs.distrinet.sparta.io.util.LaTeX;
 import be.kuleuven.cs.distrinet.sparta.spartamodel.DFDModel;
 
 public class ReportWriter {
+
+	private static final StaticTemplate REPORT = new StaticTemplate("report.txt");
+	private static final StaticTemplate INTRODUCTION = new StaticTemplate("introduction.txt");
+	private static final StaticTemplate DESCRIPTION = new StaticTemplate("description.txt");
+	private static final StaticTemplate THREAT_CATALOG = new StaticTemplate("threatcatalog.txt");
 
 	private List<? extends Threat> threats;
 	private ResourceSet model;
@@ -67,6 +70,16 @@ public class ReportWriter {
 	 *                     partial report.
 	 */
 	public void performExport(File path, ResourceSet model, List<? extends Threat> threats) throws IOException {
+		try {
+			doExport(path, model, threats);
+		} catch (UncheckedIOException e) {
+			// Template resources are read lazily; unwrap so a missing/unreadable
+			// template surfaces through the regular IOException path.
+			throw e.getCause();
+		}
+	}
+
+	private void doExport(File path, ResourceSet model, List<? extends Threat> threats) throws IOException {
 		this.threats = threats;
 		this.model = model;
 
@@ -83,7 +96,7 @@ public class ReportWriter {
 		}
 		try (OutputStreamWriter fw = new OutputStreamWriter(new FileOutputStream(file),
 				StandardCharsets.UTF_8)) {
-			fw.write(ReportTemplate.fill());
+			fw.write(REPORT.instantiate());
 		}
 
 		// introduction (do not overwrite once generated)
@@ -95,7 +108,7 @@ public class ReportWriter {
 		}
 		try (OutputStreamWriter fw = new OutputStreamWriter(new FileOutputStream(file),
 				StandardCharsets.UTF_8)) {
-			fw.write(IntroductionTemplate.fill());
+			fw.write(INTRODUCTION.instantiate());
 		}
 
 		filename = "description.tex";
@@ -131,7 +144,7 @@ public class ReportWriter {
 
 		output(fw, "%%% System description, generated on " + new Date() + "\n\n");
 
-		output(fw, DescriptionTemplate.fill());
+		output(fw, DESCRIPTION.instantiate());
 
 		String diagrams = buildDiagramSection();
 		if (diagrams != null) {
@@ -182,7 +195,7 @@ public class ReportWriter {
 
 		output(fw, "%%% Threat catalog, generated on " + new Date() + "\n\n");
 
-		output(fw, ThreatCatalog.fill());
+		output(fw, THREAT_CATALOG.instantiate());
 
 
 		output(fw, "\n% Threats\n");

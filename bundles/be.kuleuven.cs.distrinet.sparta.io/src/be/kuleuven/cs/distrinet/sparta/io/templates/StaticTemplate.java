@@ -9,25 +9,24 @@
  */
 package be.kuleuven.cs.distrinet.sparta.io.templates;
 
-public class ThreatCatalog extends Template<Object> {
+/**
+ * A template without placeholders: instantiating it returns the resource text
+ * verbatim. Replaces the former ReportTemplate, IntroductionTemplate,
+ * DescriptionTemplate and ThreatCatalog classes, which only differed in the
+ * resource name.
+ */
+public class StaticTemplate extends Template<Object> {
 
-	protected ThreatCatalog() {
-		super("threatcatalog.txt");
-	}
-	
-	public static final ThreatCatalog INSTANCE = new ThreatCatalog();
-
-	public static String fill() {
-		return INSTANCE.instantiate();
+	public StaticTemplate(String filename) {
+		super(filename);
 	}
 
 	@Override
-	public String instantiate(Object o) {
+	public String instantiate(Object ignored) {
 		return instantiate();
 	}
-	
+
 	public String instantiate() {
 		return getTemplate();
 	}
-
 }

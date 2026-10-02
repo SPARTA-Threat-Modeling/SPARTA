@@ -9,36 +9,39 @@
  */
 package be.kuleuven.cs.distrinet.sparta.io.templates;
 
+import static be.kuleuven.cs.distrinet.sparta.io.templates.TemplateUtils.BY_RISK;
+
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import be.kuleuven.cs.distrinet.sparta.core.model.Threat;
-import static be.kuleuven.cs.distrinet.sparta.io.templates.TemplateUtils.BY_RISK;
+import be.kuleuven.cs.distrinet.sparta.io.util.LaTeX;
 
 public class ThreatsTemplate extends Template<List<? extends Threat>> {
-	public ThreatsTemplate() {
+	private ThreatsTemplate() {
 		super("threats.txt");
 	}
 
 	private static final String ITEMS = "$$THREAT_ITEMS$$";
 	private static final String TYPE = "$$TYPE$$";
-	
+
 	public static final ThreatsTemplate INSTANCE = new ThreatsTemplate();
 
+	public static String fill(List<? extends Threat> list) {
+		return INSTANCE.instantiate(list);
+	}
 
 	@Override
 	public String instantiate(List<? extends Threat> threats) {
 		if (threats.isEmpty()) {
 			return "% no threats";
 		}
-		ThreatItemTemplate it = new ThreatItemTemplate();
-		String items = threats.stream().sorted(BY_RISK.reversed()).map(it::instantiate).collect(Collectors.joining("\n"));
-		String type = threats.stream().findAny().get().getThreatTypeName();
-		return getTemplate().replace(TYPE,type).replace(ITEMS, items);
-	}
-
-
-	public static String fill(List<? extends Threat> list) {
-		return INSTANCE.instantiate(list);
+		String items = threats.stream().sorted(BY_RISK.reversed()).map(ThreatItemTemplate::fill)
+				.collect(Collectors.joining("\n"));
+		// The type name ends up in \section{...}, so it needs the same LaTeX
+		// escaping as the per-threat fields.
+		String type = LaTeX.latexEscape(threats.get(0).getThreatTypeName());
+		return TemplateUtils.substitute(getTemplate(), Map.of(TYPE, type, ITEMS, items));
 	}
 }

@@ -9,6 +9,8 @@
  */
 package be.kuleuven.cs.distrinet.sparta.io.templates;
 
+import java.util.Map;
+
 import be.kuleuven.cs.distrinet.sparta.core.model.Threat;
 import be.kuleuven.cs.distrinet.sparta.io.util.LaTeX;
 import be.kuleuven.cs.distrinet.sparta.spartamodel.DFDElement;
@@ -20,7 +22,7 @@ import be.kuleuven.cs.distrinet.sparta.spartamodel.RecipientSpecification;
 import be.kuleuven.cs.distrinet.sparta.spartamodel.SenderSpecification;
 
 public class ThreatItemDiagramTemplate extends Template<Threat> {
-	public ThreatItemDiagramTemplate() {
+	private ThreatItemDiagramTemplate() {
 		super("threat_item_diagram.txt");
 	}
 
@@ -35,7 +37,6 @@ public class ThreatItemDiagramTemplate extends Template<Threat> {
 	public static final ThreatItemDiagramTemplate INSTANCE = new ThreatItemDiagramTemplate();
 
 	public static String fill(Threat x) {
-		
 		return INSTANCE.instantiate(x);
 	}
 
@@ -46,13 +47,13 @@ public class ThreatItemDiagramTemplate extends Template<Threat> {
 			// render a diagram containing only the threatened element instead.
 			return instantiateElementOnly(x);
 		}
-		return getTemplate().replace(SENDERTYPE, getTikzNode(x, x.getDataFlow().getSender(), getSender(x.getDataFlow())))
-				.replace(RECIPIENTTYPE, getTikzNode(x, x.getDataFlow().getRecipient(), getRecipient(x.getDataFlow())))
-				.replace(SENDERNAME, LaTeX.latexEscape(x.getDataFlowFromName()))
-				.replace(RECIPIENTNAME, LaTeX.latexEscape(x.getDataFlowToName()))
-				.replace(FLOWNAME, LaTeX.latexEscape(x.getDataFlowName()))
-				.replace(FLOWHIGHLIGHT, "DataFlow".equals(x.getThreatenedElementTypeName()) ? "red" : "")
-				;
+		return TemplateUtils.substitute(getTemplate(), Map.of(
+				SENDERTYPE, getTikzNode(x, x.getDataFlow().getSender(), getSender(x.getDataFlow())),
+				RECIPIENTTYPE, getTikzNode(x, x.getDataFlow().getRecipient(), getRecipient(x.getDataFlow())),
+				SENDERNAME, LaTeX.latexEscape(x.getDataFlowFromName()),
+				RECIPIENTNAME, LaTeX.latexEscape(x.getDataFlowToName()),
+				FLOWNAME, LaTeX.latexEscape(x.getDataFlowName()),
+				FLOWHIGHLIGHT, "DataFlow".equals(x.getThreatenedElementTypeName()) ? "red" : ""));
 	}
 
 	private String instantiateElementOnly(Threat x) {

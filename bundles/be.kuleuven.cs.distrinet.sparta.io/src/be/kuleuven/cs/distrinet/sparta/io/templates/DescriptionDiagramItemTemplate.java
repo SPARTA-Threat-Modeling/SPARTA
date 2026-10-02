@@ -9,21 +9,23 @@
  */
 package be.kuleuven.cs.distrinet.sparta.io.templates;
 
+import java.util.Map;
+
 /** One diagram subsection in the "Diagrams" section: a title plus its (TikZ) body. */
 public class DescriptionDiagramItemTemplate extends Template<Object> {
 
 	private static final String TITLE = "$$DIAGRAM_TITLE$$";
 	private static final String BODY = "$$DIAGRAM_BODY$$";
 
-	protected DescriptionDiagramItemTemplate() {
+	private DescriptionDiagramItemTemplate() {
 		super("descriptiondiagram_item.txt");
 	}
 
 	public static final DescriptionDiagramItemTemplate INSTANCE = new DescriptionDiagramItemTemplate();
 
 	public static String fill(String title, String body) {
-		return INSTANCE.getTemplate().replace(TITLE, title == null ? "" : title).replace(BODY,
-				body == null ? "" : body);
+		return TemplateUtils.substitute(INSTANCE.getTemplate(),
+				Map.of(TITLE, title == null ? "" : title, BODY, body == null ? "" : body));
 	}
 
 	@Override
