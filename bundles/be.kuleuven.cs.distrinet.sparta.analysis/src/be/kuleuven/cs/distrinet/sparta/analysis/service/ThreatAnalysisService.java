@@ -37,6 +37,7 @@ import org.eclipse.emf.ecore.EStructuralFeature.Setting;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.ui.IPropertyListener;
+import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.viatra.addon.databinding.runtime.collection.ObservablePatternMatchCollectionBuilder;
 import org.eclipse.viatra.query.patternlanguage.emf.util.PatternParsingResults;
 import org.eclipse.viatra.query.runtime.api.IPatternMatch;
@@ -86,7 +87,40 @@ public class ThreatAnalysisService implements IPropertyListener {
 	private final List<WritableList<ObservableThreat>> targetLists = new ArrayList<>();
 	private final List<IObservableList<IPatternMatch>> sourceLists = new ArrayList<>();
 
+	/** The editor this singleton is currently registered on as property listener. */
+	private IWorkbenchPart currentEditor;
+
+	/**
+	 * Registers this service as property listener on the given editor, detaching
+	 * it from any previously tracked editor first so the singleton never stays
+	 * subscribed to more than one editor at a time.
+	 */
+	public void attachEditor(IWorkbenchPart editor) {
+		if (currentEditor == editor) {
+			return;
+		}
+		detachCurrentEditor();
+		if (editor != null) {
+			editor.addPropertyListener(this);
+			currentEditor = editor;
+		}
+	}
+
+	private void detachCurrentEditor() {
+		if (currentEditor != null) {
+			currentEditor.removePropertyListener(this);
+			currentEditor = null;
+		}
+	}
+
 	public void clear() {
+		// Stop listening to the editor that triggered the analysis and drop the
+		// loaded state, so a late editor property event can no longer reach the
+		// torn-down service and stale resources are not retained.
+		detachCurrentEditor();
+		resource = null;
+		parseResults = null;
+		project = null;
 		if (engine == null) {
 			return;
 		}
@@ -140,13 +174,27 @@ public class ThreatAnalysisService implements IPropertyListener {
 	public void load(Resource resource) {
 		
 		try {
-			project = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(resource.getURI().toPlatformString(true))).getProject();
-			this.resource = resource;
-
+			// Tear down any previous analysis first: clear() also resets the
+			// resource/project fields, so they must be assigned afterwards.
 			if (engine != null) {
 				clear();
 			}
-			
+
+			if (resource == null || resource.getURI() == null) {
+				log("Cannot load the threat analysis: no model resource is available", null);
+				return;
+			}
+			// toPlatformString returns null for non-platform URIs (e.g. file: URIs),
+			// and new Path(null) fails with an assertion error.
+			String platformString = resource.getURI().toPlatformString(true);
+			if (platformString == null) {
+				log("Cannot load the threat analysis: " + resource.getURI()
+						+ " is not a resource in the workspace", null);
+				return;
+			}
+			project = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(platformString)).getProject();
+			this.resource = resource;
+
 			Map<EObject, Collection<Setting>> map = EcoreUtil.ExternalCrossReferencer.find(resource);
 			Set<Notifier> roots = map.keySet().stream().map(o -> o.eResource()).collect(Collectors.toSet());
 			roots.add(resource);
@@ -231,8 +279,13 @@ public class ThreatAnalysisService implements IPropertyListener {
 	}
 	@Override
 	public void propertyChanged(Object source, int propId) {
+		// After clear() the observable graph is gone (ml == null); a late editor
+		// property event must not trigger a view reload against torn-down state.
+		if (ml == null) {
+			return;
+		}
 		notifyListeners();
-		
+
 	}
 	public Resource getResource() {
 		return resource;

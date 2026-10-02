@@ -14,6 +14,7 @@ import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.sirius.diagram.ui.tools.api.editor.DDiagramEditor;
 import org.eclipse.sirius.viewpoint.DRepresentation;
 import org.eclipse.sirius.viewpoint.DSemanticDecorator;
@@ -40,27 +41,39 @@ public class LoadHandler extends AbstractHandler {
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		final IWorkbenchWindow activeWorkbenchWindow = HandlerUtil.getActiveWorkbenchWindowChecked(event);
 
-		IEditorPart editorPart = activeWorkbenchWindow.getActivePage().getActiveEditor();
+		IEditorPart editorPart = activeWorkbenchWindow.getActivePage() != null
+				? activeWorkbenchWindow.getActivePage().getActiveEditor() : null;
+		if (editorPart == null) {
+			MessageDialog.openInformation(activeWorkbenchWindow.getShell(), "Load analysis",
+					"No active editor found. Open a SPARTA model or diagram editor first.");
+			return null;
+		}
 		if (editorPart instanceof DDiagramEditor) {
 			DDiagramEditor editor = (DDiagramEditor) editorPart;
-			editor.addPropertyListener(ThreatAnalysisService.getInstance());
 			DRepresentation rep = editor.getRepresentation();
 			if (rep instanceof DSemanticDecorator) {
 				EObject root = ((DSemanticDecorator) rep).getTarget();
-				Resource rs = root.eResource();
-				ThreatAnalysisService.getInstance().load(rs);
-				return null;
+				Resource rs = root != null ? root.eResource() : null;
+				if (rs != null) {
+					// Attach after load(): load() tears down the previous state via
+					// clear(), which detaches the previously tracked editor.
+					ThreatAnalysisService.getInstance().load(rs);
+					ThreatAnalysisService.getInstance().attachEditor(editor);
+					return null;
+				}
 			}
-		}
-		if (editorPart instanceof be.kuleuven.cs.distrinet.sparta.spartamodel.presentation.SpartaModelEditor) {
-			editorPart.addPropertyListener(ThreatAnalysisService.getInstance());
-			
 		}
 		IModelConnector modelConnector = AdapterUtil.getModelConnectorFromIEditorPart(editorPart);
 		if (modelConnector instanceof EMFModelConnector) {
 			modelConnector.loadModel(IModelConnectorTypeEnum.RESOURCE);
 			Resource resource = (Resource) modelConnector.getNotifier(IModelConnectorTypeEnum.RESOURCE);
-			ThreatAnalysisService.getInstance().load(resource);
+			if (resource != null) {
+				ThreatAnalysisService.getInstance().load(resource);
+				if (editorPart instanceof be.kuleuven.cs.distrinet.sparta.spartamodel.presentation.SpartaModelEditor
+						|| editorPart instanceof DDiagramEditor) {
+					ThreatAnalysisService.getInstance().attachEditor(editorPart);
+				}
+			}
 		}
 		return null;
 	}
