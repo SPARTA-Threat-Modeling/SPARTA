@@ -12,12 +12,23 @@ package be.kuleuven.cs.distrinet.sparta.core.tests;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import org.junit.Test;
 
 import be.kuleuven.cs.distrinet.sparta.core.analysis.RiskCalculation;
 import be.kuleuven.cs.distrinet.sparta.core.model.Attacker;
+import be.kuleuven.cs.distrinet.sparta.core.model.CustomEstimate;
 import be.kuleuven.cs.distrinet.sparta.spartamodel.AttackerProfile;
+import be.kuleuven.cs.distrinet.sparta.spartamodel.CounterMeasure;
+import be.kuleuven.cs.distrinet.sparta.spartamodel.DFDElement;
+import be.kuleuven.cs.distrinet.sparta.spartamodel.DataFlow;
+import be.kuleuven.cs.distrinet.sparta.spartamodel.Role;
+import be.kuleuven.cs.distrinet.sparta.spartamodel.RoleBinding;
 import be.kuleuven.cs.distrinet.sparta.spartamodel.SpartaModelFactory;
 import be.kuleuven.cs.distrinet.sparta.spartamodel.ThreatType;
 
@@ -96,5 +107,186 @@ public class RiskCalculationTest {
 			assertFalse("degenerate estimate must not yield NaN TEF", Double.isNaN(v));
 			assertEquals(2.5, v, 1e-9);
 		}
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void calculateVulnerabilityRejectsEmptyArray() {
+		RiskCalculation.calculateVulnerability(new double[0]);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void calculateBoundariesRejectsEmptyArray() {
+		RiskCalculation.calculateBoundaries(new double[0]);
+	}
+
+	// ---------------------------------------------------------------------
+	// calculateVulnerabilityConfidenceInterval
+	// (BinomialConfidence is called with alpha = 0.05, see CLOPPER_PEARSON_ALPHA)
+	// ---------------------------------------------------------------------
+
+	/** All failures: expected vulnerability 0, lower bound exactly 0, closed-form upper bound. */
+	@Test
+	public void vulnerabilityConfidenceIntervalAllFailures() {
+		int n = 20;
+		double[] conf = RiskCalculation.calculateVulnerabilityConfidenceInterval(fill(0, n));
+		assertEquals(0.0, conf[0], 0.0);
+		assertEquals(0.0, conf[1], 0.0);
+		assertEquals(1.0 - Math.pow(0.025, 1.0 / n), conf[2], 1e-9);
+		assertOrdered(conf);
+	}
+
+	/** All successes: expected vulnerability 1, upper bound exactly 1, closed-form lower bound. */
+	@Test
+	public void vulnerabilityConfidenceIntervalAllSuccesses() {
+		int n = 20;
+		double[] conf = RiskCalculation.calculateVulnerabilityConfidenceInterval(fill(1, n));
+		assertEquals(Math.pow(0.025, 1.0 / n), conf[0], 1e-9);
+		assertEquals(1.0, conf[1], 0.0);
+		assertEquals(1.0, conf[2], 0.0);
+		assertOrdered(conf);
+	}
+
+	/** Mixed vector: interval strictly brackets the point estimate. */
+	@Test
+	public void vulnerabilityConfidenceIntervalMixedVector() {
+		double[] vulnerability = new double[20];
+		for (int i = 0; i < 10; i++) {
+			vulnerability[i] = 1;
+		}
+		double[] conf = RiskCalculation.calculateVulnerabilityConfidenceInterval(vulnerability);
+		assertEquals(0.5, conf[1], 1e-9);
+		assertTrue("lower bound must be > 0", conf[0] > 0);
+		assertTrue("upper bound must be < 1", conf[2] < 1);
+		assertOrdered(conf);
+	}
+
+	// ---------------------------------------------------------------------
+	// calculateVulnerabilityArray branch coverage, using degenerate (point-mass)
+	// estimates so success/failure is deterministic per sample
+	// ---------------------------------------------------------------------
+
+	private static final int SAMPLES = 100;
+
+	/** An insider attacker bypasses all countermeasures: the vulnerability vector is all 1s. */
+	@Test
+	public void insiderAttackerIsAlwaysSuccessful() {
+		SpartaModelFactory f = SpartaModelFactory.eINSTANCE;
+		ThreatType tt = f.createThreatType();
+		DataFlow flow = f.createDataFlow();
+		DFDElement element = f.createDataStore();
+		Attacker attacker = pointMassAttacker(0);
+		attacker.getInsider().add(element);
+
+		double[] v = RiskCalculation.calculateVulnerabilityArray(element, flow, tt,
+				Collections.emptyList(), attacker, SAMPLES);
+		assertArrayEquals(fill(1, SAMPLES), v, 0.0);
+	}
+
+	/** With no countermeasures every attack attempt succeeds: all 1s. */
+	@Test
+	public void noCountermeasuresMeansFullyVulnerable() {
+		SpartaModelFactory f = SpartaModelFactory.eINSTANCE;
+		ThreatType tt = f.createThreatType();
+		DataFlow flow = f.createDataFlow();
+		DFDElement element = f.createDataStore();
+
+		double[] v = RiskCalculation.calculateVulnerabilityArray(element, flow, tt,
+				Collections.emptyList(), pointMassAttacker(0), SAMPLES);
+		assertArrayEquals(fill(1, SAMPLES), v, 0.0);
+	}
+
+	/** A single countermeasure harder than the attacker blocks every attempt: all 0s. */
+	@Test
+	public void singleCountermeasureBlocksWeakerAttacker() {
+		SpartaModelFactory f = SpartaModelFactory.eINSTANCE;
+		ThreatType tt = f.createThreatType();
+		Role role = f.createRole();
+		countermeasure(tt, new CustomEstimate(60, 60, 60, 4), role);
+
+		double[] v = RiskCalculation.calculateVulnerabilityArray(f.createDataStore(), f.createDataFlow(), tt,
+				bindingFor(role), pointMassAttacker(50), SAMPLES);
+		assertArrayEquals(fill(0, SAMPLES), v, 0.0);
+	}
+
+	/** Capability equal to the difficulty (tie) counts as success: all 1s. */
+	@Test
+	public void singleCountermeasureTieCountsAsSuccess() {
+		SpartaModelFactory f = SpartaModelFactory.eINSTANCE;
+		ThreatType tt = f.createThreatType();
+		Role role = f.createRole();
+		countermeasure(tt, new CustomEstimate(60, 60, 60, 4), role);
+
+		double[] v = RiskCalculation.calculateVulnerabilityArray(f.createDataStore(), f.createDataFlow(), tt,
+				bindingFor(role), pointMassAttacker(60), SAMPLES);
+		assertArrayEquals(fill(1, SAMPLES), v, 0.0);
+	}
+
+	/** Sequential countermeasures: the attack only succeeds when the attacker beats ALL of them. */
+	@Test
+	public void sequentialCountermeasuresRequireBeatingAll() {
+		SpartaModelFactory f = SpartaModelFactory.eINSTANCE;
+		ThreatType tt = f.createThreatType();
+		Role role = f.createRole();
+		countermeasure(tt, new CustomEstimate(30, 30, 30, 4), role);
+		countermeasure(tt, new CustomEstimate(60, 60, 60, 4), role);
+
+		// tcap 50 beats the first countermeasure (30) but not the second (60): all 0s
+		double[] blocked = RiskCalculation.calculateVulnerabilityArray(f.createDataStore(), f.createDataFlow(), tt,
+				bindingFor(role), pointMassAttacker(50), SAMPLES);
+		assertArrayEquals(fill(0, SAMPLES), blocked, 0.0);
+
+		// tcap 70 beats both: all 1s
+		double[] successful = RiskCalculation.calculateVulnerabilityArray(f.createDataStore(), f.createDataFlow(), tt,
+				bindingFor(role), pointMassAttacker(70), SAMPLES);
+		assertArrayEquals(fill(1, SAMPLES), successful, 0.0);
+	}
+
+	/** A countermeasure with a null difficulty is treated as impenetrable (difficulty 100): all 0s. */
+	@Test
+	public void nullDifficultyCountermeasureIsImpenetrable() {
+		SpartaModelFactory f = SpartaModelFactory.eINSTANCE;
+		ThreatType tt = f.createThreatType();
+		Role role = f.createRole();
+		countermeasure(tt, null, role);
+
+		double[] v = RiskCalculation.calculateVulnerabilityArray(f.createDataStore(), f.createDataFlow(), tt,
+				bindingFor(role), pointMassAttacker(99), SAMPLES);
+		assertArrayEquals(fill(0, SAMPLES), v, 0.0);
+	}
+
+	// ---------------------------------------------------------------------
+	// fixture helpers
+	// ---------------------------------------------------------------------
+
+	/** An attacker whose threat capability is a point mass at {@code tcap} (cf/poa are irrelevant here). */
+	private static Attacker pointMassAttacker(double tcap) {
+		return new Attacker("attacker", tcap, tcap, tcap, 4, 1, 1, 1, 4, 1, 1, 1, 4);
+	}
+
+	/** A countermeasure mitigating {@code tt}, with the given (nullable) difficulty, subjected to {@code role}. */
+	private static CounterMeasure countermeasure(ThreatType tt, CustomEstimate difficulty, Role role) {
+		CounterMeasure cm = SpartaModelFactory.eINSTANCE.createCounterMeasure();
+		cm.getMitigates().add(tt);
+		cm.setDifficulty(difficulty);
+		cm.getSubject().add(role);
+		return cm;
+	}
+
+	/** A single role binding that binds {@code role} (and thereby its subjected countermeasures). */
+	private static List<RoleBinding> bindingFor(Role role) {
+		RoleBinding rb = SpartaModelFactory.eINSTANCE.createRoleBinding();
+		rb.setBinds(role);
+		return Collections.singletonList(rb);
+	}
+
+	private static double[] fill(double value, int n) {
+		double[] result = new double[n];
+		Arrays.fill(result, value);
+		return result;
+	}
+
+	private static void assertOrdered(double[] conf) {
+		assertTrue("lower <= expected", conf[0] <= conf[1]);
+		assertTrue("expected <= upper", conf[1] <= conf[2]);
 	}
 }

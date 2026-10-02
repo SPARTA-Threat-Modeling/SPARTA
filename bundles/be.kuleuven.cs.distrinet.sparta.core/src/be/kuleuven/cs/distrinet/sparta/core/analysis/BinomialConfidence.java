@@ -29,6 +29,10 @@ public class BinomialConfidence {
 	 * @return a double[] with the interval boundaries at indices 0 and 1.
 	 */
 	public static double[] calcClopperPearsonInt(double  successes, double sampleSize, double alpha) {
+		if (sampleSize <= 0 || successes < 0 || successes > sampleSize)
+			throw new IllegalArgumentException(
+					"Invalid Clopper-Pearson parameters: expected sampleSize > 0 and 0 <= successes <= sampleSize, got successes="
+							+ successes + ", sampleSize=" + sampleSize);
 		if (successes == 0)
 			return new double[] {0, 1.0- Math.pow(alpha/2, 1/sampleSize) };
 		else if (successes == sampleSize)

@@ -26,21 +26,37 @@ public class StatsUtil {
 	private StatsUtil() {}
 
 	/**
+	 * Validate that an input array is non-null and non-empty; the statistical
+	 * operations below are undefined on empty input and would otherwise surface an
+	 * obscure {@code NoSuchElementException} from the stream terminal operation.
+	 *
+	 * @param values - the array to validate
+	 * @param operation - the name of the operation, used in the exception message
+	 */
+	private static void requireNonEmpty(double[] values, String operation) {
+		if (values == null || values.length == 0) {
+			throw new IllegalArgumentException(operation + " requires a non-empty array");
+		}
+	}
+
+	/**
 	 * Calculate the maximum value in a double[].
 	 * @param values - the double[] to use
 	 * @return the maximum
 	 */
 	public static double max(double[] values) {
-		return Arrays.stream(values).parallel().reduce(Double::max).getAsDouble();
+		requireNonEmpty(values, "max");
+		return Arrays.stream(values).reduce(Double::max).getAsDouble();
 	}
-	
+
 	/**
 	 * Calculate the minimum value in a double[].
 	 * @param values - the double[] to use
 	 * @return the minimum
 	 */
 	public static double min(double[] values) {
-		return Arrays.stream(values).parallel().reduce(Double::min).getAsDouble();
+		requireNonEmpty(values, "min");
+		return Arrays.stream(values).reduce(Double::min).getAsDouble();
 	}
 	
 	/**
@@ -59,21 +75,23 @@ public class StatsUtil {
 	 * @return the mode
 	 */
 	public static double mode(double[] values, int numbins) {
+		requireNonEmpty(values, "mode");
 		// Guard against a zero (or negative) bin count - e.g. the single-argument
 		// mode() computes values.length/100, which is 0 for arrays shorter than 100
 		// elements and would make binwidth infinite/NaN.
-		if (numbins < 1) {
-			numbins = 1;
-		}
+		final int bins = Math.max(numbins, 1);
 		double max = max(values);
 		double min = min(values);
 
-		double binwidth = (max - min) / numbins;
-		
-		double[] bincounts = new double[numbins+1];
-		Arrays.stream(values).forEach((double v) -> bincounts[(int) ((v-min)/binwidth)]++ );
-		
-		return min + ((new ArrayRealVector(bincounts)).getMaxIndex() + 0.5) *binwidth;
+		double binwidth = (max - min) / bins;
+
+		// The last bin is right-closed: values equal to max are clamped into bin
+		// bins-1 instead of landing in an extra zero-width overflow bin, whose center
+		// (min + (bins + 0.5) * binwidth) would exceed the data maximum.
+		double[] bincounts = new double[bins];
+		Arrays.stream(values).forEach((double v) -> bincounts[Math.min((int) ((v - min) / binwidth), bins - 1)]++);
+
+		return min + ((new ArrayRealVector(bincounts)).getMaxIndex() + 0.5) * binwidth;
 	}
 	
 	/**
@@ -134,6 +152,7 @@ public class StatsUtil {
 	 * @return the median of the double[]
 	 */
 	public static double median(double[] valuation) {
+		requireNonEmpty(valuation, "median");
 		if (valuation.length % 2 == 0) {
 			return Arrays.stream(valuation).sorted().skip(valuation.length/2L-1).limit(2).average().getAsDouble();
 		} else {

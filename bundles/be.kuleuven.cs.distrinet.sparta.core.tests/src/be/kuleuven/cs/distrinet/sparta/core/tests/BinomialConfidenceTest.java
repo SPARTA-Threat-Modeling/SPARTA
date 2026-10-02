@@ -66,4 +66,20 @@ public class BinomialConfidenceTest {
 		double largeWidth = large[1] - large[0];
 		assertTrue("larger sample should tighten the interval", largeWidth < smallWidth);
 	}
+
+	/** Regression: a zero sample size used to silently return {0, 1} instead of failing fast. */
+	@Test(expected = IllegalArgumentException.class)
+	public void rejectsZeroSampleSize() {
+		BinomialConfidence.calcClopperPearsonInt(0, 0, ALPHA);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void rejectsNegativeSuccesses() {
+		BinomialConfidence.calcClopperPearsonInt(-1, 10, ALPHA);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void rejectsSuccessesAboveSampleSize() {
+		BinomialConfidence.calcClopperPearsonInt(11, 10, ALPHA);
+	}
 }

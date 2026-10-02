@@ -9,10 +9,14 @@
  */
 package be.kuleuven.cs.distrinet.sparta.core.tests;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
+
+import org.apache.commons.math3.random.Well19937c;
 import org.junit.Test;
 
 import be.kuleuven.cs.distrinet.sparta.core.analysis.BetaPERT;
@@ -78,5 +82,34 @@ public class BetaPERTTest {
 	@Test(expected = IllegalArgumentException.class)
 	public void rejectsModeBelowMin() {
 		new BetaPERT(5, 1, 10);
+	}
+
+	/**
+	 * Regression: a negative confidence (lambda) used to surface as an obscure
+	 * commons-math {@code NotStrictlyPositiveException} deep inside sampling; it
+	 * must be rejected up front with a clear {@link IllegalArgumentException}.
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	public void rejectsNegativeConfidence() {
+		new BetaPERT(0, 5, 10, -3);
+	}
+
+	/** With a fixed seed, the sample mean approximates the PERT mean (min + 4*mode + max)/6. */
+	@Test
+	public void seededSampleMeanApproximatesPertMean() {
+		double min = 2;
+		double mode = 6;
+		double max = 10;
+		double[] samples = new BetaPERT(min, mode, max, 4, new Well19937c(12345L)).sample(100_000);
+		double mean = Arrays.stream(samples).average().getAsDouble();
+		assertEquals((min + 4 * mode + max) / 6.0, mean, 0.05);
+	}
+
+	/** The same seed must reproduce the exact same sample sequence. */
+	@Test
+	public void sameSeedReproducesSamples() {
+		double[] a = new BetaPERT(0, 5, 10, 4, new Well19937c(42L)).sample(50);
+		double[] b = new BetaPERT(0, 5, 10, 4, new Well19937c(42L)).sample(50);
+		assertArrayEquals(a, b, 0.0);
 	}
 }

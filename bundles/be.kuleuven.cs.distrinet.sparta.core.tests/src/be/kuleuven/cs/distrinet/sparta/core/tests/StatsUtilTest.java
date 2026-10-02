@@ -91,7 +91,65 @@ public class StatsUtilTest {
 		assertTrue("mode should be near the peak (7), was " + mode, Math.abs(mode - 7.0) < 1.5);
 	}
 
-	// NOTE: the single-argument StatsUtil.mode(double[]) computes numbins = length/100, which
-	// is 0 for arrays shorter than 100 elements and yields a non-finite result. That known
-	// edge case is intentionally not asserted here; add coverage once it is fixed.
+	/**
+	 * Regression: a point mass at the data maximum used to land in a zero-width
+	 * overflow bin, returning a "mode" of 15 for data whose maximum is 10. The mode
+	 * must always lie within [min, max].
+	 */
+	@Test
+	public void modeStaysWithinDataRangeForPointMassAtMax() {
+		double[] v = { 0, 10, 10, 10 };
+		double mode = StatsUtil.mode(v);
+		assertTrue("mode should be finite", Double.isFinite(mode));
+		assertTrue("mode must be >= min, was " + mode, mode >= 0.0);
+		assertTrue("mode must be <= max, was " + mode, mode <= 10.0);
+	}
+
+	/** Same regression with an explicit bin count: max-valued samples clamp into the last (right-closed) bin. */
+	@Test
+	public void modeWithExplicitBinsStaysWithinDataRangeForPointMassAtMax() {
+		double[] v = { 0, 10, 10, 10 };
+		double mode = StatsUtil.mode(v, 4);
+		// bins of width 2.5; the three 10s fall in the last bin [7.5, 10], center 8.75
+		assertEquals(8.75, mode, EPS);
+	}
+
+	/** The single-argument mode() on short (&lt;100 element) arrays uses one bin and stays finite. */
+	@Test
+	public void modeSingleArgumentShortArrayIsFinite() {
+		double mode = StatsUtil.mode(new double[] { 1, 2, 3 });
+		assertTrue("mode should be finite", Double.isFinite(mode));
+		assertEquals("single bin [1,3] has center 2", 2.0, mode, EPS);
+	}
+
+	/** A constant array (zero bin width) degenerates to the constant itself. */
+	@Test
+	public void modeOfConstantArrayIsThatValue() {
+		assertEquals(5.0, StatsUtil.mode(new double[] { 5, 5, 5 }), EPS);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void maxRejectsEmptyArray() {
+		StatsUtil.max(new double[0]);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void minRejectsEmptyArray() {
+		StatsUtil.min(new double[0]);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void medianRejectsEmptyArray() {
+		StatsUtil.median(new double[0]);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void modeRejectsEmptyArray() {
+		StatsUtil.mode(new double[0]);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void modeWithExplicitBinsRejectsEmptyArray() {
+		StatsUtil.mode(new double[0], 10);
+	}
 }

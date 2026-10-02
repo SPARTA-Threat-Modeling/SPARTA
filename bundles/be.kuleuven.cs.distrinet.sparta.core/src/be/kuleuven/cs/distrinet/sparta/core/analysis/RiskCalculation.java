@@ -50,6 +50,9 @@ public class RiskCalculation {
 	 * @return Single vulnerability number
 	 */
 	public static double calculateVulnerability(double[] vulnerability) {
+		if (vulnerability == null || vulnerability.length == 0) {
+			throw new IllegalArgumentException("calculateVulnerability requires a non-empty vulnerability array");
+		}
 		return Arrays.stream(vulnerability).average().getAsDouble();
 	}
 
@@ -75,6 +78,9 @@ public class RiskCalculation {
 	 * @return double[] containing {min, average, max}
 	 */
 	public static double[] calculateBoundaries(double[] tef) {
+		if (tef == null || tef.length == 0) {
+			throw new IllegalArgumentException("calculateBoundaries requires a non-empty frequency array");
+		}
 		double[] result = new double[3];
 		result[0] = Arrays.stream(tef).min().getAsDouble();
 		result[1] = Arrays.stream(tef).average().getAsDouble();
@@ -192,6 +198,7 @@ public class RiskCalculation {
 	 * @return the mitigations, in binding order
 	 */
 	public static List<Mitigation> mitigations(DataFlow flow, ThreatType tt, List<RoleBinding> countermeasureBindings) {
+		// sequential on purpose: EMF proxy resolution during navigation is not thread-safe
 		return countermeasureBindings.stream()
 				.filter(b -> b.getBinds() != null)
 				.flatMap(b -> b.getBinds().getSubjected().stream()

@@ -12,6 +12,7 @@ package be.kuleuven.cs.distrinet.sparta.core.analysis;
 import java.util.Arrays;
 
 import org.apache.commons.math3.distribution.BetaDistribution;
+import org.apache.commons.math3.random.RandomGenerator;
 
 import be.kuleuven.cs.distrinet.sparta.spartamodel.Estimate;
 
@@ -35,13 +36,32 @@ public class BetaPERT {
 	}
 	
 	public BetaPERT(double min, double mode, double max, double lambda) {
-		setup(min, mode, max, lambda);
+		this(min, mode, max, lambda, null);
 	}
-	
-	private void setup(double min, double mode, double max, double lambda) {
+
+	/**
+	 * Create a BetaPERT distribution that samples through the provided random
+	 * generator, enabling deterministic (seeded) sampling in tests.
+	 *
+	 * @param min - the minimum
+	 * @param mode - the most probable value
+	 * @param max - the maximum
+	 * @param lambda - the confidence in the estimate (must be non-negative)
+	 * @param rng - the random generator to sample with, or {@code null} for the
+	 *              commons-math default (the previous, unseeded behavior)
+	 */
+	public BetaPERT(double min, double mode, double max, double lambda, RandomGenerator rng) {
+		setup(min, mode, max, lambda, rng);
+	}
+
+	private void setup(double min, double mode, double max, double lambda, RandomGenerator rng) {
 		if (min > max || mode > max || mode < min)
-			throw new IllegalArgumentException("Invalid arguments");
-		
+			throw new IllegalArgumentException("Invalid BetaPERT estimate: expected min <= mode <= max, got min="
+					+ min + ", mode=" + mode + ", max=" + max);
+		if (lambda < 0)
+			throw new IllegalArgumentException(
+					"Invalid BetaPERT confidence (lambda): expected a non-negative value, got " + lambda);
+
 		this.min = min;
 		range = max - min;
 
@@ -56,7 +76,7 @@ public class BetaPERT {
 		double alpha1 = 1 + lambda * (mode - min)/(max - min);
 		double alpha2 = 1 + lambda * (max - mode)/(max - min);
 
-		bDist = new BetaDistribution(alpha1, alpha2);
+		bDist = rng == null ? new BetaDistribution(alpha1, alpha2) : new BetaDistribution(rng, alpha1, alpha2);
 	}
 
 
@@ -67,7 +87,7 @@ public class BetaPERT {
 			Arrays.fill(result, min);
 			return result;
 		}
-		return Arrays.stream(bDist.sample(n)).parallel().map(x -> x * range + min).toArray();
+		return Arrays.stream(bDist.sample(n)).map(x -> x * range + min).toArray();
 	}
 	
 }
