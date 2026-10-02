@@ -18,16 +18,15 @@ import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import be.kuleuven.cs.distrinet.sparta.cli.TestModels;
 import be.kuleuven.cs.distrinet.sparta.cli.ci.SpartaCi.AnalysisResults;
 import be.kuleuven.cs.distrinet.sparta.cli.runtime.StandaloneRuntime;
 
@@ -41,12 +40,6 @@ import be.kuleuven.cs.distrinet.sparta.cli.runtime.StandaloneRuntime;
  */
 public class CiSmokeTest {
 
-	private static final String[] MODEL_FILES = {
-			"Contoso.sparta",
-			"stride-per-interaction - Shostack.sparta",
-			"SecurityPatternCatalog.sparta"
-	};
-
 	@Rule
 	public TemporaryFolder tempFolder = new TemporaryFolder();
 
@@ -59,7 +52,9 @@ public class CiSmokeTest {
 
 	@Test(timeout = 600_000)
 	public void analyzesContosoFromYmlConfigWithoutSubmitting() throws Exception {
-		File dir = copyModelsToTempDir();
+		// The fixtures come from the sparta-cli test-jar (single source of truth for the
+		// shared model files) and are loaded from the classpath.
+		File dir = TestModels.copyModelsTo(tempFolder.newFolder("contoso"));
 		String modelPath = new File(dir, "Contoso.sparta").getAbsolutePath().replace('\\', '/');
 
 		// Absolute model path so it resolves regardless of the JVM's user.dir; quoted because a
@@ -131,16 +126,5 @@ public class CiSmokeTest {
 
 	private static String snippet(String s) {
 		return s == null ? "null" : s.substring(0, Math.min(80, s.length()));
-	}
-
-	private File copyModelsToTempDir() throws Exception {
-		File dir = tempFolder.newFolder("contoso");
-		for (String name : MODEL_FILES) {
-			try (InputStream in = getClass().getResourceAsStream("/models/" + name)) {
-				assertNotNull("Missing test resource /models/" + name, in);
-				Files.copy(in, new File(dir, name).toPath(), StandardCopyOption.REPLACE_EXISTING);
-			}
-		}
-		return dir;
 	}
 }

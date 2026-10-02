@@ -44,6 +44,16 @@
 			<version>${project.version}</version>
 		</dependency>
 
+		<!-- Shared test fixtures (Contoso model + catalogs) and the TestModels helper
+		     from sparta-cli, instead of duplicating the model files in this module. -->
+		<dependency>
+			<groupId>be.kuleuven.cs.distrinet.sparta</groupId>
+			<artifactId>sparta-cli</artifactId>
+			<version>${project.version}</version>
+			<type>test-jar</type>
+			<scope>test</scope>
+		</dependency>
+
 		<!-- snakeyaml is provided transitively via sparta-cli -> sparta-io -->
 
 		<dependency>

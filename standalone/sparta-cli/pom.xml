@@ -32,6 +32,23 @@
 				<artifactId>maven-shade-plugin</artifactId>
 				<!-- config (transformers, service-merge, signature filter) inherited from the standalone parent pom -->
 			</plugin>
+			<!--
+			  Publish the test classes and fixtures (the Contoso model + threat/pattern
+			  catalogs under src/test/resources/models) as a test-jar so sparta-ci can
+			  reuse them instead of keeping copies.
+			-->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>3.4.1</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>test-jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 
 		</plugins>
 	</build>

@@ -15,9 +15,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -49,13 +46,6 @@ public class CliAnalysisSmokeTest {
 	private static final String PATTERN_LANGUAGE_NS =
 			"http://www.eclipse.org/viatra/query/patternlanguage/emf/PatternLanguage";
 
-	/** Contoso.sparta plus the two resources it cross-references (kept beside it on load). */
-	private static final String[] MODEL_FILES = {
-			"Contoso.sparta",
-			"stride-per-interaction - Shostack.sparta",
-			"SecurityPatternCatalog.sparta"
-	};
-
 	@Rule
 	public TemporaryFolder tempFolder = new TemporaryFolder();
 
@@ -82,7 +72,7 @@ public class CliAnalysisSmokeTest {
 	 */
 	@Test(timeout = 600_000)
 	public void loadsContosoModelAndElicitsThreats() throws Exception {
-		File modelDir = copyModelsToTempDir();
+		File modelDir = TestModels.copyModelsTo(tempFolder.newFolder("contoso"));
 		String contoso = new File(modelDir, "Contoso.sparta").getAbsolutePath();
 
 		List<Threat> results = StandaloneRuntime.runThreatAnalysis(contoso);
@@ -105,7 +95,7 @@ public class CliAnalysisSmokeTest {
 	 */
 	@Test(timeout = 600_000)
 	public void cliRunsTheAnalysisAndTheRequestedExports() throws Exception {
-		File modelDir = copyModelsToTempDir();
+		File modelDir = TestModels.copyModelsTo(tempFolder.newFolder("contoso"));
 		File csv = new File(tempFolder.getRoot(), "threats.csv");
 		File reportDir = new File(tempFolder.getRoot(), "report");
 
@@ -115,17 +105,5 @@ public class CliAnalysisSmokeTest {
 		assertEquals("the analysis and both exports should succeed", 0, exitCode);
 		assertTrue("the CSV export should be written", csv.isFile() && csv.length() > 0);
 		assertTrue("the LaTeX report should be written", new File(reportDir, "report.tex").isFile());
-	}
-
-	/** Copy the model and its cross-referenced catalogs into a temp dir so relative hrefs resolve. */
-	private File copyModelsToTempDir() throws Exception {
-		File dir = tempFolder.newFolder("contoso");
-		for (String name : MODEL_FILES) {
-			try (InputStream in = getClass().getResourceAsStream("/models/" + name)) {
-				assertNotNull("Missing test resource /models/" + name, in);
-				Files.copy(in, new File(dir, name).toPath(), StandardCopyOption.REPLACE_EXISTING);
-			}
-		}
-		return dir;
 	}
 }
