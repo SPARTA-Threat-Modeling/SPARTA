@@ -411,6 +411,18 @@ public class ObservableThreat extends Threat {
 		}
 	}
 
+	/**
+	 * Recalculate this threat's risk after its inputs changed in the model, e.g. a new role
+	 * binding. Failures are logged, like for the initial calculation.
+	 */
+	public void recalculateRisk() {
+		try {
+			performRiskCalculation(loopConfiguration);
+		} catch (Exception e) {
+			logRiskCalculationFailure(e);
+		}
+	}
+
 	/** Report a risk-calculation failure to the platform log rather than stderr. */
 	protected void logRiskCalculationFailure(Exception e) {
 		Activator activator = Activator.getDefault();

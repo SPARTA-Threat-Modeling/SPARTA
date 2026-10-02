@@ -80,6 +80,9 @@ public class ThreatAnalysisService implements IPropertyListener {
 	private Map<ThreatPatternMatchMetadata,PatternParsingResults> parseResults;
 
 	private DataBindingContext dbc;
+
+	/** Recalculates the threats affected by model edits; lives from load() to clear(). */
+	private RiskChangeTracker tracker;
 	private final List<WritableList<ObservableThreat>> targetLists = new ArrayList<>();
 	private final List<IObservableList<IPatternMatch>> sourceLists = new ArrayList<>();
 
@@ -114,6 +117,10 @@ public class ThreatAnalysisService implements IPropertyListener {
 		// loaded state, so a late editor property event can no longer reach the
 		// torn-down service and stale resources are not retained.
 		detachCurrentEditor();
+		if (tracker != null) {
+			tracker.dispose();
+			tracker = null;
+		}
 		resource = null;
 		parseResults = null;
 		if (engine == null) {
@@ -233,6 +240,13 @@ public class ThreatAnalysisService implements IPropertyListener {
 			}
 			
 			ml = new MultiList<>(observableLists);
+
+			// Recalculate the threats affected by later edits of the analysed resources.
+			List<Resource> analysed = roots.stream().filter(Resource.class::isInstance).map(Resource.class::cast)
+					.collect(Collectors.toList());
+			tracker = new RiskChangeTracker(analysed, ml,
+					() -> engine.getLoopConfiguration().setUpLoopParameters(engine), this::notifyListeners);
+			tracker.start();
 		} catch (RuntimeException e) {
 			// Includes ViatraQueryException (unchecked in VIATRA 2). Loading failed after
 			// the engine and observable graph were partially built; tear the half-built
