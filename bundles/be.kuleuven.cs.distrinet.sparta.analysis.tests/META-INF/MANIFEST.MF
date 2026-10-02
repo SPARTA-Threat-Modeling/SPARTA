@@ -9,5 +9,9 @@ Bundle-Vendor: DistriNet
 Require-Capability: osgi.ee;filter:="(&(osgi.ee=JavaSE)(version=21))"
 Require-Bundle: org.eclipse.core.runtime,
  be.kuleuven.cs.distrinet.sparta.analysis,
+ org.eclipse.ui,
+ org.eclipse.emf.common,
+ org.eclipse.emf.ecore,
+ org.eclipse.emf.ecore.xmi,
  org.junit
 Bundle-ActivationPolicy: lazy

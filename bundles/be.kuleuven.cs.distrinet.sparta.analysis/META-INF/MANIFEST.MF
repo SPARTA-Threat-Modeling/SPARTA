@@ -43,5 +43,6 @@ Require-Bundle: org.eclipse.ui,
 Require-Capability: osgi.ee;filter:="(&(osgi.ee=JavaSE)(version=21))"
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
-Export-Package: be.kuleuven.cs.distrinet.sparta.analysis.util
+Export-Package: be.kuleuven.cs.distrinet.sparta.analysis.service;x-friends:="be.kuleuven.cs.distrinet.sparta.analysis.tests",
+ be.kuleuven.cs.distrinet.sparta.analysis.util
 Automatic-Module-Name: be.kuleuven.cs.distrinet.sparta.analysis

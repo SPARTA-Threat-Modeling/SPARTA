@@ -12,12 +12,15 @@ package be.kuleuven.cs.distrinet.sparta.analysis.handlers;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.sirius.diagram.ui.tools.api.editor.DDiagramEditor;
 import org.eclipse.sirius.viewpoint.DRepresentation;
 import org.eclipse.sirius.viewpoint.DSemanticDecorator;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.handlers.HandlerUtil;
@@ -37,14 +40,17 @@ import be.kuleuven.cs.distrinet.sparta.analysis.service.ThreatAnalysisService;
  */
 public class LoadHandler extends AbstractHandler {
 
+	private static final String TITLE = "Load and Analyze Model";
+
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		final IWorkbenchWindow activeWorkbenchWindow = HandlerUtil.getActiveWorkbenchWindowChecked(event);
+		Shell shell = activeWorkbenchWindow.getShell();
 
 		IEditorPart editorPart = activeWorkbenchWindow.getActivePage() != null
 				? activeWorkbenchWindow.getActivePage().getActiveEditor() : null;
 		if (editorPart == null) {
-			MessageDialog.openInformation(activeWorkbenchWindow.getShell(), "Load analysis",
+			MessageDialog.openInformation(shell, TITLE,
 					"No active editor found. Open a SPARTA model or diagram editor first.");
 			return null;
 		}
@@ -55,10 +61,7 @@ public class LoadHandler extends AbstractHandler {
 				EObject root = ((DSemanticDecorator) rep).getTarget();
 				Resource rs = root != null ? root.eResource() : null;
 				if (rs != null) {
-					// Attach after load(): load() tears down the previous state via
-					// clear(), which detaches the previously tracked editor.
-					ThreatAnalysisService.getInstance().load(rs);
-					ThreatAnalysisService.getInstance().attachEditor(editor);
+					load(shell, rs, editor);
 					return null;
 				}
 			}
@@ -68,14 +71,33 @@ public class LoadHandler extends AbstractHandler {
 			modelConnector.loadModel(IModelConnectorTypeEnum.RESOURCE);
 			Resource resource = (Resource) modelConnector.getNotifier(IModelConnectorTypeEnum.RESOURCE);
 			if (resource != null) {
-				ThreatAnalysisService.getInstance().load(resource);
-				if (editorPart instanceof be.kuleuven.cs.distrinet.sparta.spartamodel.presentation.SpartaModelEditor
-						|| editorPart instanceof DDiagramEditor) {
-					ThreatAnalysisService.getInstance().attachEditor(editorPart);
-				}
+				boolean tracked = editorPart instanceof be.kuleuven.cs.distrinet.sparta.spartamodel.presentation.SpartaModelEditor
+						|| editorPart instanceof DDiagramEditor;
+				load(shell, resource, tracked ? editorPart : null);
+				return null;
 			}
 		}
+		MessageDialog.openInformation(shell, TITLE,
+				"The active editor does not show a SPARTA model. Open a SPARTA model or diagram editor first.");
 		return null;
+	}
+
+	/**
+	 * Analyse the resource and report a failure to the user. On success the service starts
+	 * listening to {@code editor} (if any), so later edits refresh the results.
+	 */
+	private static void load(Shell shell, Resource resource, IEditorPart editor) {
+		ThreatAnalysisService service = ThreatAnalysisService.getInstance();
+		IStatus status = service.load(resource);
+		if (!status.isOK()) {
+			ErrorDialog.openError(shell, TITLE, "The model could not be analysed.", status);
+			return;
+		}
+		// Attach after load(): load() tears down the previous state via clear(),
+		// which detaches the previously tracked editor.
+		if (editor != null) {
+			service.attachEditor(editor);
+		}
 	}
 
 }

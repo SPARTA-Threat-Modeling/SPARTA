@@ -171,27 +171,32 @@ public class ThreatAnalysisService implements IPropertyListener {
 		}
 	}
 	
-	public void load(Resource resource) {
-		
-		try {
-			// Tear down any previous analysis first: clear() also resets the
-			// resource/project fields, so they must be assigned afterwards.
-			if (engine != null) {
-				clear();
-			}
+	/**
+	 * Load and analyse the given model resource, replacing any previous analysis.
+	 *
+	 * @return {@link Status#OK_STATUS} when the analysis results are available; otherwise an
+	 *         error status (also logged) with a user-facing explanation of why the model could
+	 *         not be analysed, for the caller to report
+	 */
+	public IStatus load(Resource resource) {
+		// Tear down any previous analysis first: clear() also resets the
+		// resource/project fields, so they must be assigned afterwards.
+		if (engine != null) {
+			clear();
+		}
 
-			if (resource == null || resource.getURI() == null) {
-				log("Cannot load the threat analysis: no model resource is available", null);
-				return;
-			}
-			// toPlatformString returns null for non-platform URIs (e.g. file: URIs),
-			// and new Path(null) fails with an assertion error.
-			String platformString = resource.getURI().toPlatformString(true);
-			if (platformString == null) {
-				log("Cannot load the threat analysis: " + resource.getURI()
-						+ " is not a resource in the workspace", null);
-				return;
-			}
+		if (resource == null || resource.getURI() == null) {
+			return error("There is no model to analyse.", null);
+		}
+		// toPlatformString returns null for non-platform URIs (e.g. file: URIs),
+		// and new Path(null) fails with an assertion error.
+		String platformString = resource.getURI().toPlatformString(true);
+		if (platformString == null) {
+			return error(resource.getURI() + " is not a resource in the workspace. "
+					+ "Open the model from a workspace project to analyse it.", null);
+		}
+
+		try {
 			project = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(platformString)).getProject();
 			this.resource = resource;
 
@@ -235,17 +240,30 @@ public class ThreatAnalysisService implements IPropertyListener {
 			}
 			
 			ml = new MultiList<>(observableLists);
-
-			patternsParsed();
-			notifyListeners();
-		} catch (ViatraQueryException e) {
-			// Loading failed after the engine and observable graph were partially
-			// built; log it and tear the half-built state back down so views are
-			// not left bound to an inconsistent list.
-			log("Failed to initialise the analysis engine for " + resource.getURI(), e);
+		} catch (RuntimeException e) {
+			// Includes ViatraQueryException (unchecked in VIATRA 2). Loading failed after
+			// the engine and observable graph were partially built; tear the half-built
+			// state back down so views are not left bound to an inconsistent list, and
+			// report why.
 			clear();
+			return error("The analysis engine could not analyse " + resource.getURI() + ": " + e.getMessage(), e);
 		}
 
+		// Outside the catch: a failing listener is not a failed load and must not
+		// clear the results that were just built.
+		patternsParsed();
+		notifyListeners();
+		return Status.OK_STATUS;
+	}
+
+	/** Log an error and return it as a status for the caller to report. */
+	private IStatus error(String message, Throwable t) {
+		IStatus status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, message, t);
+		Activator activator = Activator.getDefault();
+		if (activator != null) {
+			activator.getLog().log(status);
+		}
+		return status;
 	}
 	
 	private ViatraQueryMatcher<?> getVQMatchers(IQuerySpecification<?> qs, Engine engine) {
