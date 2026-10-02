@@ -8,9 +8,10 @@ Bundle-ClassPath: .
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
 Require-Capability: osgi.ee;filter:="(&(osgi.ee=JavaSE)(version=21))"
-Export-Package: be.kuleuven.cs.distrinet.sparta.spartamodel.tests
 Require-Bundle: org.eclipse.core.runtime,
- be.kuleuven.cs.distrinet.sparta.spartamodel;visibility:=reexport,
- org.eclipse.emf.ecore.xmi;visibility:=reexport,
- org.junit;visibility:=reexport
+ be.kuleuven.cs.distrinet.sparta.spartamodel,
+ org.eclipse.emf.ecore,
+ org.eclipse.emf.ecore.xmi,
+ org.eclipse.emf.common,
+ org.junit
 Bundle-ActivationPolicy: lazy

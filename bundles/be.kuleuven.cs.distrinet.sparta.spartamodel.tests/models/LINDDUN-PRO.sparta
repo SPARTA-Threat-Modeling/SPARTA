@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<spartamodel:ThreatTypeCatalog xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:spartamodel="http://distrinet.cs.kuleuven.be/spartamodel" xmi:id="_0_8dEG7QEfCHVt66_63vZQ" name="LINDDUN-per-interaction" package="linddun">
+  <threat xsi:type="spartamodel:ThreatTypeGroup" xmi:id="_xo5zUG7REfCHVt66_63vZQ" name="Linking" description="Learning more about an individual or a group by associating data items or user actions. Linking may lead to unwanted privacy implications, even if it does not reveal one’s identity." id="linddun.linking">
+    <subThreatTypes xsi:type="spartamodel:ThreatType" xmi:id="_uT6E4HErEfCrdaq8WyU1iQ" name="Data sent by &lt;$sender$> may be linked." description="Data items or user actions can be associated to learn more about an individual or group. Linking may lead to unwanted privacy implications, even if it does not reveal one’s identity." id="linddun.linking.sender">
+      <threatpattern xmi:id="_BqjwgHEsEfCrdaq8WyU1iQ" name="linkingSender" description="Data items or user actions can be associated to learn more about an individual or group. Linking may lead to unwanted privacy implications, even if it does not reveal one’s identity.">
+        <patterns>pattern linkingSender(location : DFDElement, sender : DFDElement, recipient : DFDElement, df: DataFlow) {&#xD;
+  find Communication(sender,df,recipient);&#xD;
+  location == sender;&#xD;
+}</patterns>
+      </threatpattern>
+    </subThreatTypes>
+    <subThreatTypes xsi:type="spartamodel:ThreatType" xmi:id="_Son9sHE4EfCrdaq8WyU1iQ" name="Data received by &lt;$recipient$> may be linked." description="Data items or user actions can be associated to learn more about an individual or group. Linking may lead to unwanted privacy implications, even if it does not reveal one’s identity." id="linddun.linking.recipient">
+      <threatpattern xmi:id="_Son9sXE4EfCrdaq8WyU1iQ" name="linkingRecipient" description="Data items or user actions can be associated to learn more about an individual or group. Linking may lead to unwanted privacy implications, even if it does not reveal one’s identity.">
+        <patterns>pattern linkingRecipient(location : DFDElement, sender : DFDElement, recipient : DFDElement, df: DataFlow) {&#xD;
+  find Communication(sender,df,recipient);&#xD;
+  location == recipient;&#xD;
+}</patterns>
+      </threatpattern>
+    </subThreatTypes>
+    <subThreatTypes xsi:type="spartamodel:ThreatType" xmi:id="_XYfmIHE4EfCrdaq8WyU1iQ" name="Data sent over &lt;$df$> may be linked." description="Data items or user actions can be associated to learn more about an individual or group. Linking may lead to unwanted privacy implications, even if it does not reveal one’s identity." id="linddun.linking.flow">
+      <threatpattern xmi:id="_XYfmIXE4EfCrdaq8WyU1iQ" name="linkingFlow" description="Data items or user actions can be associated to learn more about an individual or group. Linking may lead to unwanted privacy implications, even if it does not reveal one’s identity.">
+        <patterns>pattern linkingFlow(location : DFDElement, sender : DFDElement, recipient : DFDElement, df: DataFlow) {&#xD;
+  find Communication(sender,df,recipient);&#xD;
+  location == df;&#xD;
+}</patterns>
+      </threatpattern>
+    </subThreatTypes>
+  </threat>
+  <threat xsi:type="spartamodel:ThreatTypeGroup" xmi:id="_-5m0YG7REfCHVt66_63vZQ" name="Identifying" description="Learning the identity of an individual. Although many systems require the identification of data subjects, identifying threats arise when the identity can be revealed through leaks, deduction or inference in cases where this is not intentional or desired." id="linddun.identifying">
+    <subThreatTypes xsi:type="spartamodel:ThreatType" xmi:id="_qHCv8HE4EfCrdaq8WyU1iQ" name="Data sent by &lt;$sender$> over &lt;$df$> may allow identifying individuals." description="The identity of an individual can be revealed. Although many systems require the identification of data subjects, identifying threats arise when the identity can be revealed through leaks, deduction or inference in cases where this is not intentional or desired. Identifying can be done through identified data (when the system explicitly maintains the link to the identity, or refers to the identity, for example in the metadata) or identifiable data (when the identity can be derived indirectly, for example from pseudonyms, identity-revealing content, or through a small anonymity set)." id="linddun.identifying.sender">
+      <threatpattern xmi:id="_qHCv8XE4EfCrdaq8WyU1iQ" name="identifyingSender" description="The identity of an individual can be revealed. Although many systems require the identification of data subjects, identifying threats arise when the identity can be revealed through leaks, deduction or inference in cases where this is not intentional or desired. Identifying can be done through identified data (when the system explicitly maintains the link to the identity, or refers to the identity, for example in the metadata) or identifiable data (when the identity can be derived indirectly, for example from pseudonyms, identity-revealing content, or through a small anonymity set).">
+        <patterns>pattern identifyingSender(location : DFDElement, sender : DFDElement, recipient : DFDElement, df: DataFlow) {&#xD;
+  find Communication(sender,df,recipient);&#xD;
+  location == sender;&#xD;
+}</patterns>
+      </threatpattern>
+    </subThreatTypes>
+    <subThreatTypes xsi:type="spartamodel:ThreatType" xmi:id="_qHCv8nE4EfCrdaq8WyU1iQ" name="Data received by &lt;$recipient$> over &lt;$df$> may allow identifying individuals." description="The identity of an individual can be revealed. Although many systems require the identification of data subjects, identifying threats arise when the identity can be revealed through leaks, deduction or inference in cases where this is not intentional or desired. Identifying can be done through identified data (when the system explicitly maintains the link to the identity, or refers to the identity, for example in the metadata) or identifiable data (when the identity can be derived indirectly, for example from pseudonyms, identity-revealing content, or through a small anonymity set)." id="linddun.identifying.recipient">
+      <threatpattern xmi:id="_qHCv83E4EfCrdaq8WyU1iQ" name="identifyingRecipient" description="The identity of an individual can be revealed. Although many systems require the identification of data subjects, identifying threats arise when the identity can be revealed through leaks, deduction or inference in cases where this is not intentional or desired. Identifying can be done through identified data (when the system explicitly maintains the link to the identity, or refers to the identity, for example in the metadata) or identifiable data (when the identity can be derived indirectly, for example from pseudonyms, identity-revealing content, or through a small anonymity set).">
+        <patterns>pattern identifyingRecipient(location : DFDElement, sender : DFDElement, recipient : DFDElement, df: DataFlow) {&#xD;
+  find Communication(sender,df,recipient);&#xD;
+  location == recipient;&#xD;
+}</patterns>
+      </threatpattern>
+    </subThreatTypes>
+    <subThreatTypes xsi:type="spartamodel:ThreatType" xmi:id="_qHCv9HE4EfCrdaq8WyU1iQ" name="Identifiable data transmitted over &lt;$df$> without sufficient protection." description="The identity of an individual can be revealed. Although many systems require the identification of data subjects, identifying threats arise when the identity can be revealed through leaks, deduction or inference in cases where this is not intentional or desired. Identifying can be done through identified data (when the system explicitly maintains the link to the identity, or refers to the identity, for example in the metadata) or identifiable data (when the identity can be derived indirectly, for example from pseudonyms, identity-revealing content, or through a small anonymity set)." id="linddun.identifying.flow">
+      <threatpattern xmi:id="_qHCv9XE4EfCrdaq8WyU1iQ" name="identifyingFlow" description="Data items or user actions can be associated to learn more about an individual or group. Linking may lead to unwanted privacy implications, even if it does not reveal one’s identity.">
+        <patterns>pattern identifyingFlow(location : DFDElement, sender : DFDElement, recipient : DFDElement, df: DataFlow) {&#xD;
+  find Communication(sender,df,recipient);&#xD;
+  location == df;&#xD;
+}</patterns>
+      </threatpattern>
+    </subThreatTypes>
+  </threat>
+  <threat xsi:type="spartamodel:ThreatTypeGroup" xmi:id="_5iYRAG7REfCHVt66_63vZQ" name="Non-Repudiation" description="Being able to attribute a claim, i.e. to know, having done, having said something, to an individual. This leads to loss of plausible deniability, e.g. a whistleblower who can be prosecuted." id="linddun.nonrepudiation">
+    <subThreatTypes xsi:type="spartamodel:ThreatType" xmi:id="_uhcCMHE5EfCrdaq8WyU1iQ" name=" &lt;$sender$> cannot plausibly deny sending data over &lt;$df$>." description="A claim (i.e. to know, having done, or having said something) can be attributed to an individual. This leads to loss of plausible deniability, e.g. a whistleblower who can be prosecuted." id="linddun.nonrepudiation.sender">
+      <threatpattern xmi:id="_uhcCMXE5EfCrdaq8WyU1iQ" name="nonRepudiationSender" description="A claim (i.e. to know, having done, or having said something) can be attributed to an individual. This leads to loss of plausible deniability, e.g. a whistleblower who can be prosecuted.">
+        <patterns>pattern nonRepudiationSender(location : DFDElement, sender : DFDElement, recipient : DFDElement, df: DataFlow) {&#xD;
+  find Communication(sender,df,recipient);&#xD;
+  location == sender;&#xD;
+}</patterns>
+      </threatpattern>
+    </subThreatTypes>
+    <subThreatTypes xsi:type="spartamodel:ThreatType" xmi:id="_uhcCMnE5EfCrdaq8WyU1iQ" name="&lt;$recipient$> cannot plausibly deny receiving data over &lt;$df$>." description="A claim (i.e. to know, having done, or having said something) can be attributed to an individual. This leads to loss of plausible deniability, e.g. a whistleblower who can be prosecuted." id="linddun.nonrepudiation.recipient">
+      <threatpattern xmi:id="_uhcCM3E5EfCrdaq8WyU1iQ" name="nonRepudiationRecipient" description="A claim (i.e. to know, having done, or having said something) can be attributed to an individual. This leads to loss of plausible deniability, e.g. a whistleblower who can be prosecuted.">
+        <patterns>pattern nonRepudiationRecipient(location : DFDElement, sender : DFDElement, recipient : DFDElement, df: DataFlow) {&#xD;
+  find Communication(sender,df,recipient);&#xD;
+  location == recipient;&#xD;
+}</patterns>
+      </threatpattern>
+    </subThreatTypes>
+    <subThreatTypes xsi:type="spartamodel:ThreatType" xmi:id="_uhcCNHE5EfCrdaq8WyU1iQ" name="&lt;$df$> may be captured to collect evidence of communication." description="A claim (i.e. to know, having done, or having said something) can be attributed to an individual. This leads to loss of plausible deniability, e.g. a whistleblower who can be prosecuted." id="linddun.nonrepudiation.flow">
+      <threatpattern xmi:id="_uhcCNXE5EfCrdaq8WyU1iQ" name="nonRepudiationFlow" description="A claim (i.e. to know, having done, or having said something) can be attributed to an individual. This leads to loss of plausible deniability, e.g. a whistleblower who can be prosecuted.">
+        <patterns>pattern nonRepudiationFlow(location : DFDElement, sender : DFDElement, recipient : DFDElement, df: DataFlow) {&#xD;
+  find Communication(sender,df,recipient);&#xD;
+  location == df;&#xD;
+}</patterns>
+      </threatpattern>
+    </subThreatTypes>
+  </threat>
+  <threat xsi:type="spartamodel:ThreatTypeGroup" xmi:id="_B2zlUG7SEfCHVt66_63vZQ" name="Detecting" description="Deducing the involvement of an individual through observation. Detecting threats do not require being able to read the actual data – merely knowing that the data exists, is sufficient to infer more (sensitive) information." id="linddun.detecting">
+    <subThreatTypes xsi:type="spartamodel:ThreatType" xmi:id="_zCmDwHE6EfCrdaq8WyU1iQ" name="Data sent by &lt;$sender$> over &lt;$df$> may allow deducing the involmenent of an individual." description="The involvement of an individual may be deduced through observation. Detecting threats do not require being able to read the actual data – merely knowing that the data exists, is sufficient to infer more (sensitive) information." id="linddun.detecting.sender">
+      <threatpattern xmi:id="_zCmDwXE6EfCrdaq8WyU1iQ" name="detectingSender" description="The involvement of an individual may be deduced through observation. Detecting threats do not require being able to read the actual data – merely knowing that the data exists, is sufficient to infer more (sensitive) information.">
+        <patterns>pattern detectingSender(location : DFDElement, sender : DFDElement, recipient : DFDElement, df: DataFlow) {&#xD;
+  find Communication(sender,df,recipient);&#xD;
+  location == sender;&#xD;
+}</patterns>
+      </threatpattern>
+    </subThreatTypes>
+    <subThreatTypes xsi:type="spartamodel:ThreatType" xmi:id="_DBKZQHE7EfCrdaq8WyU1iQ" name="Communication over &lt;$df$> may be detected." description="The involvement of an individual may be deduced through observation. Detecting threats do not require being able to read the actual data – merely knowing that the data exists, is sufficient to infer more (sensitive) information." id="linddun.detecting.flow">
+      <threatpattern xmi:id="_DBKZQXE7EfCrdaq8WyU1iQ" name="detectingFlow" description="The involvement of an individual may be deduced through observation. Detecting threats do not require being able to read the actual data – merely knowing that the data exists, is sufficient to infer more (sensitive) information.">
+        <patterns>pattern detectingFlow(location : DFDElement, sender : DFDElement, recipient : DFDElement, df: DataFlow) {&#xD;
+  find Communication(sender,df,recipient);&#xD;
+  location == df;&#xD;
+}</patterns>
+      </threatpattern>
+    </subThreatTypes>
+  </threat>
+  <threat xsi:type="spartamodel:ThreatTypeGroup" xmi:id="_GJ9ckG7SEfCHVt66_63vZQ" name="Data Disclosure" description="Excessively collecting, storing, processing or sharing personal data. Data disclosure threats represent cases in which disclosure of personal data to, within, and from the system are considered problematic." id="linddun.datadisclosure">
+    <subThreatTypes xsi:type="spartamodel:ThreatType" xmi:id="_C5QlAHE8EfCrdaq8WyU1iQ" name=" &lt;$sender$> reveals data to &lt;$recipient$>." description="Personal data may be excessively collected, stored, processed or shared. Data disclosure threats represent cases in which disclosure of personal data to, within, and from the system are considered problematic. " id="linddun.datadisclosure.sender">
+      <threatpattern xmi:id="_C5QlAXE8EfCrdaq8WyU1iQ" name="dataDisclosureSender" description="Personal data may be excessively collected, stored, processed or shared. Data disclosure threats represent cases in which disclosure of personal data to, within, and from the system are considered problematic. ">
+        <patterns>pattern dataDisclosureSender(location : DFDElement, sender : DFDElement, recipient : DFDElement, df: DataFlow) {&#xD;
+  find Communication(sender,df,recipient);&#xD;
+  location == sender;&#xD;
+}</patterns>
+      </threatpattern>
+    </subThreatTypes>
+    <subThreatTypes xsi:type="spartamodel:ThreatType" xmi:id="_C5QlAnE8EfCrdaq8WyU1iQ" name="&lt;$recipient$> receives an excessive amount of data from &lt;$sender$>." description="Personal data may be excessively collected, stored, processed or shared. Data disclosure threats represent cases in which disclosure of personal data to, within, and from the system are considered problematic. " id="linddun.datadisclosure.recipient">
+      <threatpattern xmi:id="_C5QlA3E8EfCrdaq8WyU1iQ" name="dataDisclosureRecipient" description="Personal data may be excessively collected, stored, processed or shared. Data disclosure threats represent cases in which disclosure of personal data to, within, and from the system are considered problematic. ">
+        <patterns>pattern dataDisclosureRecipient(location : DFDElement, sender : DFDElement, recipient : DFDElement, df: DataFlow) {&#xD;
+  find Communication(sender,df,recipient);&#xD;
+  location == recipient;&#xD;
+}</patterns>
+      </threatpattern>
+    </subThreatTypes>
+    <subThreatTypes xsi:type="spartamodel:ThreatType" xmi:id="_C5QlBHE8EfCrdaq8WyU1iQ" name="&lt;$df$> contents and meta-data may be sniffed on the wire." description="Personal data may be excessively collected, stored, processed or shared. Data disclosure threats represent cases in which disclosure of personal data to, within, and from the system are considered problematic. " id="linddun.datadisclosure.flow">
+      <threatpattern xmi:id="_C5QlBXE8EfCrdaq8WyU1iQ" name="dataDisclosureFlow" description="Personal data may be excessively collected, stored, processed or shared. Data disclosure threats represent cases in which disclosure of personal data to, within, and from the system are considered problematic. ">
+        <patterns>pattern dataDisclosureFlow(location : DFDElement, sender : DFDElement, recipient : DFDElement, df: DataFlow) {&#xD;
+  find Communication(sender,df,recipient);&#xD;
+  location == df;&#xD;
+}</patterns>
+      </threatpattern>
+    </subThreatTypes>
+  </threat>
+  <threat xsi:type="spartamodel:ThreatTypeGroup" xmi:id="_JXNbsG7SEfCHVt66_63vZQ" name="Unawareness and Unintervenability" description="Individuals may be insufficiently informed, involved or empowered regarding the processing of their personal data. " id="linddun.unawareness">
+    <subThreatTypes xsi:type="spartamodel:ThreatType" xmi:id="_gU3R8HE9EfCrdaq8WyU1iQ" name="Individuals may be unaware of which or how much data is being shared with &lt;$recipient$>, do not get sufficient feedback regarding its privacy impact, or cannot access or manage this data." description="Individuals may be insufficiently informed, involved or empowered regarding the processing of their personal data. These threats may arise when there is insufficient transparency  (data subjects are not aware of the collection or processing of their personal data or the personal data of others), insufficient feedback  (data subjects are insufficiently informed about the privacy impact they may cause to others by using the system), or insufficient intervenability (data subjects cannot access or manage their personal data)." id="linddun.unawareness.sender">
+      <threatpattern xmi:id="_gU3R8XE9EfCrdaq8WyU1iQ" name="unawarenessSender" description="Individuals may be insufficiently informed, involved or empowered regarding the processing of their personal data. These threats may arise when there is insufficient transparency  (data subjects are not aware of the collection or processing of their personal data or the personal data of others), insufficient feedback  (data subjects are insufficiently informed about the privacy impact they may cause to others by using the system), or insufficient intervenability (data subjects cannot access or manage their personal data).">
+        <patterns>pattern unawarenessSender(location : DFDElement, sender : DFDElement, recipient : DFDElement, df: DataFlow) {&#xD;
+  find Communication(sender,df,recipient);&#xD;
+  location == sender;&#xD;
+}</patterns>
+      </threatpattern>
+    </subThreatTypes>
+    <subThreatTypes xsi:type="spartamodel:ThreatType" xmi:id="_gU3R8nE9EfCrdaq8WyU1iQ" name="Individuals may be unaware of which or how much data is being shared with &lt;$recipient$>, do not get sufficient feedback regarding its privacy impact, or cannot access or manage this data." description="Individuals may be insufficiently informed, involved or empowered regarding the processing of their personal data. These threats may arise when there is insufficient transparency  (data subjects are not aware of the collection or processing of their personal data or the personal data of others), insufficient feedback  (data subjects are insufficiently informed about the privacy impact they may cause to others by using the system), or insufficient intervenability (data subjects cannot access or manage their personal data)." id="linddun.unawareness.recipient">
+      <threatpattern xmi:id="_gU3R83E9EfCrdaq8WyU1iQ" name="unawarenessRecipient" description="Individuals may be insufficiently informed, involved or empowered regarding the processing of their personal data. These threats may arise when there is insufficient transparency  (data subjects are not aware of the collection or processing of their personal data or the personal data of others), insufficient feedback  (data subjects are insufficiently informed about the privacy impact they may cause to others by using the system), or insufficient intervenability (data subjects cannot access or manage their personal data).">
+        <patterns>pattern unawarenessRecipient(location : DFDElement, sender : DFDElement, recipient : DFDElement, df: DataFlow) {&#xD;
+  find Communication(sender,df,recipient);&#xD;
+  location == recipient;&#xD;
+}</patterns>
+      </threatpattern>
+    </subThreatTypes>
+  </threat>
+  <threat xsi:type="spartamodel:ThreatTypeGroup" xmi:id="_NKpREG7SEfCHVt66_63vZQ" name="Non-Compliance" description="he system deviates from security and data management best practices, standards and legislation, leading to the incomplete management of risk. Focus is on the organizational and operational management context in which a system or service is embedded." id="linddun.noncompliance">
+    <subThreatTypes xsi:type="spartamodel:ThreatType" xmi:id="_rnUBIHE-EfCrdaq8WyU1iQ" name="&lt;$location$> processes, shares, or stores data without lawful basis." description="The system deviates from security and data management best practices, standards and legislation, leading to the incomplete management of risk. Focus is on the organizational and operational management context in which a system or service is embedded. Non-compliance main threat characteristics are unlawfulness of personal data processing, lacking data lifecycle management (this relates to data minimization, storage limitation, and data subject controls principles), and a lack of proper cybersecurity risk management." id="linddun.noncompliance.sender">
+      <threatpattern xmi:id="_rnUBIXE-EfCrdaq8WyU1iQ" name="nonComplianceSender" description="The system deviates from security and data management best practices, standards and legislation, leading to the incomplete management of risk. Focus is on the organizational and operational management context in which a system or service is embedded. Non-compliance main threat characteristics are unlawfulness of personal data processing, lacking data lifecycle management (this relates to data minimization, storage limitation, and data subject controls principles), and a lack of proper cybersecurity risk management.">
+        <patterns>pattern nonComplianceSender(location : DFDElement, sender : DFDElement, recipient : DFDElement, df: DataFlow) {&#xD;
+  Process(location);&#xD;
+  find Communication(sender,df,recipient);&#xD;
+  location == sender;&#xD;
+} or {&#xD;
+  DataStore(location);&#xD;
+  find Communication(sender,df,recipient);&#xD;
+  location == sender;&#xD;
+}</patterns>
+      </threatpattern>
+    </subThreatTypes>
+    <subThreatTypes xsi:type="spartamodel:ThreatType" xmi:id="_rnUBInE-EfCrdaq8WyU1iQ" name="&lt;$location$> processes, shares, or stores data without lawful basis." description="The system deviates from security and data management best practices, standards and legislation, leading to the incomplete management of risk. Focus is on the organizational and operational management context in which a system or service is embedded. Non-compliance main threat characteristics are unlawfulness of personal data processing, lacking data lifecycle management (this relates to data minimization, storage limitation, and data subject controls principles), and a lack of proper cybersecurity risk management." id="linddun.noncompliance.recipient">
+      <threatpattern xmi:id="_rnUBI3E-EfCrdaq8WyU1iQ" name="nonComplianceRecipient" description="The system deviates from security and data management best practices, standards and legislation, leading to the incomplete management of risk. Focus is on the organizational and operational management context in which a system or service is embedded. Non-compliance main threat characteristics are unlawfulness of personal data processing, lacking data lifecycle management (this relates to data minimization, storage limitation, and data subject controls principles), and a lack of proper cybersecurity risk management.">
+        <patterns>pattern nonComplianceRecipient(location : DFDElement, sender : DFDElement, recipient : DFDElement, df: DataFlow) {&#xD;
+  find Communication(sender,df,recipient);&#xD;
+  location == recipient;&#xD;
+}</patterns>
+      </threatpattern>
+    </subThreatTypes>
+  </threat>
+  <imports>import &quot;http://distrinet.cs.kuleuven.be/spartamodel&quot;</imports>
+  <imports>import &quot;http://www.eclipse.org/emf/2002/Ecore&quot;</imports>
+  <helperPatterns>pattern senderSpecification(spec : SenderSpecifiable, specifiedBy : SenderSpecification) {&#xD;
+   SenderSpecifiable.senderSpecifiedBy(spec, specifiedBy);&#xD;
+}</helperPatterns>
+  <helperPatterns>pattern recipientSpecification(spec : RecipientSpecifiable, specifiedBy : RecipientSpecification) {&#xD;
+   RecipientSpecifiable.recipientSpecifiedBy(spec, specifiedBy);&#xD;
+}</helperPatterns>
+  <helperPatterns>pattern actualRecipient(spec : RecipientSpecifiable, recipient : DataFlowEntity) {&#xD;
+  neg find recipientSpecification(spec, _);&#xD;
+  RecipientSpecifiable.recipient(spec, recipient);&#xD;
+} or {&#xD;
+  RecipientSpecifiable.recipientSpecifiedBy(spec, next);&#xD;
+  find actualRecipient(next, recipient);&#xD;
+}</helperPatterns>
+  <helperPatterns>pattern actualSender(spec : SenderSpecifiable, sender : DataFlowEntity) {&#xD;
+  neg find senderSpecification(spec, _);&#xD;
+  SenderSpecifiable.sender(spec, sender);&#xD;
+} or {&#xD;
+  SenderSpecifiable.senderSpecifiedBy(spec, next);&#xD;
+  find actualSender(next, sender);&#xD;
+}</helperPatterns>
+  <helperPatterns>pattern flowComm(location : DataFlow, p : DataFlowEntity, p2 : DataFlowEntity) { &#xD;
+	DataFlow(location);DataFlowEntity(p);DataFlowEntity(p2);&#xD;
+	find Communication(p,location,p2);&#xD;
+} </helperPatterns>
+  <helperPatterns>pattern processToProcessComm(location : Process, p2 : Process, df : DataFlow) {&#xD;
+	Process(location);	Process(p2);	DataFlow(df);&#xD;
+	find Communication(location,df,p2);&#xD;
+}</helperPatterns>
+  <helperPatterns>pattern processToExternalEntityComm(location : Process, p2 : ExternalEntity, df : DataFlow) {&#xD;
+	Process(location); ExternalEntity(p2); DataFlow(df);&#xD;
+	find Communication(location,df,p2);&#xD;
+}</helperPatterns>
+  <helperPatterns>pattern processToDataStoreComm(location : Process, p2 : DataStore, df : DataFlow) {&#xD;
+	Process(location); DataStore(p2); DataFlow(df);&#xD;
+	find Communication(location,df,p2);&#xD;
+}</helperPatterns>
+  <helperPatterns>pattern dataStoreToProcessComm(location : DataStore, p2 : Process, df : DataFlow) {&#xD;
+	DataStore(location); Process(p2); DataFlow(df);&#xD;
+	find Communication(location,df,p2);&#xD;
+}</helperPatterns>
+  <helperPatterns>pattern dataStoreToDataStoreComm(location : DataStore, p2 : DataStore, df : DataFlow) {&#xD;
+	DataStore(location); DataStore(p2); DataFlow(df);&#xD;
+	find Communication(location,df,p2);&#xD;
+}</helperPatterns>
+  <helperPatterns>pattern dataStoreToExternalEntityComm(location : DataStore, p2 : ExternalEntity, df : DataFlow) {&#xD;
+	DataStore(location); ExternalEntity(p2); DataFlow(df);&#xD;
+	find Communication(location,df,p2);&#xD;
+}</helperPatterns>
+  <helperPatterns>pattern externalEntityToProcessComm(location : ExternalEntity, p2 : Process, df : DataFlow) {&#xD;
+	ExternalEntity(location); Process(p2); DataFlow(df);&#xD;
+	find Communication(location,df,p2);&#xD;
+}</helperPatterns>
+  <helperPatterns>pattern externalEntityToDataStoreComm(location : ExternalEntity, p2 : DataStore, df : DataFlow) {&#xD;
+	ExternalEntity(location); DataStore(p2); DataFlow(df);	&#xD;
+	find Communication(location,df,p2);&#xD;
+}</helperPatterns>
+  <helperPatterns>pattern externalEntityToExternalEntityComm(location : ExternalEntity, p2 : ExternalEntity, df : DataFlow) {&#xD;
+	ExternalEntity(location); ExternalEntity(p2); DataFlow(df);	&#xD;
+	find Communication(location,df,p2);&#xD;
+}</helperPatterns>
+  <helperPatterns>pattern flowThroughComm(location : DataFlow, p : DataFlowEntity, p2 : DataFlowEntity) {&#xD;
+	DataFlow(location);DataFlowEntity(p);DataFlowEntity(p2);&#xD;
+	find Communication(p,location,p2);&#xD;
+	find containerDiff(p,p2);&#xD;
+} </helperPatterns>
+  <helperPatterns>pattern processThroughProcessComm(location : Process, p2 : Process, df : DataFlow) {&#xD;
+	Process(location);	Process(p2);	DataFlow(df);&#xD;
+	find Communication(location,df,p2);&#xD;
+	find containerDiff(location,p2);&#xD;
+}</helperPatterns>
+  <helperPatterns>pattern processThroughExternalEntityComm(location : Process, p2 : ExternalEntity, df : DataFlow) {&#xD;
+	Process(location); ExternalEntity(p2); DataFlow(df);	&#xD;
+	find Communication(location,df,p2);&#xD;
+	find containerDiff(location,p2);&#xD;
+}</helperPatterns>
+  <helperPatterns>pattern processThroughDataStoreComm(location : Process, p2 : DataStore, df : DataFlow) {&#xD;
+	Process(location); DataStore(p2); DataFlow(df);&#xD;
+	find Communication(location,df,p2);&#xD;
+	find containerDiff(location,p2);&#xD;
+}</helperPatterns>
+  <helperPatterns>pattern dataStoreThroughProcessComm(location : DataStore, p2 : Process, df : DataFlow) { &#xD;
+	DataStore(location); Process(p2); DataFlow(df);&#xD;
+	find Communication(location,df,p2);&#xD;
+	find containerDiff(location,p2);&#xD;
+}</helperPatterns>
+  <helperPatterns>pattern dataStoreThroughDataStoreComm(location : DataStore, p2 : DataStore, df : DataFlow) {&#xD;
+	DataStore(location); DataStore(p2); DataFlow(df);&#xD;
+	find Communication(location,df,p2);&#xD;
+	find containerDiff(location,p2);&#xD;
+}</helperPatterns>
+  <helperPatterns>pattern dataStoreThroughExternalEntityComm(location : DataStore, p2 : ExternalEntity, df : DataFlow) {&#xD;
+	DataStore(location); ExternalEntity(p2); DataFlow(df);&#xD;
+	find Communication(location,df,p2);&#xD;
+	find containerDiff(location,p2);&#xD;
+}</helperPatterns>
+  <helperPatterns>pattern externalEntityThroughProcessComm(location : ExternalEntity, p2 : Process, df : DataFlow) {&#xD;
+	ExternalEntity(location); Process(p2); DataFlow(df);&#xD;
+	find Communication(location,df,p2);&#xD;
+	find containerDiff(location,p2);&#xD;
+}</helperPatterns>
+  <helperPatterns>pattern externalEntityThroughDataStoreComm(location : ExternalEntity, p2 : DataStore, df : DataFlow) {&#xD;
+	ExternalEntity(location); DataStore(p2); DataFlow(df);&#xD;
+	find Communication(location,df,p2);&#xD;
+	find containerDiff(location,p2);&#xD;
+}</helperPatterns>
+  <helperPatterns>pattern externalEntityThroughExternalEntityComm(location : ExternalEntity, p2 : ExternalEntity, df : DataFlow) {&#xD;
+	ExternalEntity(location); ExternalEntity(p2); DataFlow(df);&#xD;
+	find Communication(location,df,p2);&#xD;
+	find containerDiff(location,p2);&#xD;
+}</helperPatterns>
+  <helperPatterns>pattern flowThroughElementComm(location : DataFlow, p : DataFlowEntity, p2 : DataFlowEntity) {&#xD;
+	Process(p);&#xD;
+	Process(p2);&#xD;
+	find Communication(p,location,p2);&#xD;
+	find containerDiff(p,p2);&#xD;
+} or {&#xD;
+	Process(p);&#xD;
+	DataStore(p2);&#xD;
+	find Communication(p,location,p2);&#xD;
+	find containerDiff(p,p2);&#xD;
+} or {&#xD;
+	ExternalEntity(p);&#xD;
+	Process(p2);&#xD;
+	find Communication(p,location,p2);&#xD;
+	find containerDiff(p,p2);&#xD;
+}</helperPatterns>
+  <helperPatterns>pattern containerDiff(sender: DataFlowEntity, recipient : DataFlowEntity) {&#xD;
+	DataFlowEntity(sender); DataFlowEntity(recipient);&#xD;
+	find Communication(sender, _df, recipient);&#xD;
+	TrustBoundaryContainer(contain);&#xD;
+	find contains(contain,sender);&#xD;
+	neg find contains(contain,recipient);&#xD;
+} or {&#xD;
+	DataFlowEntity(sender); DataFlowEntity(recipient);&#xD;
+	find Communication(sender, _df2, recipient);&#xD;
+	TrustBoundaryContainer(contain);&#xD;
+	find contains(contain,recipient);&#xD;
+	neg find contains(contain,sender);&#xD;
+}</helperPatterns>
+  <helperPatterns>pattern contains(outer : DFDContainer, inner : DFDContainer) {&#xD;
+	DFDContainer(outer);&#xD;
+	find containment+(outer,inner);&#xD;
+}</helperPatterns>
+  <helperPatterns>pattern containment(outer : DFDContainer, inner : DFDContainer) {&#xD;
+	DFDContainer.containedElements(outer, inner);&#xD;
+} or {&#xD;
+	DFDElement(inner);&#xD;
+	outer == inner;&#xD;
+}</helperPatterns>
+  <helperPatterns>pattern sendSpecReachable(spec: SenderSpecifiable, next: SenderSpecifiable) {&#xD;
+	SenderSpecification(spec);&#xD;
+	SenderSpecification.specifiesSenderOf(spec, next);&#xD;
+} or {&#xD;
+	DataFlow(spec);&#xD;
+	spec == next;&#xD;
+}</helperPatterns>
+  <helperPatterns>pattern receiveSpecReachable(spec: RecipientSpecifiable, next: RecipientSpecifiable) {&#xD;
+	RecipientSpecification(spec);&#xD;
+	RecipientSpecification.specifiesRecipientOf(spec, next);&#xD;
+} or {&#xD;
+	DataFlow(spec);&#xD;
+	spec == next;&#xD;
+}</helperPatterns>
+  <helperPatterns>pattern Communication(&#xD;
+	sender : DataFlowEntity, &#xD;
+	flow: DataFlow, &#xD;
+	recipient : DataFlowEntity&#xD;
+) {&#xD;
+	find actualSender(flow, sender);&#xD;
+        find actualRecipient(flow, recipient);&#xD;
+}</helperPatterns>
+</spartamodel:ThreatTypeCatalog>

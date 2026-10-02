@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<spartamodel:DFDModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:spartamodel="http://distrinet.cs.kuleuven.be/spartamodel" xmi:id="_Sdma0O-7Eee3CaICheTseA">
+  <containedElements xsi:type="spartamodel:ExternalEntity" xmi:id="_Tpx6EO-7Eee3CaICheTseA" name="User" send="_rDVacO-7Eee3CaICheTseA" receive="_sU0QcO-7Eee3CaICheTseA">
+    <estimates xmi:id="_4caNAO--EeeYeJDnmMgaMA" probable="0.5" maximum="1.0" confidence="4.0" name=""/>
+  </containedElements>
+  <containedElements xsi:type="spartamodel:TrustBoundaryContainer" xmi:id="_kzInsO-7Eee3CaICheTseA" name="Trust Boundary">
+    <containedElements xsi:type="spartamodel:Process" xmi:id="_mlk1sO-7Eee3CaICheTseA" name="Portal" send="_sU0QcO-7Eee3CaICheTseA _t46gcO-7Eee3CaICheTseA" receive="_rDVacO-7Eee3CaICheTseA _uQR3kO-7Eee3CaICheTseA">
+      <estimates xmi:id="_8TtOsO--EeeYeJDnmMgaMA" probable="0.5" maximum="1.0" confidence="4.0" name=""/>
+    </containedElements>
+    <containedElements xsi:type="spartamodel:Process" xmi:id="_mzEfIO-7Eee3CaICheTseA" name="Service" send="_uQR3kO-7Eee3CaICheTseA _vux14O-7Eee3CaICheTseA" receive="_t46gcO-7Eee3CaICheTseA _wnK2cO-7Eee3CaICheTseA">
+      <estimates xmi:id="_8cZQoO--EeeYeJDnmMgaMA" probable="0.5" maximum="1.0" confidence="4.0" name=""/>
+    </containedElements>
+    <containedElements xsi:type="spartamodel:DataStore" xmi:id="_oiyJQO-7Eee3CaICheTseA" name="Social network DB" send="_wnK2cO-7Eee3CaICheTseA" receive="_vux14O-7Eee3CaICheTseA">
+      <estimates xmi:id="_8xAOsO--EeeYeJDnmMgaMA" probable="0.5" maximum="1.0" confidence="4.0" name=""/>
+    </containedElements>
+    <containedElements xsi:type="spartamodel:DataFlow" xmi:id="_sU0QcO-7Eee3CaICheTseA" name="PortalToUser" sender="_mlk1sO-7Eee3CaICheTseA" recipient="_Tpx6EO-7Eee3CaICheTseA">
+      <estimates xmi:id="_8kKskO--EeeYeJDnmMgaMA" probable="0.5" maximum="1.0" confidence="4.0" name=""/>
+    </containedElements>
+    <containedElements xsi:type="spartamodel:DataFlow" xmi:id="_t46gcO-7Eee3CaICheTseA" name="PortalToService" sender="_mlk1sO-7Eee3CaICheTseA" recipient="_mzEfIO-7Eee3CaICheTseA">
+      <estimates xmi:id="_8-BXAO--EeeYeJDnmMgaMA" probable="0.5" maximum="1.0" confidence="4.0" name=""/>
+    </containedElements>
+    <containedElements xsi:type="spartamodel:DataFlow" xmi:id="_uQR3kO-7Eee3CaICheTseA" name="ServiceToPortal" sender="_mzEfIO-7Eee3CaICheTseA" recipient="_mlk1sO-7Eee3CaICheTseA">
+      <estimates xmi:id="_9F12QO--EeeYeJDnmMgaMA" probable="0.5" maximum="1.0" confidence="4.0" name=""/>
+    </containedElements>
+    <containedElements xsi:type="spartamodel:DataFlow" xmi:id="_vux14O-7Eee3CaICheTseA" name="ServiceToDB" sender="_mzEfIO-7Eee3CaICheTseA" recipient="_oiyJQO-7Eee3CaICheTseA">
+      <estimates xmi:id="_9OTOsO--EeeYeJDnmMgaMA" probable="0.5" maximum="1.0" confidence="4.0" name=""/>
+    </containedElements>
+    <containedElements xsi:type="spartamodel:DataFlow" xmi:id="_wnK2cO-7Eee3CaICheTseA" name="DBToService" sender="_oiyJQO-7Eee3CaICheTseA" recipient="_mzEfIO-7Eee3CaICheTseA">
+      <estimates xmi:id="_9VjtQO--EeeYeJDnmMgaMA" probable="0.5" maximum="1.0" confidence="4.0" name=""/>
+    </containedElements>
+  </containedElements>
+  <containedElements xsi:type="spartamodel:DataFlow" xmi:id="_rDVacO-7Eee3CaICheTseA" name="UserToPortal" sender="_Tpx6EO-7Eee3CaICheTseA" recipient="_mlk1sO-7Eee3CaICheTseA">
+    <estimates xmi:id="_9gTksO--EeeYeJDnmMgaMA" probable="0.5" maximum="1.0" confidence="4.0" name=""/>
+  </containedElements>
+  <resource xsi:type="spartamodel:ThreatTypeCatalog" href="LINDDUN-PRO.sparta#_0_8dEG7QEfCHVt66_63vZQ"/>
+</spartamodel:DFDModel>

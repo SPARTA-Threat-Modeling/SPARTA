@@ -52,6 +52,12 @@
 		</dependency>
 		<dependency>
 			<groupId>be.kuleuven.cs.distrinet.sparta</groupId>
+			<artifactId>be.kuleuven.cs.distrinet.sparta.spartamodel.tests</artifactId>
+			<version>${project.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>be.kuleuven.cs.distrinet.sparta</groupId>
 			<artifactId>be.kuleuven.cs.distrinet.sparta.core.tests</artifactId>
 			<version>${project.version}</version>
 			<scope>test</scope>
