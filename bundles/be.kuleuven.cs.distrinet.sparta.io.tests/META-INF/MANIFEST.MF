@@ -10,6 +10,8 @@ Require-Capability: osgi.ee;filter:="(&(osgi.ee=JavaSE)(version=21))"
 Require-Bundle: org.eclipse.core.runtime,
  be.kuleuven.cs.distrinet.sparta.io,
  be.kuleuven.cs.distrinet.sparta.core,
+ org.apache.poi,
+ org.apache.poi.ooxml,
  be.kuleuven.cs.distrinet.sparta.spartamodel,
  org.eclipse.viatra.query.runtime,
  org.eclipse.emf.ecore,

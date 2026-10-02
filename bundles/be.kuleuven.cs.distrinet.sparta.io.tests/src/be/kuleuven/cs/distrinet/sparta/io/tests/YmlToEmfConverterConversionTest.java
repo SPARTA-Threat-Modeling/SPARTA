@@ -117,6 +117,64 @@ public class YmlToEmfConverterConversionTest {
 		}
 	}
 
+	/** A flow referencing an undeclared sender must fail naming that endpoint. */
+	@Test
+	public void rejectsFlowWithUnknownSenderNamingTheEndpoint() throws Exception {
+		String txt = "processes:\n"
+				+ "  - WebApp\n"
+				+ "dataFlows:\n"
+				+ "  - Ghost->WebApp\n";
+		Files.write(new File(workingDir, "unknown-sender.txt").toPath(), txt.getBytes(StandardCharsets.UTF_8));
+		try {
+			YmlToEmfConverter.convert(workingDir, "unknown-sender.txt");
+			fail("expected an IllegalArgumentException for an unknown flow sender");
+		} catch (IllegalArgumentException e) {
+			assertTrue("the error should name the unknown sender, was: " + e.getMessage(),
+					e.getMessage().contains("sender 'Ghost'"));
+		}
+	}
+
+	/** A flow referencing an undeclared recipient must fail naming that endpoint. */
+	@Test
+	public void rejectsFlowWithUnknownRecipientNamingTheEndpoint() throws Exception {
+		String txt = "processes:\n"
+				+ "  - WebApp\n"
+				+ "dataFlows:\n"
+				+ "  - WebApp->Phantom\n";
+		Files.write(new File(workingDir, "unknown-recipient.txt").toPath(), txt.getBytes(StandardCharsets.UTF_8));
+		try {
+			YmlToEmfConverter.convert(workingDir, "unknown-recipient.txt");
+			fail("expected an IllegalArgumentException for an unknown flow recipient");
+		} catch (IllegalArgumentException e) {
+			assertTrue("the error should name the unknown recipient, was: " + e.getMessage(),
+					e.getMessage().contains("recipient 'Phantom'"));
+		}
+	}
+
+	/**
+	 * The converter deliberately tolerates absent sections: an input declaring only
+	 * processes (no dataStores/externalEntities/dataFlows keys at all) converts,
+	 * yielding a model with just the declared elements.
+	 */
+	@Test
+	public void toleratesMissingSections() throws Exception {
+		Files.write(new File(workingDir, "only-processes.txt").toPath(),
+				"processes:\n  - WebApp\n".getBytes(StandardCharsets.UTF_8));
+
+		File converted = YmlToEmfConverter.convert(workingDir, "only-processes.txt");
+
+		assertTrue("the converted model should exist at the returned path: " + converted, converted.isFile());
+		ResourceSet resSet = new ResourceSetImpl();
+		resSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put("sparta",
+				new SpartaModelResourceFactoryImpl());
+		Resource res = resSet.getResource(URI.createFileURI(converted.getAbsolutePath()), true);
+		DFDModel dfd = res.getContents().stream().filter(DFDModel.class::isInstance).map(DFDModel.class::cast)
+				.findAny().orElse(null);
+		assertNotNull("the converted file should contain a DFDModel", dfd);
+		assertEquals("only the single declared process should be contained", 1,
+				dfd.getContainedElements().size());
+	}
+
 	/** Malformed YAML is wrapped in an IOException naming the file instead of a raw parser error. */
 	@Test
 	public void rejectsMalformedInputWithErrorNamingTheFile() throws Exception {

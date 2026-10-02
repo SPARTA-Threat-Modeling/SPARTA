@@ -12,10 +12,13 @@ package be.kuleuven.cs.distrinet.sparta.io.tests;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.List;
+
 import org.junit.Test;
 
 import be.kuleuven.cs.distrinet.sparta.core.analysis.risk.SpartaRiskModel;
 import be.kuleuven.cs.distrinet.sparta.io.templates.ThreatItemTemplate;
+import be.kuleuven.cs.distrinet.sparta.io.templates.ThreatsTemplate;
 import be.kuleuven.cs.distrinet.sparta.spartamodel.Process;
 import be.kuleuven.cs.distrinet.sparta.spartamodel.SpartaModelFactory;
 import be.kuleuven.cs.distrinet.sparta.spartamodel.ThreatType;
@@ -41,6 +44,16 @@ public class UncalculatedRiskExportTest {
 	public void threatWithAnUncalculatedRiskModelReportsItAsNotCalculated() {
 		assertFalse(uncalculatedThreat().isRiskCalculated());
 		assertTrue(new StubThreat(null, FACTORY.createProcess(), null, new StubRiskModel()).isRiskCalculated());
+	}
+
+	@Test
+	public void threatSectionSortsAnUncalculatedThreatWithoutFailing() {
+		// ThreatsTemplate sorts the threats of a type by risk, which used to read the risk.
+		StubThreat calculated = new StubThreat(uncalculatedThreat().getThreatType(), FACTORY.createProcess(),
+				null, new StubRiskModel());
+		String section = ThreatsTemplate.fill(List.of(uncalculatedThreat(), calculated));
+
+		assertTrue(section, section.contains("\\item[Risk] --"));
 	}
 
 	@Test

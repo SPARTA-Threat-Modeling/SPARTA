@@ -27,8 +27,9 @@ public class TemplateUtils {
 
 	public static final Comparator<? super Threat> BY_NAME = Comparator
 			.comparing(e -> (e.toString() != null ? e.toString().toLowerCase(Locale.ROOT) : ""));
+	/** By risk, ascending; a threat whose risk was not calculated sorts as risk 0. */
 	public static final Comparator<? super Threat> BY_RISK = Comparator
-			.comparing(e -> (e.getRisk() != null ? e.getRisk() : 0d));
+			.comparing(e -> (e.isRiskCalculated() && e.getRisk() != null ? e.getRisk() : 0d));
 	public static final Comparator<Threat> BY_TYPE_NAME = Comparator
 			.comparing(e -> (e.getThreatTypeName() != null ? e.getThreatTypeName().toLowerCase(Locale.ROOT) : ""));
 
