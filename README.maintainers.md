@@ -21,6 +21,17 @@ Bump the committed version **right after cutting a release**, not before:
 3. Immediately after: `set-version` to the next line (e.g. `2026.3.0`), commit
    (`chore: bump to 2026.3.0`), and push.
 
+**Manual step: `Require-Bundle` version floors.** `tycho-versions:set-version`
+rewrites `Bundle-Version` (and the pom/feature/product versions) but does
+**not** update the `bundle-version="..."` lower bounds that our bundles place
+on each other in their `META-INF/MANIFEST.MF` `Require-Bundle` headers. Bump
+those floors to the new version by hand as part of the post-release bump
+(step 3). Find them with:
+
+```sh
+grep -rn 'be\.kuleuven.*bundle-version=' bundles/*/META-INF/MANIFEST.MF
+```
+
 A pre-release bump would be redundant (CI overrides the version from the tag).
 The post-release bump keeps `main` always pointing at "what we're building
 toward next", and the released version lives immutably in the tag. It also

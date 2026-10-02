@@ -3,6 +3,86 @@ package be.kuleuven.cs.distrinet.sparta.queries
 import "http://distrinet.cs.kuleuven.be/spartamodel"
 import "http://www.eclipse.org/emf/2002/Ecore"
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// SPARTA DFD threat-elicitation pattern catalog
+//
+// This file is the built-in catalog of VIATRA patterns used for threat elicitation. The generated
+// matcher classes of every public *Comm pattern are referenced BY NAME from Java
+// (Engine.getPatternMatchers in be.kuleuven.cs.distrinet.sparta.core), so do not rename patterns or
+// change their signatures without updating those call sites.
+//
+// == Pattern families ==
+//
+// <X>To<Y>Comm       (e.g. processToDataStoreComm)
+//   Matches a directed communication over a DataFlow `df` between an element of type X and an
+//   element of type Y. The `location` parameter is the DFD element the elicited threat is
+//   attached to.
+//
+// <X>Through<Y>Comm  (e.g. processThroughDataStoreComm)
+//   Same as the To variant, but additionally requires the flow to cross a trust boundary: some
+//   TrustBoundaryContainer (transitively) contains one endpoint but not the other
+//   (see flowContainerDiff below).
+//
+// flowComm / flowThroughComm
+//   Generic variants that attach the threat to the DataFlow itself (`location : DataFlow`)
+//   instead of to one of its endpoints.
+//
+// == Applicability strings ==
+//
+// Every pattern body guards itself with
+//     find threatApplicable(location, t, "<key>");
+// The <key> string is compared literally — by plain map-key equality, the `*` is part of the key,
+// NOT a wildcard — against the keys of the AbstractThreatType.patterns map (EStringToEBooleanMap)
+// of the threat type or of one of its CompositeThreatType ancestors. A threat catalog enables a
+// body by mapping that key to true, and vetoes it by mapping it to false (see the cascade below).
+//
+// Key naming conventions (Through keys behave identically, with the added boundary-crossing
+// requirement):
+//
+// - "XToY" (no asterisk): forward-direction body. The threat is attached to the flow's SENDER:
+//   `location` (of type X) sends `df` to `p2` (of type Y) — find communication(location, df, p2).
+//   The key equals the name of the pattern hosting the body (e.g. "ProcessToDataStore" in
+//   processToDataStoreComm).
+//
+// - "XToY*" (trailing asterisk): inverse-direction body. The flow still runs X -> Y, but the
+//   threat is attached to the flow's RECIPIENT (the Y endpoint). Such a body therefore lives in
+//   the pattern whose `location` type is Y: e.g. "DataStoreToProcess*" is the second body of
+//   processToDataStoreComm — `p2` (DataStore) sends `df` to `location` (Process).
+//
+// - "XTo*Y" (asterisk in the middle): used only by the generic flowComm / flowThroughComm
+//   patterns. The `*` marks the position of the threat: it is attached to the DataFlow itself,
+//   flowing from an X sender to a Y recipient. Direction matters (e.g. "ProcessTo*DataStore" and
+//   "DataStoreTo*Process" are distinct keys), and only pairs involving a Process are provided.
+//   The fully generic keys "DataFlow" (flowComm) and "DataFlowThrough" (flowThroughComm) match a
+//   flow regardless of its endpoint types.
+//
+// == Enable/disable cascade (threatApplicable) ==
+//
+// A body matches threat type `t` for key `k` if and only if ALL of the following hold:
+//  1. `t` itself is enabled (ThreatType.enabled == true);
+//  2. `t` or one of its ancestors maps `k` to true in its patterns map (threatPattern). The
+//     ancestor chain is `t` itself plus every CompositeThreatType that (transitively) contains it
+//     via subThreatTypes (threatTypeParent / threatTypeAncestor), so enablement is inherited;
+//  3. no ancestor in that chain is disabled (neg threatTypeParentDisabled);
+//  4. no enabled ancestor maps `k` to false (neg threatPatternDisabled) — an explicit false
+//     anywhere in the hierarchy vetoes a true inherited from elsewhere;
+//  5. no ThreatSpecification whose `threat` targets `t` or an ancestor
+//     - disables the threat outright (enabled == false, threatSpecDisable),
+//     - maps `k` to false in its own patterns map (threatSpecPatternDisable), or
+//     - disables the element type of `location` — "Process" / "DataStore" / "ExternalEntity" /
+//       "DataFlow" mapped to false in its types map (threatSpecTypeDisable).
+//     ThreatSpecifications are per-model overrides: a model can switch off catalog threats,
+//     individual pattern keys, or whole element types without editing the catalog itself.
+//
+// == Supporting helper patterns ==
+//
+// - communication(sender, flow, recipient): resolves the logical endpoints of a DataFlow through
+//   chains of SenderSpecification / RecipientSpecification indirections
+//   (sendSpecReachable / receiveSpecReachable).
+// - flowContainerDiff(sender, recipient): the two entities communicate (in either direction) and
+//   some TrustBoundaryContainer contains exactly one of them, i.e. the flow crosses that trust
+//   boundary. Containment is resolved transitively (contains / containment).
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 pattern flowComm(location : DataFlow, p : DataFlowEntity, p2 : DataFlowEntity,
 							t : ThreatType) {
@@ -407,7 +487,7 @@ or {
 //
 // The *Through* pattern variants (contrary to the *to* variants) require the flow to cross a trust
 // boundary.
-// In addition, the fow has to be between certain types of elements
+// In addition, the flow has to be between certain types of elements
 //
 ///////////////////// ////////////////////////////////////////////////////////// /////////////////////
 
@@ -420,7 +500,7 @@ private pattern threatApplicable(location : DFDElement, t : ThreatType, pattrn :
 	ThreatType(t);
 	ThreatType.enabled(t,true);
 	find threatPattern(t,pattrn);
-	// there is no parent disalbing the threat
+	// there is no parent disabling the threat
 	neg find threatTypeParentDisabled(t);
 	// there is no parent disabling the pattern
 	neg find threatPatternDisabled(t,pattrn);
