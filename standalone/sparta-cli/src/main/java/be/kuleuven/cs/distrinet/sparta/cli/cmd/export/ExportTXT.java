@@ -13,10 +13,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collection;
 
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.Option;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,26 +31,22 @@ import be.kuleuven.cs.distrinet.sparta.io.ThreatWriter;
 public class ExportTXT implements Exporter {
 
 	private static final Logger logger = LoggerFactory.getLogger(ExportTXT.class);
-	private final Option txtoption;
-	
-	public ExportTXT() { 
-		txtoption = new Option(null, "outtxt", true, "TXT export files");
+	private final Path targetDir;
+
+	/**
+	 * Create a new ExportTXT step.
+	 *
+	 * @param targetDir the directory to write one txt file per threat into.
+	 */
+	public ExportTXT(Path targetDir) {
+		this.targetDir = targetDir;
 	}
 
 	@Override
-	public Option[] getOptions() {
-		return new Option[] {txtoption};
-	}
-
-	@Override
-	public boolean process(CommandLine cmd, Collection<Threat> results) {
-		if (!cmd.hasOption(txtoption.getLongOpt())) {
-			return true;
-		}
+	public boolean export(Collection<Threat> results) {
 		logger.info("Exporting to txt files");
 
-		String dir = cmd.getOptionValue(txtoption.getLongOpt());
-		File f = new File(dir);
+		File f = targetDir.toFile();
 		if (!f.isDirectory() && !f.mkdirs()) {
 			logger.error("Could not create output directory: {}", f.getAbsolutePath());
 			return false;

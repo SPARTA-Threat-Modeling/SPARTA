@@ -13,8 +13,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.Option;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,7 +24,7 @@ import be.kuleuven.cs.distrinet.sparta.io.ThreatJsonWriter;
 /**
  * Exporter that submits the analysis results to a SPARTA server via the command line. The
  * HTTP mechanics are delegated to {@link SpartaServerClient} (shared with the CI runner);
- * this class only maps the CLI options to a submission and serializes the threat list.
+ * this class only carries the submission coordinates and serializes the threat list.
  *
  * @author Laurens
  *
@@ -35,32 +33,30 @@ public class SubmitToSpartaServer implements Exporter {
 
 	private static final Logger logger = LoggerFactory.getLogger(SubmitToSpartaServer.class);
 
-	private final Option token,server,commitId;
+	private final String server;
+	private final String token;
+	private final String commitId;
 
-	public SubmitToSpartaServer() {
-		token = new Option(null, "token", true, "Server submission token");
-		server = new Option(null, "server", true, "Server submission url");
-		commitId = new Option(null, "commitid", true, "Server submission commit id");
+	/**
+	 * Create a new server submission step.
+	 *
+	 * @param server   the server submission url.
+	 * @param token    the server submission token.
+	 * @param commitId the commit id to submit the results under.
+	 */
+	public SubmitToSpartaServer(String server, String token, String commitId) {
+		this.server = server;
+		this.token = token;
+		this.commitId = commitId;
 	}
 
 	@Override
-	public Option[] getOptions() {
-		return new Option[] { token,server,commitId };
-	}
-
-	@Override
-	public boolean process(CommandLine cmd, Collection<Threat> results) {
-		if (!cmd.hasOption(token.getLongOpt()) || !cmd.hasOption(server.getLongOpt()) || !cmd.hasOption(commitId.getLongOpt()) ) {
-			return true;
-		}
+	public boolean export(Collection<Threat> results) {
 		logger.info("Submitting to SPARTA server");
 
 		List<IInteractionThreat> threats = results.stream().map(IInteractionThreat.class::cast)
 				.collect(Collectors.toList());
-		return SpartaServerClient.submit(
-				cmd.getOptionValue(server.getLongOpt()),
-				cmd.getOptionValue(token.getLongOpt()),
-				cmd.getOptionValue(commitId.getLongOpt()),
+		return SpartaServerClient.submit(server, token, commitId,
 				writer -> new ThreatJsonWriter<IInteractionThreat>(writer, IInteractionThreat.class).write(threats));
 	}
 }

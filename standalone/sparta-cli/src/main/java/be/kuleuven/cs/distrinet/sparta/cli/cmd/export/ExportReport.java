@@ -11,11 +11,11 @@ package be.kuleuven.cs.distrinet.sparta.cli.cmd.export;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Locale;
 
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.Option;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,58 +34,52 @@ public class ExportReport implements Exporter {
 
 	private static final Logger logger = LoggerFactory.getLogger(ExportReport.class);
 
-	private final Option reportOption;
-	private final Option airdOption;
+	private final Path targetDir;
+	private final File aird;
+	private final File input;
 
-	public ExportReport() {
-		reportOption = new Option(null, "outreport", true, "LaTeX report output directory");
-		airdOption = new Option(null, "aird", true,
-				"Sirius .aird file whose diagram layout is reused in the report (optional; "
-						+ "auto-detected next to the model when omitted)");
+	/**
+	 * Create a new ExportReport step.
+	 *
+	 * @param targetDir the directory to write the LaTeX report into.
+	 * @param aird      the Sirius {@code .aird} whose diagram layout to reuse, or {@code null} to
+	 *                  use the first {@code .aird} next to the input model (if any).
+	 * @param input     the analysed input model.
+	 */
+	public ExportReport(Path targetDir, File aird, File input) {
+		this.targetDir = targetDir;
+		this.aird = aird;
+		this.input = input;
 	}
 
 	@Override
-	public Option[] getOptions() {
-		return new Option[] { reportOption, airdOption };
-	}
-
-	@Override
-	public boolean process(CommandLine cmd, Collection<Threat> results) {
-		if (!cmd.hasOption(reportOption.getLongOpt())) {
-			return true;
-		}
+	public boolean export(Collection<Threat> results) {
 		logger.info("Exporting LaTeX report");
 
-		String dir = cmd.getOptionValue(reportOption.getLongOpt());
-
 		ResourceSet resourceSet = resourceSetFrom(results);
-		if (resourceSet == null && cmd.hasOption("i")) {
-			// No threats to borrow the model from (e.g. a clean model); reload it.
-			resourceSet = StandaloneRuntime.loadModel(cmd.getOptionValue("i"));
-		}
 		if (resourceSet == null) {
-			logger.error("No model available to export the report from");
-			return false;
+			// No threats to borrow the model from (e.g. a clean model); reload it.
+			resourceSet = StandaloneRuntime.loadModel(input.getPath());
 		}
 
-		File aird = resolveAird(cmd);
-		if (aird != null) {
-			logger.info("Using diagram layout from {}", aird.getAbsolutePath());
+		File layout = resolveAird();
+		if (layout != null) {
+			logger.info("Using diagram layout from {}", layout.getAbsolutePath());
 		} else {
 			logger.info("No .aird found; report will be generated without the data flow diagram");
 		}
 
 		ReportWriter writer = new ReportWriter();
-		if (aird != null) {
-			writer.setAird(aird);
+		if (layout != null) {
+			writer.setAird(layout);
 		}
 		try {
-			writer.performExport(new File(dir), resourceSet, new ArrayList<>(results));
+			writer.performExport(targetDir.toFile(), resourceSet, new ArrayList<>(results));
 		} catch (IOException e) {
 			logger.error("Report export failed: {}", e.getMessage());
 			return false;
 		}
-		logger.info("Exported LaTeX report to {}", dir);
+		logger.info("Exported LaTeX report to {}", targetDir);
 		return true;
 	}
 
@@ -100,28 +94,23 @@ public class ExportReport implements Exporter {
 	}
 
 	/**
-	 * Resolve the {@code .aird}: the explicit {@code --aird} option if given, otherwise the first
+	 * Resolve the {@code .aird}: the explicit {@code --aird} file if given, otherwise the first
 	 * {@code .aird} sitting next to the input model. Returns {@code null} if none is usable.
 	 */
-	private File resolveAird(CommandLine cmd) {
-		if (cmd.hasOption(airdOption.getLongOpt())) {
-			File f = toFile(cmd.getOptionValue(airdOption.getLongOpt()));
-			return f.isFile() ? f : null;
+	private File resolveAird() {
+		if (aird != null) {
+			if (!aird.isFile()) {
+				logger.warn("--aird file {} does not exist; generating the report without the diagram",
+						aird.getAbsolutePath());
+				return null;
+			}
+			return aird;
 		}
-		if (!cmd.hasOption("i")) {
-			return null;
-		}
-		File model = toFile(cmd.getOptionValue("i"));
-		File dir = model.getParentFile();
+		File dir = input.getAbsoluteFile().getParentFile();
 		if (dir == null || !dir.isDirectory()) {
 			return null;
 		}
-		File[] airds = dir.listFiles((d, name) -> name.toLowerCase(java.util.Locale.ROOT).endsWith(".aird"));
+		File[] airds = dir.listFiles((d, name) -> name.toLowerCase(Locale.ROOT).endsWith(".aird"));
 		return airds != null && airds.length > 0 ? airds[0] : null;
-	}
-
-	private File toFile(String path) {
-		File f = new File(path);
-		return f.isAbsolute() ? f : new File(System.getProperty("user.dir"), path);
 	}
 }

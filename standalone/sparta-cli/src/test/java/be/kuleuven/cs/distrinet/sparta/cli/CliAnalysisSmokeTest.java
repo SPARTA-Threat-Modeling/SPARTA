@@ -9,6 +9,7 @@
  */
 package be.kuleuven.cs.distrinet.sparta.cli;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -96,6 +97,24 @@ public class CliAnalysisSmokeTest {
 		assertFalse("Elicited threats should have resolvable threat-type categories", threatTypes.isEmpty());
 		assertTrue("Expected a STRIDE 'Information Disclosure' category, got: " + threatTypes,
 				threatTypes.contains("Information Disclosure"));
+	}
+
+	/**
+	 * The picocli command end to end: analyse Contoso and run the CSV and LaTeX report exports
+	 * (the report export reuses the analysed model and has no .aird next to it here).
+	 */
+	@Test(timeout = 600_000)
+	public void cliRunsTheAnalysisAndTheRequestedExports() throws Exception {
+		File modelDir = copyModelsToTempDir();
+		File csv = new File(tempFolder.getRoot(), "threats.csv");
+		File reportDir = new File(tempFolder.getRoot(), "report");
+
+		int exitCode = SpartaCli.createCommandLine().execute("-i", new File(modelDir, "Contoso.sparta").getPath(),
+				"--outcsv", csv.getPath(), "--outreport", reportDir.getPath());
+
+		assertEquals("the analysis and both exports should succeed", 0, exitCode);
+		assertTrue("the CSV export should be written", csv.isFile() && csv.length() > 0);
+		assertTrue("the LaTeX report should be written", new File(reportDir, "report.tex").isFile());
 	}
 
 	/** Copy the model and its cross-referenced catalogs into a temp dir so relative hrefs resolve. */

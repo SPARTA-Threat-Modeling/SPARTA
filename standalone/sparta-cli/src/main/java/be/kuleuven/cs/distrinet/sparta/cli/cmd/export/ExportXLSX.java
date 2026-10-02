@@ -9,12 +9,11 @@
  */
 package be.kuleuven.cs.distrinet.sparta.cli.cmd.export;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collection;
 
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.Option;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,34 +23,29 @@ import be.kuleuven.cs.distrinet.sparta.io.ThreatXlsxOutputStream;
 
 /**
  * Export for xlsx export via the command line.
- * 
+ *
  * @author Laurens
  *
  */
 public class ExportXLSX implements Exporter {
 
 	private static final Logger logger = LoggerFactory.getLogger(ExportXLSX.class);
-	private final Option xlsxoption;
-	
-	public ExportXLSX() { 
-		xlsxoption = new Option(null, "outxlsx", true, "XLSX export file");
+	private final Path target;
+
+	/**
+	 * Create a new ExportXLSX step.
+	 *
+	 * @param target the XLSX file to write.
+	 */
+	public ExportXLSX(Path target) {
+		this.target = target;
 	}
 
 	@Override
-	public Option[] getOptions() {
-		return new Option[] {xlsxoption};
-	}
-
-	@Override
-	public boolean process(CommandLine cmd, Collection<Threat> results) {
-		if (!cmd.hasOption(xlsxoption.getLongOpt())) {
-			return true;
-		}
+	public boolean export(Collection<Threat> results) {
 		logger.info("Exporting to xlsx files");
 
-		String xlsx = cmd.getOptionValue(xlsxoption.getLongOpt());
-
-		try (ThreatXlsxOutputStream tw = new ThreatXlsxOutputStream(new FileOutputStream(xlsx),
+		try (ThreatXlsxOutputStream tw = new ThreatXlsxOutputStream(Files.newOutputStream(target),
 				ThreatExportColumns.withMetadata())) {
 			tw.write(results.toArray(new Threat[] {}));
 

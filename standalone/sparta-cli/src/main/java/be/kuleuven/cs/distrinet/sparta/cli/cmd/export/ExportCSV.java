@@ -12,11 +12,9 @@ package be.kuleuven.cs.distrinet.sparta.cli.cmd.export;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.Collection;
 
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.Option;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,32 +30,23 @@ import be.kuleuven.cs.distrinet.sparta.io.ThreatExportColumns;
 public class ExportCSV implements Exporter {
 
 	private static final Logger logger = LoggerFactory.getLogger(ExportCSV.class);
-	private final Option csvoption;
-	
-	
+	private final Path target;
+
 	/**
-	 * Create a new ExportCSV class.
+	 * Create a new ExportCSV step.
+	 *
+	 * @param target the CSV file to write.
 	 */
-	public ExportCSV() { 
-		csvoption = new Option(null, "outcsv", true, "CSV Export file");
+	public ExportCSV(Path target) {
+		this.target = target;
 	}
 
 	@Override
-	public Option[] getOptions() {
-		return new Option[] {csvoption};
-	}
-
-	@Override
-	public boolean process(CommandLine cmd, Collection<Threat> results) {
-		if (!cmd.hasOption(csvoption.getLongOpt())) {
-			return true;
-		}
+	public boolean export(Collection<Threat> results) {
 		logger.info("Exporting to csv");
 
-		String csv = cmd.getOptionValue(csvoption.getLongOpt());
-
 		try (ThreatCSVWriter tw = new ThreatCSVWriter(
-				Files.newBufferedWriter(Paths.get(csv), StandardCharsets.UTF_8), ThreatExportColumns.withMetadata())) {
+				Files.newBufferedWriter(target, StandardCharsets.UTF_8), ThreatExportColumns.withMetadata())) {
 			tw.writeHeader();
 			tw.write(results.toArray(new Threat[] {}));
 

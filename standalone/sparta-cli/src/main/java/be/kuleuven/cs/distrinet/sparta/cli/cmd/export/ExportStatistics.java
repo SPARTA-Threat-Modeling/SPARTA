@@ -10,14 +10,12 @@
 package be.kuleuven.cs.distrinet.sparta.cli.cmd.export;
 
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collection;
 
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.Option;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,29 +33,24 @@ import be.kuleuven.cs.distrinet.sparta.spartamodel.ThreatType;
 public class ExportStatistics implements Exporter {
 
 	private static final Logger logger = LoggerFactory.getLogger(ExportStatistics.class);
-	private final Option txtoption;
+	private final Path target;
 
-	public ExportStatistics() {
-		txtoption = new Option(null, "outstatistics", true, "Output txt file with threat statistics");
+	/**
+	 * Create a new ExportStatistics step.
+	 *
+	 * @param target the txt file to write the threat statistics to.
+	 */
+	public ExportStatistics(Path target) {
+		this.target = target;
 	}
 
 	@Override
-	public Option[] getOptions() {
-		return new Option[] { txtoption };
-	}
-
-	@Override
-	public boolean process(CommandLine cmd, Collection<Threat> results) {
-		if (!cmd.hasOption(txtoption.getLongOpt())) {
-			return true;
-		}
+	public boolean export(Collection<Threat> results) {
 		logger.info("Exporting threat statistics");
-
-		String trgt = cmd.getOptionValue(txtoption.getLongOpt());
 
 		ThreatAggregationAnalysis taa = new ThreatAggregationAnalysis(results);
 
-		try (BufferedWriter w = Files.newBufferedWriter(new File(trgt).toPath(), StandardCharsets.UTF_8)) {
+		try (BufferedWriter w = Files.newBufferedWriter(target, StandardCharsets.UTF_8)) {
 			w.write("SPARTA Threat Statistics Report");
 			w.newLine();
 			w.write("===============================");

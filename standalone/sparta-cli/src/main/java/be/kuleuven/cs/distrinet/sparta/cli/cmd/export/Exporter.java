@@ -11,30 +11,23 @@ package be.kuleuven.cs.distrinet.sparta.cli.cmd.export;
 
 import java.util.Collection;
 
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.Option;
-
 import be.kuleuven.cs.distrinet.sparta.core.model.Threat;
 
 /**
- * Interface for providing export functionality to the sparta cli.
- * 
+ * A single export step of the sparta cli. Implementations are constructed with their
+ * (already parsed and typed) target and only run when the corresponding option was
+ * actually provided — the option-to-exporter wiring lives in the command class.
+ *
  * @author Laurens
  *
  */
 public interface Exporter {
 
 	/**
-	 * Get the options that have to be processed for determining if this command should run.
-	 * @return the array of options this command relies upon.
-	 */
-	public Option[] getOptions();
-	
-	/**
-	 * Process the parsed options and run the export if needed on the provided collection of threats.
-	 * @param cmd the processed command line options.
+	 * Run the export on the provided collection of threats.
+	 *
 	 * @param results the collection of threats to export
-	 * @return {@code true} if the export succeeded or was not requested; {@code false} if it failed.
+	 * @return {@code true} if the export succeeded; {@code false} if it failed.
 	 */
-	public boolean process(CommandLine cmd, Collection<Threat> results);
+	boolean export(Collection<Threat> results);
 }
