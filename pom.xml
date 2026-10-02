@@ -22,6 +22,12 @@
 		</license>
 	</licenses>
 
+	<scm>
+		<connection>scm:git:https://github.com/SPARTA-Threat-Modeling/SPARTA.git</connection>
+		<developerConnection>scm:git:git@github.com:SPARTA-Threat-Modeling/SPARTA.git</developerConnection>
+		<url>https://github.com/SPARTA-Threat-Modeling/SPARTA</url>
+	</scm>
+
 	<modules>
 		<module>bundles</module>
 		<module>features</module>
@@ -34,16 +40,19 @@
 		<sparta.version>${project.version}</sparta.version>
 		<tycho.version>4.0.13</tycho.version>
 		<tycho-extras.version>4.0.13</tycho-extras.version>
-		<maven-compiler.version>3.13.0</maven-compiler.version>
 		<viatra.version>2.9.1</viatra.version>
 		<jacoco.version>0.8.15</jacoco.version>
 		<javadoc.skip>true</javadoc.skip>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<eclipse-release>2025-06</eclipse-release>
 		<eclipse-repo.url>https://download.eclipse.org/releases/${eclipse-release}</eclipse-repo.url>
-		<slf4j.version>1.7.30</slf4j.version>
-		<maven.compiler.target>21</maven.compiler.target>
-		<maven.compiler.source>21</maven.compiler.source>
+		<!-- JustJ JRE embedded in the product. Floats on the latest 21 release so builds
+		     pick up the quarterly security updates; to reproduce an older build, pass the
+		     release it used, e.g. -Djustj.release=21.0.12 (listed in the build log). -->
+		<justj.release>latest</justj.release>
+		<justj-repo.url>https://download.eclipse.org/justj/jres/21/updates/release/${justj.release}</justj-repo.url>
+		<!-- Reproducible builds: fixed timestamp for archive entries. Bump per release. -->
+		<project.build.outputTimestamp>2026-01-01T00:00:00Z</project.build.outputTimestamp>
 	</properties>
 
 
@@ -93,22 +102,6 @@
 				<version>${tycho.version}</version>
 				<extensions>true</extensions>
 			</plugin>
-			<!--Enable the replacement of the SNAPSHOT version in the final product
-				configuration -->
-			<plugin>
-				<groupId>org.eclipse.tycho</groupId>
-				<artifactId>tycho-packaging-plugin</artifactId>
-				<executions>
-					<execution>
-						<phase>package</phase>
-						<id>package-feature</id>
-						<configuration>
-							<finalName>${project.artifactId}_${unqualifiedVersion}.${buildQualifier}
-							</finalName>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
 			<!-- Enforce the EPL-2.0 license header on all Java sources. The
 				pluginManagement configuration uses aggregate=true with includes
 				spanning **/src/**, so a single execution at the root covers the
@@ -156,6 +149,10 @@
 		</plugins>
 		<pluginManagement>
 			<plugins>
+				<!-- Qualifier support, kept for intermediate (x.y.z.qualifier) versions.
+					Released versions carry no .qualifier, so this is inert for them; once
+					a version does, Tycho replaces the qualifier with the jgit timestamp of
+					the last commit touching the module (pom.xml changes ignored). -->
 				<plugin>
 					<groupId>org.eclipse.tycho</groupId>
 					<artifactId>tycho-packaging-plugin</artifactId>
@@ -177,8 +174,8 @@
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-assembly-plugin</artifactId>
-					<version>3.3.0</version>
+					<artifactId>maven-deploy-plugin</artifactId>
+					<version>3.1.4</version>
 				</plugin>
 				<plugin>
 					<groupId>org.eclipse.tycho.extras</groupId>
@@ -388,6 +385,14 @@
 	</build>
 
 
+	<!--
+	  NOTE: these <repositories> (the p2 entries below) ARE the target platform of the
+	  Tycho build. The PDE target definition in
+	  releng/be.kuleuven.cs.distrinet.sparta.product/target-platform.target is used by
+	  the Eclipse IDE only and is NOT consumed by any pom. The two are maintained by
+	  hand and MUST be kept in sync manually when bumping the Eclipse release, Orbit,
+	  VIATRA, or JustJ coordinates here.
+	-->
 	<repositories>
 		<repository>
 			<id>eclipse-release</id>
@@ -411,7 +416,7 @@
 		<repository>
 			<id>jre-updates</id>
 			<layout>p2</layout>
-			<url>https://download.eclipse.org/justj/jres/21/updates/release/latest</url>
+			<url>${justj-repo.url}</url>
 		</repository>
 		<!-- Public, anonymously-readable endpoint for SPARTA's own artifacts. -->
 		<repository>

@@ -28,6 +28,9 @@
 	  mismatch, not just a CVE.
 	-->
 	<properties>
+		<!-- The standalone (plain-Java) half compiles with javac; release replaces the old
+		     source/target pair and also validates API usage against the JDK 21 API. -->
+		<maven.compiler.release>21</maven.compiler.release>
 		<!--
 		  EMF pinned explicitly instead of via xtext-dev-bom 2.20.0, which forced EMF to
 		  ~2.12 and constrained the whole graph to a 2020 set that conflicts with VIATRA
@@ -58,6 +61,9 @@
 		     routes POI's log4j2 logging to slf4j (bound by slf4j-simple), so the plain-Java
 		     runtime no longer prints "Log4j API could not find a logging provider". -->
 		<log4j.version>2.24.3</log4j.version>
+		<!-- slf4j 2.x: matches the log4j-to-slf4j 2.24 bridge (which targets the slf4j 2.x
+		     provider SPI); slf4j-simple 2.x is a drop-in for the basic API usage here. -->
+		<slf4j.version>2.0.18</slf4j.version>
 		<junit.version>4.13.2</junit.version>
 	</properties>
 
@@ -155,6 +161,16 @@
 				<version>${log4j.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-api</artifactId>
+				<version>${slf4j.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-simple</artifactId>
+				<version>${slf4j.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>junit</groupId>
 				<artifactId>junit</artifactId>
 				<version>${junit.version}</version>
@@ -183,9 +199,56 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-enforcer-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>enforce-toolchain</id>
+						<goals>
+							<goal>enforce</goal>
+						</goals>
+						<configuration>
+							<rules>
+								<!-- Maven 3.6.1 has a known Tycho-breaking resolver bug; require
+								     the versions the build is actually tested with. -->
+								<requireMavenVersion>
+									<version>[3.8,)</version>
+								</requireMavenVersion>
+								<!-- The standalone half targets exactly JDK 21 (matching the
+								     JustJ 21 JRE embedded in the Eclipse product). -->
+								<requireJavaVersion>
+									<version>[21,22)</version>
+								</requireJavaVersion>
+								<!-- dependencyConvergence deliberately NOT enabled: the
+								     org.eclipse.* graph pulled transitively by
+								     viatra-query-language 2.9.1 (emf.codegen.ecore ->
+								     jdt.launching -> platform bundles) diverges internally,
+								     e.g. org.eclipse.core.runtime and org.eclipse.debug.core
+								     3.23.200 vs 3.23.300. -->
+							</rules>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 		<pluginManagement>
 			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>3.14.1</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-surefire-plugin</artifactId>
+					<version>3.5.6</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-enforcer-plugin</artifactId>
+					<version>3.6.3</version>
+				</plugin>
 				<!--
 				  Shared fat-jar packaging for the CLI/CI apps. Both shade identically:
 				  the Manifest main class from each module's ${cli.main.class}, a
@@ -197,7 +260,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-shade-plugin</artifactId>
-					<version>3.2.4</version>
+					<version>3.6.2</version>
 					<executions>
 						<execution>
 							<goals>
@@ -205,6 +268,8 @@
 							</goals>
 							<configuration>
 								<shadedArtifactAttached>true</shadedArtifactAttached>
+								<!-- Keep the generated dependency-reduced pom out of the source tree. -->
+								<dependencyReducedPomLocation>${project.build.directory}/dependency-reduced-pom.xml</dependencyReducedPomLocation>
 								<transformers>
 									<transformer
 										implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
@@ -236,28 +301,6 @@
 			<id>eclipse</id>
 			<url>https://repo.eclipse.org/content/groups/releases/</url>
 		</repository>
-		<repository>
-			<id>mvn central</id>
-			<url>https://repo1.maven.org/maven2/</url>
-		</repository>
 	</repositories>
-
-  <profiles>
-  	<profile>
-  		<id>sign</id>
-  		<build>
-  		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jarsigner-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<groupId>org.eclipse.cbi.maven.plugins</groupId>
-				<artifactId>eclipse-jarsigner-plugin</artifactId>
-			</plugin>
-		</plugins>
-  		</build>
-  	</profile>
-  </profiles>
 
 </project>

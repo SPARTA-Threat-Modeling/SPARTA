@@ -17,24 +17,6 @@
 		<module>be.kuleuven.cs.distrinet.sparta.threatanalysis.feature</module>
 	</modules>
 
-  <profiles>
-  	<profile>
-  		<id>sign</id>
-  		<build>
-  		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jarsigner-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<groupId>org.eclipse.cbi.maven.plugins</groupId>
-				<artifactId>eclipse-jarsigner-plugin</artifactId>
-			</plugin>
-		</plugins>
-  		</build>
-  	</profile>
-  </profiles>
-
 	<build>
 		<pluginManagement>
 			<plugins>

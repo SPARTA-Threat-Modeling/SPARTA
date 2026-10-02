@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde version="3.8"?>
+<!--
+  IMPORTANT: this PDE target definition is used by the Eclipse IDE ONLY.
+  It is NOT referenced by any pom: the Tycho/Maven build resolves its target
+  platform from the p2 <repositories> declared in the root pom.xml instead.
+  The two definitions are maintained by hand and MUST be kept in sync manually
+  (Eclipse release, Orbit, VIATRA, Sirius, JustJ coordinates) — updating one
+  without the other means the IDE and the CI build compile against different
+  platforms.
+-->
 <target name="Running Platform">
 	<locations>
 		<!-- <location path="${eclipse_home}" type="Profile"/> -->
