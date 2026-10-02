@@ -26,10 +26,7 @@ import org.eclipse.core.databinding.observable.list.AbstractObservableList;
 import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.observable.list.MultiList;
 import org.eclipse.core.databinding.observable.list.WritableList;
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.common.notify.Notifier;
 import org.eclipse.emf.ecore.EObject;
@@ -75,8 +72,7 @@ public class ThreatAnalysisService implements IPropertyListener {
 
 	private Set<AnalysisListener> listeners = new HashSet<AnalysisListener>();
 	private Set<PatternParseListener> plisteners = new HashSet<PatternParseListener>();
-	
-	private IProject project;
+
 	private Resource resource;
 	
 	private Engine engine;
@@ -120,7 +116,6 @@ public class ThreatAnalysisService implements IPropertyListener {
 		detachCurrentEditor();
 		resource = null;
 		parseResults = null;
-		project = null;
 		if (engine == null) {
 			return;
 		}
@@ -180,7 +175,7 @@ public class ThreatAnalysisService implements IPropertyListener {
 	 */
 	public IStatus load(Resource resource) {
 		// Tear down any previous analysis first: clear() also resets the
-		// resource/project fields, so they must be assigned afterwards.
+		// resource field, so it must be assigned afterwards.
 		if (engine != null) {
 			clear();
 		}
@@ -189,7 +184,7 @@ public class ThreatAnalysisService implements IPropertyListener {
 			return error("There is no model to analyse.", null);
 		}
 		// toPlatformString returns null for non-platform URIs (e.g. file: URIs),
-		// and new Path(null) fails with an assertion error.
+		// i.e. models that are not part of the workspace.
 		String platformString = resource.getURI().toPlatformString(true);
 		if (platformString == null) {
 			return error(resource.getURI() + " is not a resource in the workspace. "
@@ -197,7 +192,6 @@ public class ThreatAnalysisService implements IPropertyListener {
 		}
 
 		try {
-			project = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(platformString)).getProject();
 			this.resource = resource;
 
 			Map<EObject, Collection<Setting>> map = EcoreUtil.ExternalCrossReferencer.find(resource);
@@ -225,7 +219,6 @@ public class ThreatAnalysisService implements IPropertyListener {
 
 			parseResults = new PatternProcessor(engine).parsePatterns(resource.getResourceSet());
 			for (Entry<ThreatPatternMatchMetadata,PatternParsingResults> e : parseResults.entrySet()) {
-				e.getKey();
 				StreamSupport.stream(e.getValue().getQuerySpecifications().spliterator(),false)
 					.map(qs -> getVQMatchers(qs, engine))
 					.filter(vqm -> vqm != null)
@@ -236,7 +229,7 @@ public class ThreatAnalysisService implements IPropertyListener {
 						sourceLists.add(list);
 						targetLists.add(obsList);
 						observableLists.add(obsList);
-					});;
+					});
 			}
 			
 			ml = new MultiList<>(observableLists);

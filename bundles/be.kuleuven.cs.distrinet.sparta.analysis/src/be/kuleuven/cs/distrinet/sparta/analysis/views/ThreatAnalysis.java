@@ -22,20 +22,16 @@ import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.property.Properties;
 import org.eclipse.core.databinding.property.value.IValueProperty;
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.ITableLabelProvider;
-import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.StructuredViewer;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Combo;
@@ -45,9 +41,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.ui.IActionBars;
-import org.eclipse.ui.ISharedImages;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
 import be.kuleuven.cs.distrinet.sparta.analysis.model.ObservableThreat;
@@ -70,22 +63,6 @@ public class ThreatAnalysis extends ViewPart implements AnalysisListener {
 	public static final String ID = "be.kuleuven.cs.distrinet.sparta.analysis.views.ThreatAnalysis";
 
 	private TableViewer viewer;
-
-
-	static class ViewLabelProvider extends LabelProvider implements ITableLabelProvider {
-		@Override
-		public String getColumnText(Object obj, int index) {
-			return getText(obj);
-		}
-		@Override
-		public Image getColumnImage(Object obj, int index) {
-			return getImage(obj);
-		}
-		@Override
-		public Image getImage(Object obj) {
-			return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_ELEMENT);
-		}
-	}
 
 	private Composite parent;
 	private Label countLabel;
@@ -171,8 +148,6 @@ public class ThreatAnalysis extends ViewPart implements AnalysisListener {
 
 		makeActions();
 		hookDoubleClickAction();
-		contributeToActionBars();
-
 		// The service only notifies on the next load, so a view opened after an analysis
 		// already ran would stay empty; bind to the existing results now that the widgets exist.
 		if (ThreatAnalysisService.getInstance().hasResults()) {
@@ -219,16 +194,10 @@ public class ThreatAnalysis extends ViewPart implements AnalysisListener {
 		createCol(viewer,"Name", 100, ObservableThreat::getThreat);
 		createCol(viewer,"Flow",100, ObservableThreat::getFlow);
 		createCol(viewer,"Risk",60,SWT.RIGHT, ObservableThreat::getRiskAsDouble);
-//		createCol(viewer,"risk_LB", 80,SWT.RIGHT, ObservableThreat::getRisk_lowerAsDouble);
-//		createCol(viewer,"risk_UB", 80,SWT.RIGHT, ObservableThreat::getRisk_upperAsDouble);
 		createCol(viewer,"SLE (Single Loss Event)", 80,SWT.RIGHT, ObservableThreat::getSleAsDouble);
 		createCol(viewer,"Vulnerability",60, ObservableThreat::getVulnerabilityAsDouble);
-//		createCol(viewer,"LB", 60, ObservableThreat::getVulnerability_lowerAsDouble);
-//		createCol(viewer,"UB", 60,ObservableThreat::getVulnerability_upperAsDouble);
 		createCol(viewer,"LEF (Loss Event Frequency)", 40,ObservableThreat::getLefAsDouble);
 		createCol(viewer,"Description", 500, ObservableThreat::getDescription);
-//		createCol(viewer,"mitigationstatus",80,Threat::getMitigationStatus);
-//		createCol(viewer,"message",100,Threat::toString);
 
 	}
 
@@ -260,16 +229,6 @@ public class ThreatAnalysis extends ViewPart implements AnalysisListener {
 
 	}
 
-	private void contributeToActionBars() {
-		IActionBars bars = getViewSite().getActionBars();
-		fillLocalToolBar(bars.getToolBarManager());
-	}
-
-	private void fillLocalToolBar(IToolBarManager manager) {
-
-	}
-
-
 	private void load() {
 			ml = ThreatAnalysisService.getInstance().observableThreatList();
 
@@ -282,16 +241,10 @@ public class ThreatAnalysis extends ViewPart implements AnalysisListener {
 							PojoProperties.value(ObservableThreat.class,"threat"),
 							PojoProperties.value(ObservableThreat.class,"flow"),
 							PojoProperties.value(ObservableThreat.class, "riskString"),
-//							PojoProperties.value(ObservableThreat.class, "risk_lowerString"),
-//							PojoProperties.value(ObservableThreat.class, "risk_upperString"),
 							PojoProperties.value(ObservableThreat.class, "sleString"),
 							PojoProperties.value(ObservableThreat.class, "vulnerabilityString"),
-//							PojoProperties.value(ObservableThreat.class, "vulnerability_lowerString"),
-//							PojoProperties.value(ObservableThreat.class, "vulnerability_upperString"),
 							PojoProperties.value(ObservableThreat.class, "lefString"),
 							PojoProperties.value(ObservableThreat.class, "description"),
-//							PojoProperties.value(Threat.class,"mitigationStatus"),
-//							PojoProperties.value(Threat.class,"message"),
 							}
 					);
 
@@ -299,7 +252,6 @@ public class ThreatAnalysis extends ViewPart implements AnalysisListener {
 			processRiskChange(ml);
 
 		viewer.refresh();
-		countLabel.setText("" + viewer.getTable().getItemCount());
 	}
 
 	private void processRiskChange(AbstractObservableList<? extends ObservableThreat> ml) {
@@ -307,9 +259,8 @@ public class ThreatAnalysis extends ViewPart implements AnalysisListener {
 		double max = ml.stream().mapToDouble(t -> t.getPotentialRiskAsDouble()).sum();
 		double residual = ml.stream().mapToDouble(t -> t.getRiskAsDouble()).sum();
 		double reduction = max - residual;
-		// Scale to a fixed 0-100 range: casting the raw fractional risk sum to int
-		// truncates large totals and setMaximum(0) (no potential risk) is invalid.
-		progressBar.setMaximum(100);
+		// Scale to the fixed 0-100 range set up in createPartControl: casting the raw
+		// fractional risk sum to int truncates large totals.
 		int reductionPercentage = (max > 0) ? (int) Math.round((reduction / max) * 100) : 0;
 		progressBar.setSelection(reductionPercentage);
 		NumberFormat nf = ObservableThreat.newCurrencyFormat();
@@ -358,9 +309,6 @@ public class ThreatAnalysis extends ViewPart implements AnalysisListener {
 				doubleClickAction.run();
 			}
 		});
-	}
-	private void showMessage(String message) {
-		showMessage("ThreatAnalysis", message);
 	}
 	private void showMessage(String title, String message) {
 		MessageDialog.openInformation(

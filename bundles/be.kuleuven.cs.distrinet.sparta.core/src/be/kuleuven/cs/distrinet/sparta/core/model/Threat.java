@@ -157,11 +157,6 @@ public class Threat implements IThreat, IInteractionThreat {
 		return riskModel.getMitigations();
 	}
 
-	protected String getElementName(String propertyName) {
-		Object o = patternMatch.get(propertyName);
-		return "" + ((o instanceof DFDElement) ? ((DFDElement) o).getName() : "" + o);
-	}
-
 	protected ModelElement getModelElement(String propertyName) {
 		Object o = patternMatch.get(propertyName);
 		if (o instanceof ModelElement) {

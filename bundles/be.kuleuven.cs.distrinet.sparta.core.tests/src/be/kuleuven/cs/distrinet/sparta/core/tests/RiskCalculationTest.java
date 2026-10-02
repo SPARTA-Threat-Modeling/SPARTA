@@ -21,6 +21,7 @@ import java.util.List;
 import org.junit.Test;
 
 import be.kuleuven.cs.distrinet.sparta.core.analysis.RiskCalculation;
+import be.kuleuven.cs.distrinet.sparta.core.analysis.StatsUtil;
 import be.kuleuven.cs.distrinet.sparta.core.model.Attacker;
 import be.kuleuven.cs.distrinet.sparta.core.model.CustomEstimate;
 import be.kuleuven.cs.distrinet.sparta.spartamodel.AttackerProfile;
@@ -65,6 +66,26 @@ public class RiskCalculationTest {
 		m[0][0][0] = new double[] { 5, 5, 5 };
 		double[][][] applicability = new double[1][1][1]; // all zero
 		assertArrayEquals(new double[] { 0, 0, 0 }, RiskCalculation.aggregateAvgMatrix(m, applicability), 1e-9);
+	}
+
+	/**
+	 * calculateLefArray is the sample-level variant of the LEF that SpartaRiskModel computes on
+	 * intervals: reducing its three arrays with min/average/max must give the same interval.
+	 */
+	@Test
+	public void lefArrayReducesToTheIntervalTheRiskModelUses() {
+		double[] tef = { 1, 2, 3, 6 };
+		double[] vulnerability = { 0.25, 0.5, 1.0 };
+
+		double[][] lef = RiskCalculation.calculateLefArray(tef, vulnerability, tef.length);
+
+		assertArrayEquals(new double[] { 0.25, 0.5, 0.75, 1.5 }, lef[0], 1e-9);
+		assertArrayEquals(new double[] { 0.5, 1, 1.5, 3 }, lef[1], 1e-9);
+		assertArrayEquals(tef, lef[2], 1e-9);
+		double[] interval = StatsUtil.ebeMult(RiskCalculation.calculateBoundaries(tef), vulnerability);
+		assertEquals(interval[0], Arrays.stream(lef[0]).min().getAsDouble(), 1e-9);
+		assertEquals(interval[1], Arrays.stream(lef[1]).average().getAsDouble(), 1e-9);
+		assertEquals(interval[2], Arrays.stream(lef[2]).max().getAsDouble(), 1e-9);
 	}
 
 	@Test

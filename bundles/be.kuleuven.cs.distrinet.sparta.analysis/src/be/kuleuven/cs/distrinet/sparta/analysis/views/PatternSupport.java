@@ -17,9 +17,7 @@ import java.util.function.Function;
 import org.eclipse.core.databinding.beans.typed.PojoProperties;
 import org.eclipse.core.databinding.observable.ChangeEvent;
 import org.eclipse.core.databinding.observable.IChangeListener;
-import org.eclipse.core.databinding.observable.list.IListChangeListener;
 import org.eclipse.core.databinding.observable.list.IObservableList;
-import org.eclipse.core.databinding.observable.list.ListChangeEvent;
 import org.eclipse.core.databinding.observable.list.WritableList;
 import org.eclipse.core.databinding.observable.map.IObservableMap;
 import org.eclipse.core.databinding.property.Properties;
@@ -32,8 +30,6 @@ import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IColorProvider;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.ITableLabelProvider;
-import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.LabelProviderChangedEvent;
 import org.eclipse.jface.viewers.StructuredViewer;
 import org.eclipse.jface.viewers.TableViewer;
@@ -41,14 +37,11 @@ import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.ui.ISharedImages;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.viatra.query.patternlanguage.emf.util.PatternParsingResults;
 import org.eclipse.viatra.query.patternlanguage.emf.vql.Pattern;
@@ -70,22 +63,6 @@ public class PatternSupport extends ViewPart implements PatternParseListener {
 
 	private TableViewer viewer;
 
-
-	static class ViewLabelProvider extends LabelProvider implements ITableLabelProvider {
-		@Override
-		public String getColumnText(Object obj, int index) {
-			return getText(obj);
-		}
-		@Override
-		public Image getColumnImage(Object obj, int index) {
-			return getImage(obj);
-		}
-		@Override
-		public Image getImage(Object obj) {
-			return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_ELEMENT);
-		}
-	}
-	
 	private Composite parent;
 	
 	@Override
@@ -317,7 +294,7 @@ public class PatternSupport extends ViewPart implements PatternParseListener {
 
 	}
 	
-	private class IssueLabelProvider extends ObservableMapLabelProvider implements IColorProvider, IListChangeListener<PatternDiagnostics>, IChangeListener {
+	private class IssueLabelProvider extends ObservableMapLabelProvider implements IColorProvider, IChangeListener {
 
 		private final Color red = new Color(Display.getDefault(), 255, 0, 0, 255);
 		private final Color green = new Color(Display.getDefault(), 0, 255, 0, 255);
@@ -338,19 +315,13 @@ public class PatternSupport extends ViewPart implements PatternParseListener {
 		public IssueLabelProvider(IObservableMap[] attributeMap, IObservableList<? extends PatternDiagnostics> input) {
 			this(attributeMap);
 			this.input = input;
-			input.addListChangeListener(this);
 			input.addChangeListener(this);
 		}
 
 		@Override
 		public void handleChange(ChangeEvent event) {
 			fireLabelProviderChanged(new LabelProviderChangedEvent(this));
-			
-		}
 
-		@Override
-		public void handleListChange(ListChangeEvent<? extends PatternDiagnostics> event) {
-						
 		}
 
 		@Override
@@ -373,7 +344,6 @@ public class PatternSupport extends ViewPart implements PatternParseListener {
 			// ColouredObservableMapLabelProvider.dispose(); otherwise the
 			// discarded WritableList keeps a reference to this label provider.
 			if (input != null && !input.isDisposed()) {
-				input.removeListChangeListener(this);
 				input.removeChangeListener(this);
 			}
 			input = null;

@@ -51,7 +51,8 @@ public class ThreatAggregationAnalysis {
 	}
 
 	/**
-	 * Analyze a collection of threats and print out the results.
+	 * Compute the aggregate risk totals of a collection of threats. Despite the original
+	 * intent, nothing is printed; kept for compatibility with existing callers.
 	 * 
 	 * @deprecated Instead of this generic analysis method, users are encouraged to
 	 *             create a new {@link ThreatAggregationAnalysis} objects and

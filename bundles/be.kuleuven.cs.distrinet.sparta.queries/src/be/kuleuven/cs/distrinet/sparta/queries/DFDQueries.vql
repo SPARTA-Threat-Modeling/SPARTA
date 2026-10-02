@@ -410,26 +410,6 @@ or {
 // In addition, the fow has to be between certain types of elements
 //
 ///////////////////// ////////////////////////////////////////////////////////// /////////////////////
-//pattern flowThroughElementComm(location : DataFlow, p : DataFlowEntity, p2 : DataFlowEntity,
-//							t : ThreatType) {
-//	Process(p);
-//	Process(p2);
-//	find threatApplicable(location,t,"ProcessTo*Process");
-//	find communication(p,location,p2);
-//	find flowContainerDiff(p,p2);
-//} or {
-//	Process(p);
-//	DataStore(p2);
-//	find threatApplicable(location,t,"ProcessTo*DataStore");
-//	find communication(p,location,p2);
-//	find flowContainerDiff(p,p2);
-//} or {
-//	ExternalEntity(p);
-//	Process(p2);
-//	find threatApplicable(location,t,"ExternalEntityTo*Process");
-//	find communication(p,location,p2);
-//	find flowContainerDiff(p,p2);
-//}
 
 
 

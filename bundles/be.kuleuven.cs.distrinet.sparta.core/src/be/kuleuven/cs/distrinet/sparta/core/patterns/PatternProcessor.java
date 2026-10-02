@@ -74,13 +74,12 @@ public class PatternProcessor {
 		processThreatTypeCatalogPatterns(catalog);
 	}
 	
-	private final Set<PatternParsingResults> helperPatterns = new HashSet<>();
 	private final Map<ThreatPatternMatchMetadata,PatternParsingResults> threatPatterns = new HashMap<>();
-	
+
 	private void processHelperPatterns(ThreatTypeCatalog catalog, PatternProcessingContext ctxt) {
-		PatternParsingResults parseResults;
-		parseResults = parser.parse(ctxt.instantiatePattern(catalog.getHelperPatterns().stream().collect(Collectors.joining("\n"))));
-		helperPatterns.add(parseResults);
+		// The parse result itself is not needed: parsing registers the helper patterns
+		// with the parser so that subsequent threat-pattern parses can resolve them.
+		parser.parse(ctxt.instantiatePattern(catalog.getHelperPatterns().stream().collect(Collectors.joining("\n"))));
 	}
 
 	private void processThreatTypeCatalogPatterns(ThreatTypeCatalog catalog) {

@@ -16,11 +16,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.eclipse.emf.ecore.EObject;
-
 import be.kuleuven.cs.distrinet.sparta.spartamodel.AbstractThreatType;
 import be.kuleuven.cs.distrinet.sparta.spartamodel.CounterMeasure;
-import be.kuleuven.cs.distrinet.sparta.spartamodel.DFDElement;
 import be.kuleuven.cs.distrinet.sparta.spartamodel.RoleBinding;
 import be.kuleuven.cs.distrinet.sparta.spartamodel.Solution;
 import be.kuleuven.cs.distrinet.sparta.spartamodel.SolutionType;
@@ -33,29 +30,11 @@ import be.kuleuven.cs.distrinet.sparta.spartamodel.SolutionType;
  * {@code aql:self.mitigatedThreatTypeCount()}) to show how much a solution or
  * countermeasure actually covers. All methods are null-tolerant so they are safe
  * to call on partially-built models.</p>
+ *
+ * <p>See http://help.eclipse.org/neon/index.jsp?topic=%2Forg.eclipse.sirius.doc%2Fdoc%2Findex.html&cp=24
+ * for documentation on how to write service methods.</p>
  */
 public class Services {
-
-    /**
-    * See http://help.eclipse.org/neon/index.jsp?topic=%2Forg.eclipse.sirius.doc%2Fdoc%2Findex.html&cp=24 for documentation on how to write service methods.
-    */
-    public EObject myService(EObject self, String arg) {
-       // TODO Auto-generated code
-      return self;
-    }
-
-    /**
-     * Placeholder kept for backwards compatibility; not currently wired into the
-     * VSM. Computing the threat categories applicable to a DFD element requires
-     * the analysis engine (threat catalogs + pattern matching), so it lives in
-     * the analysis bundle rather than here.
-     *
-     * @param self a DFD element
-     * @return 0 (placeholder)
-     */
-    public int getNbrOfApplicableThreatCategories(DFDElement self) {
-    		return 0;
-    }
 
     // ---------------------------------------------------------------------
     // Security coverage services

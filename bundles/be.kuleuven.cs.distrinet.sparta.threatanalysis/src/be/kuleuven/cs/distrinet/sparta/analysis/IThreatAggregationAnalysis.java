@@ -24,8 +24,12 @@ import be.kuleuven.cs.distrinet.sparta.spartamodel.ModelElement;
 import be.kuleuven.cs.distrinet.sparta.spartamodel.ThreatType;
 
 /**
- * This interface provides the analysis API to analyze entire collections of
- * {@link IThreat}s, not individual {@link IThreat}s.
+ * Aggregate statistics over a collection of {@link IThreat}s (not individual threats).
+ *
+ * <p>Despite the {@code I} prefix this is a class, not an interface. It is the
+ * {@link IThreat}-based counterpart of {@link ThreatAggregationAnalysis}, which only accepts
+ * the concrete {@code Threat}: use this one for threats that only implement {@link IThreat}.
+ * Part of the published API of this bundle.</p>
  *
  * @author Laurens
  *
@@ -40,7 +44,7 @@ public class IThreatAggregationAnalysis {
 	 * Create a new {@link IThreatAggregationAnalysis} object to retrieve statistics
 	 * on a collection of {@link IThreat}s.
 	 *
-	 * @param IThreats the collection of IThreats resulting from a IThreat elicitation.
+	 * @param threats the collection of threats resulting from a threat elicitation.
 	 */
 	public IThreatAggregationAnalysis(Collection<? extends IThreat> threats) {
 		this.threats = (threats != null) ? threats : new ArrayList<>();

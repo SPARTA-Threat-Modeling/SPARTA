@@ -49,19 +49,6 @@ public class ObservablePatternThreat extends ObservableThreat {
 
 	}
 
-	public String getSender() {
-		return sender;
-	}
-
-	public String getRecipient() {
-		return recipient;
-	}
-
-	@Override
-	public String getThreatenedElementName() {
-		return super.getThreatenedElementName();
-	}
-
 	@Override
 	public String getFlow() {
 		if (dataFlow == null) {
@@ -116,20 +103,6 @@ public class ObservablePatternThreat extends ObservableThreat {
 		} catch (Exception e) {
 			logRiskCalculationFailure(e);
 		}
-	}
-
-	@Override
-	public void performRiskCalculation(RiskAssessmentLoopConfiguration loopConfiguration) {
-		super.performRiskCalculation(loopConfiguration);
-		this.risk.setValue(super.getRisk());
-		this.risk_lower.setValue(super.getRisk_lower());
-		this.risk_upper.setValue(super.getRisk_upper());
-		this.potentialRisk.setValue(super.getPotentialRisk());
-		this.sle.setValue(super.getSle());
-		this.vulnerability.setValue(super.getVulnerability());
-		this.vulnerability_lower.setValue(super.getVulnerability_lower());
-		this.vulnerability_upper.setValue(super.getVulnerability_upper());
-		this.lef.setValue(super.getLef());
 	}
 
 	@Override

@@ -275,18 +275,24 @@ public class RiskCalculation {
 	}
 
 	/**
-	 * Calculate the loss event frequency array. This function returns a multi
-	 * dimension double array; result[0] is a double[samples] array with the lower
-	 * vulnerability value result[1] is a double[samples] array with the expected
-	 * vulnerability value result[2] is a double[samples] array with the upper
-	 * vulnerability value
-	 * 
-	 * @param tefSamples                      - the array of threat event frequency
-	 *                                        samples
-	 * @param vulnerabilityConfidenceInterval - double[] of the vulnerability
-	 *                                        {lower, expected, upper}
-	 * @param samples						  - the number of samples to use
-	 * @return the loss event frequency confidence interval {lower, expected, upper}
+	 * Calculate the loss event frequency (LEF = TEF x vulnerability) per sample, for each
+	 * bound of the vulnerability interval: {@code result[i][s] = tefSamples[s] *
+	 * vulnerabilityConfidenceInterval[i]}, so {@code result[0]}, {@code result[1]} and
+	 * {@code result[2]} are the LEF samples at the lower, expected and upper vulnerability.
+	 *
+	 * <p>Not used by {@link be.kuleuven.cs.distrinet.sparta.core.analysis.risk.SpartaRiskModel},
+	 * which multiplies the TEF interval ({@link #calculateBoundaries}) by the vulnerability
+	 * interval directly. Reducing {@code result[0]}, {@code result[1]} and {@code result[2]}
+	 * with min, average and max respectively gives that same interval (the vulnerability
+	 * bounds are non-negative constants); this method additionally keeps the full LEF sample
+	 * distribution, e.g. for percentiles or histograms.</p>
+	 *
+	 * @param tefSamples                      - the threat event frequency samples
+	 * @param vulnerabilityConfidenceInterval - the vulnerability {lower, expected, upper}
+	 * @param samples                         - the number of samples; must equal
+	 *                                        {@code tefSamples.length}
+	 * @return {@code double[3][samples]}: the LEF samples at the lower, expected and upper
+	 *         vulnerability (not a confidence interval)
 	 */
 	public static double[][] calculateLefArray(double[] tefSamples, double[] vulnerabilityConfidenceInterval, int samples) {
 		ArrayRealVector lower = (new ArrayRealVector(samples)).mapToSelf(e -> e + vulnerabilityConfidenceInterval[0]);
