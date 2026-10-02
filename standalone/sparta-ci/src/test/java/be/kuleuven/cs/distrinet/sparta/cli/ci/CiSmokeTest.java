@@ -12,9 +12,12 @@ package be.kuleuven.cs.distrinet.sparta.cli.ci;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -79,6 +82,51 @@ public class CiSmokeTest {
 		assertNotNull("a serialized model payload is expected", results.getModel());
 		assertTrue("the serialized payload should be the DFD model as XMI, was: " + snippet(results.getModel()),
 				results.getModel().contains("DFDModel"));
+	}
+
+	/** An empty {@code .sparta.yml} used to NPE inside readConfig; now it fails with a clear error. */
+	@Test
+	public void readConfigRejectsEmptyConfigWithClearError() throws Exception {
+		File dir = tempFolder.newFolder("empty-config");
+		Files.write(new File(dir, ".sparta.yml").toPath(), "# empty\n".getBytes(StandardCharsets.UTF_8));
+		try {
+			SpartaCi.readConfig(dir);
+			fail("expected an IOException for an empty configuration");
+		} catch (IOException e) {
+			assertTrue("the error should name the config file, was: " + e.getMessage(),
+					e.getMessage().contains(".sparta.yml"));
+		}
+	}
+
+	/** Malformed YAML is reported with the file name instead of leaking a raw SnakeYAML stack trace. */
+	@Test
+	public void readConfigRejectsMalformedYamlWithClearError() throws Exception {
+		File dir = tempFolder.newFolder("malformed-config");
+		Files.write(new File(dir, ".sparta.yml").toPath(),
+				"input: [unclosed\n".getBytes(StandardCharsets.UTF_8));
+		try {
+			SpartaCi.readConfig(dir);
+			fail("expected an IOException for malformed YAML");
+		} catch (IOException e) {
+			assertTrue("the error should name the config file, was: " + e.getMessage(),
+					e.getMessage().contains(".sparta.yml"));
+		}
+	}
+
+	/** The config main() proceeds with must name the model and the server url/token. */
+	@Test
+	public void validateConfigFlagsMissingFields() {
+		CiConfiguration conf = new CiConfiguration();
+		assertTrue("a config without a model should be rejected",
+				SpartaCi.validateConfig(conf).contains("input.model"));
+		conf.getInput().setModel("model.sparta");
+		assertTrue("a config without a server url should be rejected",
+				SpartaCi.validateConfig(conf).contains("server.url"));
+		conf.getServer().setUrl("https://example.invalid/submit");
+		assertTrue("a config without a server token should be rejected",
+				SpartaCi.validateConfig(conf).contains("server.token"));
+		conf.getServer().setToken("dummy-token");
+		assertNull("a complete configuration should validate", SpartaCi.validateConfig(conf));
 	}
 
 	private static String snippet(String s) {

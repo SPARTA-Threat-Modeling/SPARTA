@@ -23,8 +23,11 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
+import org.yaml.snakeyaml.DumperOptions;
+import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
+import org.yaml.snakeyaml.error.YAMLException;
 import org.yaml.snakeyaml.representer.Representer;
 
 import be.kuleuven.cs.distrinet.sparta.spartamodel.DFDModel;
@@ -94,27 +97,70 @@ public class YmlToEmfConverter {
 		if (args.length < 1 || args[0] == null || args[0].isEmpty()) {
 			throw new IllegalArgumentException("Usage: YmlToEmfConverter <yaml-file>");
 		}
-		new YmlToEmfConverter(args[0]);
+		convert(args[0]);
 	}
 
-	public YmlToEmfConverter(String file) throws IOException {
-		Representer representer = new Representer(null);
+	/**
+	 * Convert the given txt/yml DFD model to an EMF SPARTA model. The input file is
+	 * resolved against the current working directory ({@code user.dir}), which is also
+	 * where the converted model is written.
+	 *
+	 * @param file the txt/yml input file (absolute, or relative to {@code user.dir}).
+	 * @return the file the converted model was written to.
+	 * @throws IOException if the input cannot be read or parsed, or the converted model
+	 *                     cannot be written.
+	 */
+	public static File convert(String file) throws IOException {
+		return convert(new File(System.getProperty("user.dir")), file);
+	}
+
+	/**
+	 * Convert the given txt/yml DFD model to an EMF SPARTA model.
+	 *
+	 * <p>The converted model is written to {@code <workingDir>/dfd.sparta} and the threat
+	 * catalog is loaded from {@code <workingDir>/ThreatSpecification.sparta}.
+	 *
+	 * @param workingDir the directory against which the input is resolved and to which
+	 *                   the output is written.
+	 * @param file       the txt/yml input file (absolute, or relative to {@code workingDir}).
+	 * @return the file the converted model was written to.
+	 * @throws IOException if the input cannot be read or parsed, or the converted model
+	 *                     cannot be written.
+	 */
+	public static File convert(File workingDir, String file) throws IOException {
+		File yml = new File(file);
+		if (!yml.isAbsolute()) {
+			yml = new File(workingDir, file);
+		}
+		// SnakeYAML 2.x requires non-null options objects (null used to NPE here).
+		Representer representer = new Representer(new DumperOptions());
 		representer.getPropertyUtils().setSkipMissingProperties(true);
-		Yaml yaml = new Yaml(new Constructor(TxtModel.class, null),representer);
-		File yml = new File(new File(System.getProperty("user.dir")),file);
+		Yaml yaml = new Yaml(new Constructor(TxtModel.class, new LoaderOptions()), representer);
 		TxtModel model;
 		try (FileInputStream in = new FileInputStream(yml)) {
 			model = yaml.load(in);
+		} catch (YAMLException e) {
+			throw new IOException("Could not parse txt DFD model '" + yml + "': " + e.getMessage(), e);
 		}
-		saveToModel(model);
+		if (model == null) {
+			throw new IOException("Txt DFD model '" + yml + "' is empty or contains no YAML document.");
+		}
+		return new YmlToEmfConverter(workingDir).saveToModel(model);
 	}
-	
+
+	private final File workingDir;
 	private Map<String, DataFlowEntity> elementMap = new HashMap<>();
 	private List<DataFlow> dataflows = new ArrayList<>();
 	private SpartaModelFactory fac = new SpartaModelFactoryImpl();
 	private static final String dataflowTemplate = "%s->%s";
-	
-	public void saveToModel(TxtModel model) throws IOException {
+	private static final String OUTPUT_FILE = "dfd.sparta";
+	private static final String THREAT_CATALOG_FILE = "ThreatSpecification.sparta";
+
+	private YmlToEmfConverter(File workingDir) {
+		this.workingDir = workingDir;
+	}
+
+	private File saveToModel(TxtModel model) throws IOException {
 		createProcesses(model.getProcesses());
 		createDataStores(model.getDataStores());
 		createExternalEntities(model.getExternalEntities());
@@ -122,7 +168,7 @@ public class YmlToEmfConverter {
 		DFDModel dfd = fac.createDFDModel();
 		addModelElements(dfd, elementMap.values());
 		addModelElements(dfd, dataflows);
-		saveDFD(dfd);
+		return saveDFD(dfd);
 	}
 	
 	
@@ -231,9 +277,10 @@ public class YmlToEmfConverter {
 		dataflows.add(df);
 	}
 
-	private void saveDFD(DFDModel dfd) throws IOException {
+	private File saveDFD(DFDModel dfd) throws IOException {
+		File out = new File(workingDir, OUTPUT_FILE);
 		Resource.Factory.Registry reg = Resource.Factory.Registry.INSTANCE;
-		URI fileURI = URI.createFileURI(System.getProperty("user.dir") + "/dfd.sparta");
+		URI fileURI = URI.createFileURI(out.getAbsolutePath());
 		reg.getExtensionToFactoryMap().put(fileURI.fileExtension(), new SpartaModelResourceFactoryImpl());
 
 		// Obtain a new resource set
@@ -241,16 +288,17 @@ public class YmlToEmfConverter {
 
 		// create a resource
 		Resource resource = resSet.createResource(fileURI);
-		
+
 		// load threat catalog
 
 		SpartaModelPackage.eINSTANCE.eClass();
-		URI threatcat = URI.createFileURI(System.getProperty("user.dir") + "/" + "ThreatSpecification.sparta");
+		URI threatcat = URI.createFileURI(new File(workingDir, THREAT_CATALOG_FILE).getAbsolutePath());
 		Resource threatres = resSet.getResource(threatcat, true);
 		threatres.getContents().stream().filter(ThreatSpecificationCatalog.class::isInstance).map(ThreatSpecificationCatalog.class::cast).forEach(dfd.getResource()::add);
 
 		resource.getContents().add(dfd);
 
 		resource.save(null);
+		return out;
 	}
 }

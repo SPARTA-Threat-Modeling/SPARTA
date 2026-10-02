@@ -39,6 +39,7 @@ import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
+import org.yaml.snakeyaml.error.YAMLException;
 import org.yaml.snakeyaml.representer.Representer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -106,6 +107,13 @@ public class SpartaCi {
 	}
 
 
+	// Exit codes used by main: distinct non-zero values so CI scripts can tell the
+	// failure modes apart.
+	private static final int EXIT_NO_CONFIG = 1;
+	private static final int EXIT_INVALID_CONFIG = 2;
+	private static final int EXIT_ANALYSIS_FAILED = 3;
+	private static final int EXIT_SUBMISSION_FAILED = 4;
+
 	/**
 	 * Run SPARTA in a CI context.
 	 * @param args command line arguments; SpartaCI currently does not have any cli args.
@@ -119,25 +127,88 @@ public class SpartaCi {
 			conf = readConfig(wd);
 		} catch (FileNotFoundException e) {
 			logger.error("Did not find SPARTA ci configuration.");
-			System.exit(1);
+			System.err.println("sparta-ci: no " + YML_CONF_FILE + " configuration found in " + wd);
+			System.exit(EXIT_NO_CONFIG);
+			return;
+		} catch (Exception e) {
+			System.err.println("sparta-ci: could not read " + YML_CONF_FILE + ": " + firstLine(e));
+			System.exit(EXIT_INVALID_CONFIG);
 			return;
 		}
 
-		AnalysisResults results = analyze(conf);
+		// main always submits, so url/token are required here in addition to the model.
+		String configError = validateConfig(conf);
+		if (configError != null) {
+			System.err.println("sparta-ci: invalid " + YML_CONF_FILE + ": " + configError);
+			System.exit(EXIT_INVALID_CONFIG);
+			return;
+		}
+		logger.info("Input model: {}", conf.getInput().getModel());
+		logger.info("Submitting to server: {}", conf.getServer().getUrl());
+
+		AnalysisResults results;
+		try {
+			results = analyze(conf);
+		} catch (Exception e) {
+			System.err.println("sparta-ci: analysis failed: " + firstLine(e));
+			System.exit(EXIT_ANALYSIS_FAILED);
+			return;
+		}
 		if (results == null) {
-			System.exit(1);
+			System.err.println("sparta-ci: analysis failed; see the log for details.");
+			System.exit(EXIT_ANALYSIS_FAILED);
 			return;
 		}
 
 		// Submit via the shared client (same implementation the CLI exporter uses).
-		boolean ok = SpartaServerClient.submit(
-				conf.getServer().getUrl(),
-				conf.getServer().getToken(),
-				conf.getOverrideCommit(),
-				writer -> new ObjectMapper().writer().writeValue(writer, results));
-		if (!ok) {
-			System.exit(1);
+		boolean ok;
+		try {
+			ok = SpartaServerClient.submit(
+					conf.getServer().getUrl(),
+					conf.getServer().getToken(),
+					conf.getOverrideCommit(),
+					writer -> new ObjectMapper().writer().writeValue(writer, results));
+		} catch (Exception e) {
+			System.err.println("sparta-ci: submission failed: " + firstLine(e));
+			System.exit(EXIT_SUBMISSION_FAILED);
+			return;
 		}
+		if (!ok) {
+			System.err.println("sparta-ci: submission to " + conf.getServer().getUrl() + " failed.");
+			System.exit(EXIT_SUBMISSION_FAILED);
+		}
+	}
+
+	/**
+	 * Validate that the parsed configuration contains everything a full CI run (analysis
+	 * + submission) needs: the input model, and the server url/token used for submission.
+	 *
+	 * @param conf the parsed configuration.
+	 * @return a description of the first problem found, or {@code null} if the
+	 *         configuration is usable.
+	 */
+	static String validateConfig(CiConfiguration conf) {
+		if (conf.getInput() == null || conf.getInput().getModel() == null
+				|| conf.getInput().getModel().isBlank()) {
+			return "missing required 'input.model'";
+		}
+		if (conf.getServer() == null || conf.getServer().getUrl() == null
+				|| conf.getServer().getUrl().isBlank()) {
+			return "missing required 'server.url'";
+		}
+		if (conf.getServer().getToken() == null || conf.getServer().getToken().isBlank()) {
+			return "missing required 'server.token'";
+		}
+		return null;
+	}
+
+	/** Condense a throwable to a single line for CI-friendly stderr output. */
+	private static String firstLine(Throwable t) {
+		String msg = t.getMessage();
+		if (msg == null || msg.isBlank()) {
+			return t.getClass().getSimpleName();
+		}
+		return msg.strip().split("\\R", 2)[0];
 	}
 
 	/**
@@ -147,16 +218,22 @@ public class SpartaCi {
 	 * @param workingDir the directory containing the {@code .sparta.yml} file.
 	 * @return the parsed configuration.
 	 * @throws FileNotFoundException if there is no {@code .sparta.yml} in {@code workingDir}.
+	 * @throws IOException if the {@code .sparta.yml} file is empty or not valid YAML.
 	 */
-	public static CiConfiguration readConfig(File workingDir) throws FileNotFoundException {
+	public static CiConfiguration readConfig(File workingDir) throws IOException {
 		Representer representer = new Representer(new DumperOptions());
 		representer.getPropertyUtils().setSkipMissingProperties(true);
 		Yaml yaml = new Yaml(new Constructor(CiConfiguration.class, new LoaderOptions()), representer);
 		File yml = new File(workingDir, YML_CONF_FILE);
-		CiConfiguration conf = yaml.load(new FileInputStream(yml));
-
-		logger.info("Input model: {}", conf.getInput().getModel());
-		logger.info("Submitting to server: {}", conf.getServer().getUrl());
+		CiConfiguration conf;
+		try (FileInputStream in = new FileInputStream(yml)) {
+			conf = yaml.load(in);
+		} catch (YAMLException e) {
+			throw new IOException("Malformed YAML in '" + yml + "': " + firstLine(e), e);
+		}
+		if (conf == null) {
+			throw new IOException("Configuration file '" + yml + "' is empty.");
+		}
 
 		FileRepositoryBuilder repositoryBuilder = new FileRepositoryBuilder();
 		repositoryBuilder.readEnvironment().findGitDir(yml);
@@ -187,10 +264,11 @@ public class SpartaCi {
 	 */
 	public static AnalysisResults analyze(CiConfiguration conf) {
 		String model = conf.getInput().getModel();
-		if (model.endsWith("txt")) {
+		if (model.endsWith(".txt")) {
 			try {
-				new YmlToEmfConverter(model);
-				model = "dfd.securitydfd";
+				// Load the model from the path the converter actually wrote it to
+				// (previously this loaded a hard-coded name that was never created).
+				model = YmlToEmfConverter.convert(model).getAbsolutePath();
 			} catch (IOException e) {
 				logger.error("Error converting model to EMF: {}", e.getMessage(), e);
 				return null;
