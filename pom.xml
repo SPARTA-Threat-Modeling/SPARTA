@@ -75,6 +75,24 @@
 					</execution>
 				</executions>
 			</plugin>
+			<!-- Enforce the EPL-2.0 license header on all Java sources. The
+				pluginManagement configuration uses aggregate=true with includes
+				spanning **/src/**, so a single execution at the root covers the
+				entire tree; inherited=false avoids re-running it per module. -->
+			<plugin>
+				<groupId>com.mycila</groupId>
+				<artifactId>license-maven-plugin</artifactId>
+				<inherited>false</inherited>
+				<executions>
+					<execution>
+						<id>check-license-headers</id>
+						<phase>validate</phase>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>target-platform-configuration</artifactId>
