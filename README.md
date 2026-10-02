@@ -6,8 +6,8 @@ SPARTA will always elicit all the threats, but will recalculate the risk to take
 
 The SPARTA project consists of the following parts:
  
-* A standalone threat modeling tool that you can you can run locally. You can download this from the main [SPARTA website](https://sparta.distrinet-research.be/downloads/).
-* Eclipse-plugins that allow you to integrate it's functionality in other eclipse-based tools. For this you can use the [eclipse update site](https://downloads.sparta.distrinet-research.be/updates/2026/). Update sites are organised per release line (by year): the URL is `https://downloads.sparta.distrinet-research.be/updates/<year>/` (e.g. `.../updates/2026/`), so you can pick the line that matches your installation. A specific version is also available directly at `.../updates/<year>/releases/<version>/`.
+* A standalone threat modeling tool that you can run locally. You can download this from the main [SPARTA website](https://sparta.distrinet-research.be/downloads/).
+* Eclipse-plugins that allow you to integrate its functionality in other eclipse-based tools. For this you can use the [eclipse update site](https://downloads.sparta.distrinet-research.be/updates/2026/). Update sites are organised per release line (by year): the URL is `https://downloads.sparta.distrinet-research.be/updates/<year>/` (e.g. `.../updates/2026/`), so you can pick the line that matches your installation. A specific version is also available directly at `.../updates/<year>/releases/<version>/`.
 * Standalone libraries and runnable jars, so you can directly run the analysis on .sparta models. These are available from the [maven repository](https://maven.sparta.distrinet-research.be/).
 
 
@@ -26,7 +26,7 @@ The root directory contains the following structure.
   * *be.kuleuven.cs.distrinet.sparta.spartamodel.edit*
   * *be.kuleuven.cs.distrinet.sparta.spartamodel.editor*
   * *be.kuleuven.cs.distrinet.sparta.spartamodel.tests*
-* **features:** the SPARTA eclipse features, currently only one (can be used later to package jre lib in product)
+* **features:** the SPARTA eclipse features
   * *be.kuleuven.cs.distrinet.sparta.feature* sparta feature combining all the previous plugins
   * *be.kuleuven.cs.distrinet.sparta.graphicalmodeling.feature* sparta feature with the graphical editor plugin
   * *be.kuleuven.cs.distrinet.sparta.modeling.feature* sparta feature combining the modeling plugins
@@ -45,14 +45,14 @@ For editing the models you can install the following dependencies in your eclips
 
  * Modeling > Ecore Diagram Editor (SDK) + EMF - Eclipse Modeling Framework SDK (from eclipse update site)
  * Sirius (7.x): *installed from market place*
- * Viatra (2.7.x): *installed from viatra repository url*
+ * Viatra (2.9.x): *installed from viatra repository url*
  * You may want to include the *Ecore Diagram Editor (SDK)* from the generic eclipse repository to enable the graphical meta-model editor.
 
 
 ## Building SPARTA
 
 SPARTA can be built as a packaged eclipse product.
-The entire project can be build with *maven*[^mvn] using the command: `mvn clean package`.
+The entire project can be built with *maven*[^mvn] using the command: `mvn clean package`.
 This will:
 
 [^mvn]: Make sure to use a recent version of maven. The `3.6.1` has a bug in combination with *tycho* that leads to strange build errors.
@@ -69,4 +69,9 @@ The results of the build can be found in:
 
 * **Updatesite:** in `releng/be.kuleuven.cs.distrinet.sparta.update`
 * **SPARTA product:**  in `releng/be.kuleuven.cs.distrinet.sparta.product`
+
+### Running the tests
+
+Run `mvn verify` from the repository root to build everything and execute all unit and plugin tests.
+As with the rest of the build, JDK-21 is required (see [Dependencies](#dependencies)).
 

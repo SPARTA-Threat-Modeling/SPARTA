@@ -1,0 +1,42 @@
+[changelog]
+# Release sections are prepended to CHANGELOG.md on each release
+# (`git cliff --latest --prepend CHANGELOG.md`); the header is only used when
+# generating a file from scratch.
+header = """
+# Changelog
+
+All notable changes to this project are documented in this file. The format is
+based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions
+follow the year-based release lines (`<year>.<minor>.<patch>`).
+
+Release notes are generated from the [Conventional Commits](https://www.conventionalcommits.org/)
+history with [git-cliff](https://git-cliff.org). Sections for releases before
+2026.2.0 were written by hand from the earlier development history.
+"""
+body = """
+{% if version %}## [{{ version | trim_start_matches(pat="v") }}] - {{ timestamp | date(format="%Y-%m-%d") }}
+{% else %}## [Unreleased]
+{% endif %}{% for group, commits in commits | group_by(attribute="group") %}
+### {{ group | striptags | trim | upper_first }}
+{% for commit in commits %}
+- {% if commit.scope %}*({{ commit.scope }})* {% endif %}{% if commit.breaking %}**Breaking:** {% endif %}{{ commit.message | upper_first }} ({{ commit.id | truncate(length=7, end="") }}){% endfor %}
+{% endfor %}
+
+"""
+trim = true
+
+[git]
+conventional_commits = true
+protect_breaking_commits = true
+filter_unconventional = true
+# Keep a Changelog categories; the <!-- n --> prefixes only order the groups
+# (the template strips them).
+commit_parsers = [
+  { message = "^feat", group = "<!-- 0 -->Added" },
+  { message = "^perf", group = "<!-- 1 -->Changed" },
+  { message = "^refactor", group = "<!-- 1 -->Changed" },
+  { message = "^fix", group = "<!-- 2 -->Fixed" },
+  { message = "^docs", group = "<!-- 3 -->Documentation" },
+  { message = "^(chore|ci|build|test)", skip = true },  # hide internal noise from users
+]
+tag_pattern = "v?[0-9]+\\.[0-9]+\\.[0-9]+.*"
