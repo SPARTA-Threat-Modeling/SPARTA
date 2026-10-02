@@ -20,7 +20,7 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import be.kuleuven.cs.distrinet.sparta.cli.SpartaCliProcessor;
+import be.kuleuven.cs.distrinet.sparta.cli.runtime.StandaloneRuntime;
 import be.kuleuven.cs.distrinet.sparta.core.model.Threat;
 import be.kuleuven.cs.distrinet.sparta.io.ReportWriter;
 
@@ -61,7 +61,7 @@ public class ExportReport implements Exporter {
 		ResourceSet resourceSet = resourceSetFrom(results);
 		if (resourceSet == null && cmd.hasOption("i")) {
 			// No threats to borrow the model from (e.g. a clean model); reload it.
-			resourceSet = SpartaCliProcessor.loadModel(cmd.getOptionValue("i"));
+			resourceSet = StandaloneRuntime.loadModel(cmd.getOptionValue("i"));
 		}
 		if (resourceSet == null) {
 			logger.error("No model available to export the report from");

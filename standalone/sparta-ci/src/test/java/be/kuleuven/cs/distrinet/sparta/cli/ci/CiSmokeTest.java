@@ -28,8 +28,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import be.kuleuven.cs.distrinet.sparta.cli.SpartaCliProcessor;
 import be.kuleuven.cs.distrinet.sparta.cli.ci.SpartaCi.AnalysisResults;
+import be.kuleuven.cs.distrinet.sparta.cli.runtime.StandaloneRuntime;
 
 /**
  * Smoke test for the CI pipeline that runs <em>without</em> a CTAM server. It exercises the
@@ -54,7 +54,7 @@ public class CiSmokeTest {
 	public void resetStandaloneRegistry() {
 		// analyze() calls the standalone EMF/VIATRA setup itself; nothing to do here beyond
 		// letting each test start from the shared static registries.
-		SpartaCliProcessor.setupEMFStandalone();
+		StandaloneRuntime.setupEMFStandalone();
 	}
 
 	@Test(timeout = 600_000)

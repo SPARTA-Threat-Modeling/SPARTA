@@ -46,8 +46,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import be.kuleuven.cs.distrinet.sparta.cli.PathResolver;
-import be.kuleuven.cs.distrinet.sparta.cli.SpartaCliProcessor;
 import be.kuleuven.cs.distrinet.sparta.cli.SpartaServerClient;
+import be.kuleuven.cs.distrinet.sparta.cli.runtime.StandaloneRuntime;
 import be.kuleuven.cs.distrinet.sparta.core.model.IInteractionThreat;
 import be.kuleuven.cs.distrinet.sparta.core.model.Threat;
 import be.kuleuven.cs.distrinet.sparta.io.convert.YmlToEmfConverter;
@@ -275,13 +275,13 @@ public class SpartaCi {
 			}
 		}
 
-		SpartaCliProcessor.setupEMFStandalone();
-		SpartaCliProcessor.setupVIATRAStandalone();
+		StandaloneRuntime.setupEMFStandalone();
+		StandaloneRuntime.setupVIATRAStandalone();
 
 		// Load the model once and reuse the ResourceSet for both the analysis and the
 		// DFDModel extraction, rather than parsing the model multiple times.
-		ResourceSet modelRes = SpartaCliProcessor.loadModel(model);
-		List<Threat> results = SpartaCliProcessor.runThreatAnalysis(modelRes);
+		ResourceSet modelRes = StandaloneRuntime.loadModel(model);
+		List<Threat> results = StandaloneRuntime.runThreatAnalysis(modelRes);
 		EcoreUtil.resolveAll(modelRes);
 		DFDModel dfdModel = modelRes
 				.getResource(PathResolver.toFileURI(System.getProperty("user.dir"), model), false).getContents()

@@ -27,6 +27,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import be.kuleuven.cs.distrinet.sparta.cli.runtime.StandaloneRuntime;
 import be.kuleuven.cs.distrinet.sparta.core.model.Threat;
 
 /**
@@ -37,7 +38,7 @@ import be.kuleuven.cs.distrinet.sparta.core.model.Threat;
  * <p>This guards the standalone bootstrap that OSGi normally provides but the plain-Java CLI
  * must do itself — in particular the VIATRA pattern-language registration
  * ({@code EMFPatternLanguageStandaloneSetup.doSetup()} in
- * {@link SpartaCliProcessor#setupVIATRAStandalone()}). Without it, building the pattern
+ * {@link StandaloneRuntime#setupVIATRAStandalone()}). Without it, building the pattern
  * processor fails with an "Unresolved proxy ...PatternLanguage#//PatternModel" error and no
  * threats are produced.
  */
@@ -59,8 +60,8 @@ public class CliAnalysisSmokeTest {
 
 	@Before
 	public void setUpStandaloneRuntime() {
-		SpartaCliProcessor.setupEMFStandalone();
-		SpartaCliProcessor.setupVIATRAStandalone();
+		StandaloneRuntime.setupEMFStandalone();
+		StandaloneRuntime.setupVIATRAStandalone();
 	}
 
 	/**
@@ -83,7 +84,7 @@ public class CliAnalysisSmokeTest {
 		File modelDir = copyModelsToTempDir();
 		String contoso = new File(modelDir, "Contoso.sparta").getAbsolutePath();
 
-		List<Threat> results = SpartaCliProcessor.runThreatAnalysis(contoso);
+		List<Threat> results = StandaloneRuntime.runThreatAnalysis(contoso);
 
 		assertNotNull(results);
 		assertFalse("Expected the Contoso model to elicit threats, but got none", results.isEmpty());

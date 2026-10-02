@@ -9,7 +9,6 @@
  */
 package be.kuleuven.cs.distrinet.sparta.cli;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -20,19 +19,6 @@ import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
-import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.eclipse.emf.ecore.xmi.impl.EcoreResourceFactoryImpl;
-import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
-import org.eclipse.viatra.query.patternlanguage.emf.EMFPatternLanguageStandaloneSetup;
-import org.eclipse.viatra.query.runtime.api.ViatraQueryEngineOptions;
-import org.eclipse.viatra.query.runtime.localsearch.matcher.integration.LocalSearchBackendFactoryProvider;
-import org.eclipse.viatra.query.runtime.localsearch.matcher.integration.LocalSearchEMFBackendFactory;
-import org.eclipse.viatra.query.runtime.rete.matcher.ReteBackendFactory;
-import org.eclipse.viatra.query.runtime.rete.matcher.ReteBackendFactoryProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,18 +28,14 @@ import com.google.inject.Singleton;
 import be.kuleuven.cs.distrinet.sparta.cli.cmd.GenericCliCmd;
 import be.kuleuven.cs.distrinet.sparta.cli.cmd.Help;
 import be.kuleuven.cs.distrinet.sparta.cli.cmd.export.Exporter;
-import be.kuleuven.cs.distrinet.sparta.core.Engine;
+import be.kuleuven.cs.distrinet.sparta.cli.runtime.StandaloneRuntime;
 import be.kuleuven.cs.distrinet.sparta.core.model.Threat;
-import be.kuleuven.cs.distrinet.sparta.spartamodel.DFDModel;
-import be.kuleuven.cs.distrinet.sparta.spartamodel.SpartaModelPackage;
-import be.kuleuven.cs.distrinet.sparta.spartamodel.ThreatSpecification;
-import be.kuleuven.cs.distrinet.sparta.spartamodel.ThreatType;
-import be.kuleuven.cs.distrinet.sparta.spartamodel.util.SpartaModelResourceFactoryImpl;
 
 /**
  * Command line processor. Every {@link GenericCliCmd} and {@link Exporter} can
  * provide a list of options and will be called with the provided arguments to
- * check if they need to perform any action.
+ * check if they need to perform any action. The actual EMF/VIATRA bootstrap and
+ * analysis are delegated to the shared {@link StandaloneRuntime}.
  *
  * @author Laurens
  *
@@ -117,13 +99,13 @@ public class SpartaCliProcessor implements CliProcessor {
 
 		if (cmd.hasOption(optInput.getOpt())) {
 
-			setupEMFStandalone();
-			setupVIATRAStandalone();
+			StandaloneRuntime.setupEMFStandalone();
+			StandaloneRuntime.setupVIATRAStandalone();
 
 			List<Threat> results;
 
 			String target = cmd.getOptionValue(optInput.getOpt());
-			results = runThreatAnalysis(target);
+			results = StandaloneRuntime.runThreatAnalysis(target);
 
 			boolean success = true;
 			for (Exporter c : exporters) {
@@ -135,69 +117,6 @@ public class SpartaCliProcessor implements CliProcessor {
 			}
 		}
 
-	}
-
-	/**
-	 * Run a threat analysis on user-specified model. The model file is retrieved from the cli arguments.
-	 * @param target the model
-	 * @return the resulting list of threats
-	 */
-	public static  List<Threat> runThreatAnalysis(String target) {
-		return runThreatAnalysis(loadModel(target));
-	}
-
-	/**
-	 * Run a threat analysis on an already-loaded model. Reusing a
-	 * {@link ResourceSet} avoids parsing the same model more than once.
-	 *
-	 * @param resourceSet the resource set containing the loaded model
-	 * @return the resulting list of threats
-	 */
-	public static List<Threat> runThreatAnalysis(ResourceSet resourceSet) {
-		logger.info("Running SPARTA Analysis ...");
-		logger.debug("Cwd: {}", System.getProperty("user.dir"));
-
-		Engine e = new Engine(resourceSet);
-
-		List<Threat> results = e.runAnalysis(resourceSet);
-
-		results.stream().map(Threat::toString).forEach(t -> logger.debug("Threat: {}", t));
-
-		return results;
-	}
-
-	
-	/**
-	 * Load a model from the provided filename. This is a helper method that returns the ResourceSet.
-	 * It does not run the threat analysis. To load a model and run the threat analysis use  runThreatAnalysis.
-	 * 
-	 * @param target the filename of the model
-	 * @return the ResourceSet with the model.
-	 */
-	public static ResourceSet loadModel(String target) {
-		ResourceSet resourceSet = new ResourceSetImpl();
-		URI fileURI = PathResolver.toFileURI(System.getProperty("user.dir"), target);
-		Resource resource = resourceSet.getResource(fileURI, true);
-		try {
-			resource.load(null);
-		} catch (IOException e1) {
-			logger.error("Error loading resource: {}", e1.getMessage());
-		}
-		EcoreUtil.resolveAll(resource);
-
-		DFDModel m = resource.getContents().stream().filter(DFDModel.class::isInstance).map(DFDModel.class::cast)
-				.findAny().orElse(null);
-		logger.debug("Loaded DFD Model: {}", m == null ? "" : m.getName());
-
-		resourceSet.getAllContents().forEachRemaining(el -> {
-			if (el instanceof ThreatType)
-				logger.trace("Active Threat Type: {}", ((ThreatType) el).getName());
-		});
-		resourceSet.getAllContents().forEachRemaining(el -> {
-			if (el instanceof ThreatSpecification)
-				logger.trace("Active Threat Type Specification: {}", ((ThreatSpecification) el).getName());
-		});
-		return resourceSet;
 	}
 
 	/**
@@ -217,42 +136,6 @@ public class SpartaCliProcessor implements CliProcessor {
 		Arrays.stream(genCmd.getOptions()).forEach(options::addOption);
 
 	}
-
-	/**
-	 * Setup VIATRA for running it outside of an eclipse instance.
-	 */
-	public static void setupVIATRAStandalone() {
-		// register ecore
-		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("ecore", new EcoreResourceFactoryImpl());
-		// Register the VIATRA pattern-language grammar, its EPackages and .vql resource
-		// factory in the global EMF registry. Outside OSGi this is not done by the plugin
-		// registry, so without it the pattern parser fails to resolve the PatternLanguage
-		// EPackage ("Unresolved proxy ...PatternModel") when PatternProcessor is built.
-		EMFPatternLanguageStandaloneSetup.doSetup();
-		ViatraQueryEngineOptions.setSystemDefaultBackends(ReteBackendFactory.INSTANCE, ReteBackendFactory.INSTANCE, LocalSearchEMFBackendFactory.INSTANCE);
-		logger.info("LS: {}", new LocalSearchBackendFactoryProvider().isSystemDefaultEngine());
-		logger.info("Rete: {}", new ReteBackendFactoryProvider().isSystemDefaultEngine());
-	}
-
-	/**
-	 * Setup EMF for running it outside of an eclipse instance.
-	 */
-	public static void setupEMFStandalone() {
-		// trigger package registration
-		logger.debug("Securitydfd package registration");
-		SpartaModelPackage.eINSTANCE.eClass();
-
-		logger.debug("Registering XMI resource factory");
-		// Register resource factory
-		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("securitydfd", new SpartaModelResourceFactoryImpl());
-		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("sparta", new SpartaModelResourceFactoryImpl());
-		// secondary/generated model extension
-		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("spartamodel", new SpartaModelResourceFactoryImpl());
-		// generic XMI fallback so unknown extensions (e.g. .xmi) still load
-		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().putIfAbsent("*", new XMIResourceFactoryImpl());
-
-	}
-
 
 	@Override
 	public Options getOptions() {
