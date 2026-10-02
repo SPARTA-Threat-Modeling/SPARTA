@@ -12,7 +12,6 @@ package be.kuleuven.cs.distrinet.sparta.analysis.views;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.function.Function;
 
 import org.eclipse.core.databinding.beans.typed.PojoProperties;
 import org.eclipse.core.databinding.observable.ChangeEvent;
@@ -20,29 +19,20 @@ import org.eclipse.core.databinding.observable.IChangeListener;
 import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.observable.list.WritableList;
 import org.eclipse.core.databinding.observable.map.IObservableMap;
-import org.eclipse.core.databinding.property.Properties;
 import org.eclipse.core.databinding.property.value.IValueProperty;
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
 import org.eclipse.jface.databinding.viewers.ObservableMapLabelProvider;
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.IColorProvider;
-import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProviderChangedEvent;
-import org.eclipse.jface.viewers.StructuredViewer;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
-import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.ui.part.ViewPart;
 import org.eclipse.viatra.query.patternlanguage.emf.util.PatternParsingResults;
 import org.eclipse.viatra.query.patternlanguage.emf.vql.Pattern;
 import org.eclipse.xtext.validation.Issue;
@@ -50,21 +40,20 @@ import org.eclipse.xtext.validation.Issue;
 import be.kuleuven.cs.distrinet.sparta.analysis.service.PatternParseListener;
 import be.kuleuven.cs.distrinet.sparta.analysis.service.ThreatAnalysisService;
 import be.kuleuven.cs.distrinet.sparta.analysis.util.IssueStatus;
-import be.kuleuven.cs.distrinet.sparta.analysis.views.sorter.ThreatSorter;
 import be.kuleuven.cs.distrinet.sparta.core.patterns.ThreatPatternMatchMetadata;
 
 
-public class PatternSupport extends ViewPart implements PatternParseListener {
+public class PatternSupport extends AbstractThreatTableView<PatternSupport.PatternDiagnostics> implements PatternParseListener {
 
 	/**
 	 * The ID of the view as specified by the extension.
 	 */
 	public static final String ID = "be.kuleuven.cs.distrinet.sparta.analysis.views.PatternSupport";
 
-	private TableViewer viewer;
+	public PatternSupport() {
+		super(PatternDiagnostics.class);
+	}
 
-	private Composite parent;
-	
 	@Override
 	public void createPartControl(Composite parent) {
 		ThreatAnalysisService.getInstance().sub(this);
@@ -80,75 +69,21 @@ public class PatternSupport extends ViewPart implements PatternParseListener {
 	
 	}
 	
-	private void setupTable(TableViewer viewer) {
-		createColumns(viewer);
-		final Table table = viewer.getTable();
-		table.setHeaderVisible(true);
-		table.setLinesVisible(true);
+	@Override
+	protected void createColumns(TableViewer viewer) {
 
-		GridData gd = new GridData();
-		gd.horizontalAlignment = SWT.FILL;
-		gd.verticalAlignment = SWT.FILL;
-		gd.grabExcessHorizontalSpace = true;
-		gd.grabExcessVerticalSpace = true;
-		gd.minimumHeight = 100;
-		table.setLayoutData(gd);
-
-	}
-	
-	private void createColumns(TableViewer viewer) {
-		
 		// ThreatType column
 		TableViewerColumn idCol = new TableViewerColumn(viewer, SWT.NONE);
 		final TableColumn tc = idCol.getColumn();
 		tc.setText("ThreatType");
 		tc.setWidth(100);
-		new ThreatSorter(viewer, idCol) {
-			@Override
-			protected int compareImpl(Viewer viewer, Object e1, Object e2) {
-				if (e1 instanceof PatternDiagnostics && e2 instanceof PatternDiagnostics) {
-					PatternDiagnostics t1 = (PatternDiagnostics) e1;
-					PatternDiagnostics t2 = (PatternDiagnostics) e2;
-					return Comparator.nullsFirst(Comparator.<String>naturalOrder())
-							.compare(t1.getThreatType(), t2.getThreatType());
-				} else
-					return super.compareImpl(viewer, e1, e2);
-			}
-		};
+		addColumnSorter(viewer, idCol, Comparator.comparing(PatternDiagnostics::getThreatType,
+				Comparator.nullsFirst(Comparator.<String>naturalOrder())));
 		createCol(viewer,"Pattern",100, PatternDiagnostics::getPatternName);
 		createCol(viewer,"Issue",500, PatternDiagnostics::getIssue);
 
 	}
-	
-	private <U extends Comparable<? super U>> void createCol(TableViewer viewer, final String colname, int width, Function<? super PatternDiagnostics, ? extends U> keyExtractor) {
-		createCol(viewer, colname, width, SWT.LEFT, keyExtractor);
-	}
 
-	private <U extends Comparable<? super U>> void createCol(TableViewer viewer, final String colname, int width, int alignment, Function<? super PatternDiagnostics, ? extends U> keyExtractor) {
-		Comparator<? super PatternDiagnostics> cmp = Comparator.comparing(keyExtractor,
-				Comparator.nullsFirst(Comparator.naturalOrder()));
-		TableViewerColumn col = new TableViewerColumn(viewer, SWT.NONE);
-
-		final TableColumn tc = col.getColumn();
-		tc.setText(colname);
-		tc.setWidth(width);
-		tc.setMoveable(true);
-		tc.setAlignment(alignment);
-		new ThreatSorter(viewer, col) {
-			@Override
-			protected int compareImpl(Viewer viewer, Object e1, Object e2) {
-				if (e1 instanceof PatternDiagnostics && e2 instanceof PatternDiagnostics) {
-					PatternDiagnostics t1 = (PatternDiagnostics) e1;
-					PatternDiagnostics t2 = (PatternDiagnostics) e2;
-					return cmp.compare(t1,  t2);
-				} else
-					return super.compareImpl(viewer, e1, e2);
-			}
-		};
-
-	}
-
-	
 	private void makeActions() {
 		doubleClickAction = new Action() {
 			public void run() {
@@ -161,28 +96,6 @@ public class PatternSupport extends ViewPart implements PatternParseListener {
 
 			}
 		};
-	}
-
-	private Action doubleClickAction;
-
-	private void hookDoubleClickAction() {
-		viewer.addDoubleClickListener(new IDoubleClickListener() {
-			public void doubleClick(DoubleClickEvent event) {
-				doubleClickAction.run();
-			}
-		});
-	}
-
-	private void showMessage(String title, String message) {
-		MessageDialog.openInformation(
-			parent.getShell(),
-			title,
-			message);
-	}
-	
-	@Override
-	public void setFocus() {
-		parent.setFocus();
 	}
 
 	@Override
@@ -216,17 +129,11 @@ public class PatternSupport extends ViewPart implements PatternParseListener {
 		viewer.refresh();
 	}
 	
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private void bind(StructuredViewer viewer, IObservableList<? extends PatternDiagnostics> input, IValueProperty... labelProperties) {
-		ObservableListContentProvider<PatternDiagnostics> contentProvider = new ObservableListContentProvider<>();
-		if (viewer.getInput() != null)
-			viewer.setInput(null);
-		viewer.setContentProvider(contentProvider);
-		IssueLabelProvider lp = new IssueLabelProvider(Properties
-				.observeEach(contentProvider.getKnownElements(),
-						labelProperties), input);
-		viewer.setLabelProvider(lp);
-		viewer.setInput(input);
+	@SuppressWarnings("rawtypes")
+	@Override
+	protected IBaseLabelProvider createLabelProvider(IObservableMap[] attributeMaps,
+			IObservableList<? extends PatternDiagnostics> input) {
+		return new IssueLabelProvider(attributeMaps, input);
 	}
 
 	private IObservableList<? extends PatternDiagnostics> parseResults;
@@ -264,7 +171,10 @@ public class PatternSupport extends ViewPart implements PatternParseListener {
 		return result;
 	}
 	
-	private static class PatternDiagnostics {
+	// Package-private (not private): the type argument in this view's extends
+	// clause must be accessible there, and a private member is not in scope in
+	// the superclass clause of its own enclosing class.
+	static class PatternDiagnostics {
 
 		// Plain immutable fields: these values are set once at construction and
 		// never bound or mutated, so the previous WritableValue wrappers only

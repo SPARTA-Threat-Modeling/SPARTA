@@ -12,25 +12,19 @@ package be.kuleuven.cs.distrinet.sparta.analysis.views;
 
 import java.text.NumberFormat;
 import java.util.Comparator;
-import java.util.function.Function;
 
 import org.eclipse.core.databinding.beans.typed.PojoProperties;
 import org.eclipse.core.databinding.observable.ChangeEvent;
 import org.eclipse.core.databinding.observable.IChangeListener;
 import org.eclipse.core.databinding.observable.list.AbstractObservableList;
 import org.eclipse.core.databinding.observable.list.IObservableList;
-import org.eclipse.core.databinding.property.Properties;
+import org.eclipse.core.databinding.observable.map.IObservableMap;
 import org.eclipse.core.databinding.property.value.IValueProperty;
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.viewers.DoubleClickEvent;
-import org.eclipse.jface.viewers.IDoubleClickListener;
+import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.StructuredViewer;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
-import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -39,14 +33,11 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.ProgressBar;
-import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.ui.part.ViewPart;
 
 import be.kuleuven.cs.distrinet.sparta.analysis.model.ObservableThreat;
 import be.kuleuven.cs.distrinet.sparta.analysis.service.AnalysisListener;
 import be.kuleuven.cs.distrinet.sparta.analysis.service.ThreatAnalysisService;
-import be.kuleuven.cs.distrinet.sparta.analysis.views.sorter.ThreatSorter;
 
 
 /**
@@ -55,16 +46,17 @@ import be.kuleuven.cs.distrinet.sparta.analysis.views.sorter.ThreatSorter;
  *
  */
 
-public class ThreatAnalysis extends ViewPart implements AnalysisListener {
+public class ThreatAnalysis extends AbstractThreatTableView<ObservableThreat> implements AnalysisListener {
 
 	/**
 	 * The ID of the view as specified by the extension.
 	 */
 	public static final String ID = "be.kuleuven.cs.distrinet.sparta.analysis.views.ThreatAnalysis";
 
-	private TableViewer viewer;
+	public ThreatAnalysis() {
+		super(ObservableThreat.class);
+	}
 
-	private Composite parent;
 	private Label countLabel;
 	private String empty = "";
 	private String riskRedur = "Risk reduction progress: ";
@@ -155,40 +147,15 @@ public class ThreatAnalysis extends ViewPart implements AnalysisListener {
 		}
 	}
 
-	private void setupTable(TableViewer viewer) {
-		createColumns(viewer);
-		final Table table = viewer.getTable();
-		table.setHeaderVisible(true);
-		table.setLinesVisible(true);
-
-		GridData gd = new GridData();
-		gd.horizontalAlignment = SWT.FILL;
-		gd.verticalAlignment = SWT.FILL;
-		gd.grabExcessHorizontalSpace = true;
-		gd.grabExcessVerticalSpace = true;
-		gd.minimumHeight = 100;
-		table.setLayoutData(gd);
-
-	}
-
-	private void createColumns(TableViewer viewer) {
+	@Override
+	protected void createColumns(TableViewer viewer) {
 		TableViewerColumn idCol = new TableViewerColumn(viewer, SWT.NONE);
 
 		final TableColumn tc = idCol.getColumn();
 		tc.setText("Location");
 		tc.setWidth(100);
-		new ThreatSorter(viewer, idCol) {
-			@Override
-			protected int compareImpl(Viewer viewer, Object e1, Object e2) {
-				if (e1 instanceof ObservableThreat && e2 instanceof ObservableThreat) {
-					ObservableThreat t1 = (ObservableThreat) e1;
-					ObservableThreat t2 = (ObservableThreat) e2;
-					return Comparator.nullsFirst(Comparator.<String>naturalOrder())
-							.compare(t1.getThreatenedElementName(), t2.getThreatenedElementName());
-				} else
-					return super.compareImpl(viewer, e1, e2);
-			}
-		};
+		addColumnSorter(viewer, idCol, Comparator.comparing(ObservableThreat::getThreatenedElementName,
+				Comparator.nullsFirst(Comparator.<String>naturalOrder())));
 
 		createCol(viewer,"Type",100, ObservableThreat::getThreatTypeName);
 		createCol(viewer,"Name", 100, ObservableThreat::getThreat);
@@ -198,34 +165,6 @@ public class ThreatAnalysis extends ViewPart implements AnalysisListener {
 		createCol(viewer,"Vulnerability",60, ObservableThreat::getVulnerabilityAsDouble);
 		createCol(viewer,"LEF (Loss Event Frequency)", 40,ObservableThreat::getLefAsDouble);
 		createCol(viewer,"Description", 500, ObservableThreat::getDescription);
-
-	}
-
-	private <U extends Comparable<? super U>> void createCol(TableViewer viewer, final String colname, int width, Function<? super ObservableThreat, ? extends U> keyExtractor) {
-		createCol(viewer, colname, width, SWT.LEFT, keyExtractor);
-	}
-
-	private <U extends Comparable<? super U>> void createCol(TableViewer viewer, final String colname, int width, int alignment, Function<? super ObservableThreat, ? extends U> keyExtractor) {
-		Comparator<? super ObservableThreat> cmp = Comparator.comparing(keyExtractor,
-				Comparator.nullsFirst(Comparator.naturalOrder()));
-		TableViewerColumn col = new TableViewerColumn(viewer, SWT.NONE);
-
-		final TableColumn tc = col.getColumn();
-		tc.setText(colname);
-		tc.setWidth(width);
-		tc.setMoveable(true);
-		tc.setAlignment(alignment);
-		new ThreatSorter(viewer, col) {
-			@Override
-			protected int compareImpl(Viewer viewer, Object e1, Object e2) {
-				if (e1 instanceof ObservableThreat && e2 instanceof ObservableThreat) {
-					ObservableThreat t1 = (ObservableThreat) e1;
-					ObservableThreat t2 = (ObservableThreat) e2;
-					return cmp.compare(t1,  t2);
-				} else
-					return super.compareImpl(viewer, e1, e2);
-			}
-		};
 
 	}
 
@@ -272,16 +211,11 @@ public class ThreatAnalysis extends ViewPart implements AnalysisListener {
 		sleRisk.setText(nf.format(ml.stream().mapToDouble(t -> t.getSleAsDouble()).max().orElse(0d)));
 	}
 
-	private void bind(StructuredViewer viewer, IObservableList<? extends ObservableThreat> input, IValueProperty... labelProperties) {
-		ObservableListContentProvider<ObservableThreat> contentProvider = new ObservableListContentProvider<>();
-		if (viewer.getInput() != null)
-			viewer.setInput(null);
-		viewer.setContentProvider(contentProvider);
-		ColouredObservableMapLabelProvider lp = new ColouredObservableMapLabelProvider(Properties
-				.observeEach(contentProvider.getKnownElements(),
-						labelProperties), input);
-		viewer.setLabelProvider(lp);
-		viewer.setInput(input);
+	@SuppressWarnings("rawtypes")
+	@Override
+	protected IBaseLabelProvider createLabelProvider(IObservableMap[] attributeMaps,
+			IObservableList<? extends ObservableThreat> input) {
+		return new ColouredObservableMapLabelProvider(attributeMaps, input);
 	}
 
 	private void makeActions() {
@@ -299,25 +233,8 @@ public class ThreatAnalysis extends ViewPart implements AnalysisListener {
 			}
 		};
 	}
-	private Action doubleClickAction;
 
 	private AbstractObservableList<? extends ObservableThreat> ml;
-
-	private void hookDoubleClickAction() {
-		viewer.addDoubleClickListener(new IDoubleClickListener() {
-			public void doubleClick(DoubleClickEvent event) {
-				doubleClickAction.run();
-			}
-		});
-	}
-	private void showMessage(String title, String message) {
-		MessageDialog.openInformation(
-			parent.getShell(),
-			title,
-			message);
-	}
-
-
 
 
 	private IChangeListener changeListener = new IChangeListener() {
@@ -343,10 +260,6 @@ public class ThreatAnalysis extends ViewPart implements AnalysisListener {
 	};
 
 
-	@Override
-	public void setFocus() {
-		parent.setFocus();
-	}
 	@Override
 	public void analysisResultsAvailable() {
 		// Detach from the previously bound list before load() reassigns `ml`. On
