@@ -167,6 +167,14 @@
                   <text style-id="news-title">Welcome screen, examples and tutorial</text>
                   <text style-id="news-text">This page, bundled example projects, and a step-by-step tutorial that runs inside the workbench.</text>
                </group>
+               <group id="news-2026-3-liverisk" style-id="news-item">
+                  <text style-id="news-title">Live risk updates</text>
+                  <text style-id="news-text">Editing a role binding, a countermeasure's difficulty or an estimate now recalculates the affected threats right away, without analyzing the model again.</text>
+               </group>
+               <group id="news-2026-3-background" style-id="news-item">
+                  <text style-id="news-title">Analysis in the background</text>
+                  <text style-id="news-text">Loading and analyzing a model runs as a background job, so the workbench no longer freezes on large models.</text>
+               </group>
                <group id="news-2026-3-menu" style-id="news-item">
                   <text style-id="news-title">SPARTA menu and toolbar</text>
                   <text style-id="news-text">Analyze, clear and export from the main menu and toolbar, even when the Threat Analysis view is closed.</text>
@@ -191,7 +199,23 @@
                   <text style-id="news-title">Multi-line properties</text>
                   <text style-id="news-text">Edit descriptions, conditions and patterns as multi-line text in the Properties view.</text>
                </group>
-                     </group>
+               <group id="news-2026-3-errors" style-id="news-item">
+                  <text style-id="news-title">Clearer analysis errors</text>
+                  <text style-id="news-text">Load and Analyze Model now tells you why it fails, for example when the active editor does not show a SPARTA model, instead of failing silently.</text>
+               </group>
+               <group id="news-2026-3-ci" style-id="news-item">
+                  <text style-id="news-title">Stricter sparta-ci configuration</text>
+                  <text style-id="news-text">Missing, empty or incomplete .sparta.yml files are reported with a clear error, and the exit code tells failures apart (1 missing configuration, 2 invalid configuration, 3 analysis failure, 4 submission failure).</text>
+               </group>
+               <group id="news-2026-3-codequality" style-id="news-item">
+                  <text style-id="news-title">Code Quality export format removed</text>
+                  <text style-id="news-text">The CLI can no longer write threats in the GitLab Code Quality JSON format (option --codequalityreport). This was only an export format for showing threats in merge requests; SPARTA never analyzed code quality. Check scripts that use the option.</text>
+               </group>
+               <group id="news-2026-3-fixes" style-id="news-item">
+                  <text style-id="news-title">Fixes</text>
+                  <text style-id="news-text">The Threat Analysis view no longer stays empty when opened after an analysis, and Clear also resets the summary. Exports and reports no longer fail before results are available, or on threats without a data flow or without a calculated risk. Threat pattern placeholders are filled in more reliably.</text>
+               </group>
+            </group>
          </group>
 
          <group id="news-2026-2" label="2026.2" style-id="release">
