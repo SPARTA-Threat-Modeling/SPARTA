@@ -308,17 +308,24 @@ No third-party beneficiary rights are created under this Agreement.
       <import feature="org.eclipse.sirius.runtime.aql"/>
       <import feature="org.eclipse.sirius.runtime.ide.ui"/>
       <import plugin="org.eclipse.collections"/>
+      <import plugin="org.eclipse.ui.intro"/>
+      <import plugin="org.eclipse.ui.cheatsheets"/>
+      <import plugin="org.eclipse.emf.common.ui"/>
    </requires>
 
    <!--
-      Only the rcp plugin is listed directly: it belongs to no sub-feature.
-      Every other SPARTA plugin is contributed by one of the three included
-      sub-features (design → graphicalmodeling; spartamodel/.edit/.editor →
+      Only the rcp and welcome plugins are listed directly: they belong to no
+      sub-feature. Every other SPARTA plugin is contributed by one of the three
+      included sub-features (design → graphicalmodeling; spartamodel/.edit/.editor →
       modeling; analysis/core/io/queries/threatanalysis → threatanalysis), so
       listing them here as well only duplicated the maintenance surface.
    -->
    <plugin
          id="be.kuleuven.cs.distrinet.sparta.rcp"
+         version="0.0.0"/>
+
+   <plugin
+         id="be.kuleuven.cs.distrinet.sparta.welcome"
          version="0.0.0"/>
 
 </feature>

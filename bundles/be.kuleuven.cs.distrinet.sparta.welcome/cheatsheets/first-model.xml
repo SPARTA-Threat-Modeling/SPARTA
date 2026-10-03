@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+   Guided tutorial, following "Creating and analyzing a new model" from
+   https://docs.sparta.distrinet-research.be/main/user/tutorials.html.
+   Steps with a <command> get a "Click to perform" link; the others are done by
+   hand and ticked off with "Click when complete". The tutorial starter project
+   (examples/sparta-tutorial.zip) ships the catalogs, so no downloads are needed.
+-->
+<cheatsheet title="Create and analyze your first model">
+
+   <intro href="https://docs.sparta.distrinet-research.be/main/user/tutorials.html">
+      <description>
+In this tutorial you model a small <b>web shop</b> as a data flow diagram (DFD), let SPARTA elicit and prioritize its threats, and mitigate some of them with a security solution.
+<br/><br/>
+Each step tells you what to do. Where possible a <b>Click to perform</b> link does it for you; otherwise do it by hand and choose <b>Click when complete</b>. Click the help icon in this heading to open the online version of this tutorial.
+      </description>
+   </intro>
+
+   <item title="Open the SPARTA perspective">
+      <description>
+The SPARTA perspective arranges the <b>Project Explorer</b> on the left, the <b>Threat Analysis</b> view on the right, and the <b>Properties</b> view below the editor.
+      </description>
+      <command
+            serialization="org.eclipse.ui.perspectives.showPerspective(org.eclipse.ui.perspectives.showPerspective.perspectiveId=be.kuleuven.cs.distrinet.sparta.rcp.spartaperspective)"
+            confirm="false"
+            required="false"/>
+   </item>
+
+   <item title="Create the tutorial project" dialog="true">
+      <description>
+Create the <b>sparta-tutorial</b> modeling project. It already contains the two catalogs this tutorial uses:
+<br/><br/>
+- <b>stride-per-interaction - Shostack.sparta</b>: a threat type catalog that tells SPARTA which STRIDE threats apply to which DFD elements and interactions.
+<br/>
+- <b>SecurityPatternCatalog.sparta</b>: a catalog of security solutions (for example <b>SecurePipe</b>) that mitigate those threats.
+<br/><br/>
+Click to perform, then <b>Finish</b> the wizard. More catalogs (such as LINDDUN for privacy) are available in the SPARTA catalogs repository on GitHub.
+      </description>
+      <command
+            serialization="org.eclipse.ui.newWizard(newWizardId=be.kuleuven.cs.distrinet.sparta.welcome.examples.tutorial)"
+            confirm="false"
+            required="false"/>
+   </item>
+
+   <item title="Create a DFD model" dialog="true">
+      <description>
+Create the SPARTA model file that holds your system's data flow diagram:
+<br/><br/>
+1. Select the <b>sparta-tutorial</b> project as the parent folder.
+<br/>
+2. Name the file <b>webshop.sparta</b> and choose <b>Next</b>.
+<br/>
+3. Pick <b>DFD Model</b> as the model object and choose <b>Finish</b>.
+<br/><br/>
+You can also do this later by right-clicking a project and choosing <b>New &gt; Other... &gt; Sparta Model</b>.
+      </description>
+      <command
+            serialization="org.eclipse.ui.newWizard(newWizardId=be.kuleuven.cs.distrinet.sparta.spartamodel.presentation.SpartaModelModelWizardID)"
+            confirm="false"
+            required="false"/>
+   </item>
+
+   <item title="Create the data flow diagram">
+      <description>
+Open a graphical editor on the model:
+<br/><br/>
+1. In the Project Explorer, right-click the <b>sparta-tutorial</b> project and choose <b>Create Representation</b>.
+<br/>
+2. Select the <b>DataFlowDiagram</b> representation and choose <b>Next</b>.
+<br/>
+3. Select the <b>DFD Model</b> element inside <b>webshop.sparta</b>, choose <b>Next</b>, name the diagram <b>Web shop DFD</b> and choose <b>Finish</b>.
+<br/><br/>
+The diagram editor opens with the tool palette on its right-hand side.
+      </description>
+   </item>
+
+   <item title="Draw the system">
+      <description>
+Use the <b>DFD Elements</b> section of the palette: select a tool, then click in the diagram. Rename an element by selecting it and typing its name.
+      </description>
+      <subitem label="Draw a trust boundary with createTrustBoundary and name it 'Web shop'. Everything inside is under the web shop's control."/>
+      <subitem label="Inside the trust boundary, add two processes with createProcess: 'Web server' and 'Order service'."/>
+      <subitem label="Inside the trust boundary, add a data store with createDataStore: 'Order database'."/>
+      <subitem label="Outside the trust boundary, add an external entity with createExternalEntity: 'Customer'."/>
+      <subitem label="Connect the elements with createDataFlow (click the sender, then the recipient): Customer to Web server 'place order', Web server to Customer 'confirmation', Web server to Order service 'submit order', Order service to Order database 'store order', and Order database to Order service 'order details'."/>
+      <subitem label="Save the diagram (Ctrl+S)."/>
+   </item>
+
+   <item title="Attach the threat catalog to the model">
+      <description>
+SPARTA elicits threats using the catalogs attached to the model:
+<br/><br/>
+1. Click an empty spot of the diagram background, so that the <b>DFD Model</b> itself is selected.
+<br/>
+2. In the <b>Properties</b> view, find the <b>Resource</b> property and add <b>STRIDE-per-interaction - Shostack</b> and the security solution catalog.
+<br/>
+3. Save the diagram.
+      </description>
+   </item>
+
+   <item title="Analyze the model">
+      <description>
+Let SPARTA elicit the threats for the web shop and rank them by risk.
+      </description>
+      <subitem label="Show the Threat Analysis view.">
+         <command
+               serialization="org.eclipse.ui.views.showView(org.eclipse.ui.views.showView.viewId=be.kuleuven.cs.distrinet.sparta.analysis.views.ThreatAnalysis)"
+               confirm="false"
+               required="false"/>
+      </subitem>
+      <subitem label="With the Web shop DFD as the active editor, run Load and Analyze Model. You can also use the analyze button in the Threat Analysis view, or SPARTA > Load and Analyze Model.">
+         <command
+               serialization="be.kuleuven.cs.distrinet.sparta.analysis.loadmodel"
+               confirm="false"
+               required="false"/>
+      </subitem>
+      <subitem label="Review the threats. Each row shows the threat type, the affected elements, and its estimated risk. Sort by risk to see which threats to address first. The analysis updates as you change the model."/>
+   </item>
+
+   <item title="Estimate asset values (optional)" skip="true">
+      <description>
+Without estimates SPARTA uses default values. To make risk estimates reflect your system, right-click an element (for example <b>Order database</b>) and choose <b>New Child &gt; Estimate</b>. Then, in the Properties view, set its <b>minimum</b>, <b>probable</b> and <b>maximum</b> loss and your <b>confidence</b> in that estimate. The Threat Analysis view recalculates the risk of the related threats.
+<br/><br/>
+Attacker profiles (contact frequency, probability of action, threat capability) can be added in the same way, in a separate SPARTA model with <b>Attacker Model</b> as its model object.
+      </description>
+   </item>
+
+   <item title="Mitigate threats with a security solution">
+      <description>
+Protect the communication between the customer and the web server with a <b>SecurePipe</b>. It mitigates spoofing, tampering and information disclosure threats on those flows.
+<br/><br/>
+1. From the <b>Security Tools</b> section of the palette, add a solution to the diagram and set its type to <b>SecurePipe</b> in the Properties view.
+<br/>
+2. A SecurePipe has four roles. Use the <b>Assign Role</b> tool to bind them: <b>SP_sender</b> to <b>Customer</b>, <b>SP_recipient</b> to <b>Web server</b>, <b>SP_sendFlow</b> to <b>place order</b>, and <b>SP_receiveFlow</b> to <b>confirmation</b>.
+<br/>
+3. Save the diagram and watch the Threat Analysis view: the risk of the mitigated threats on those flows drops.
+<br/><br/>
+To keep the diagram readable, hide a solution with right-click <b>Show/Hide &gt; Hide Element</b>; it keeps its effect.
+      </description>
+   </item>
+
+   <item title="Export the results" skip="true">
+      <description>
+Share the analysis as a threat report or as a spreadsheet. These commands are also in the <b>SPARTA</b> menu.
+      </description>
+      <subitem label="Export a threat report (with the DFD diagram).">
+         <command
+               serialization="be.kuleuven.cs.distrinet.sparta.analysis.reportExport"
+               confirm="false"
+               required="false"/>
+      </subitem>
+      <subitem label="Export the threats to an Excel workbook (XLSX).">
+         <command
+               serialization="be.kuleuven.cs.distrinet.sparta.analysis.xlsxexport"
+               confirm="false"
+               required="false"/>
+      </subitem>
+   </item>
+
+   <item title="Next steps">
+      <description>
+You have modeled a system, elicited and prioritized its threats, and mitigated them with a security solution.
+<br/><br/>
+To explore further, open one of the bundled examples via <b>File &gt; New &gt; Example... &gt; SPARTA</b>. For example, <b>Social Network</b> analyzes privacy threats with LINDDUN. The documentation site has more tutorials, for example on creating your own solution catalogs and attacker models.
+      </description>
+      <onCompletion>
+Congratulations, you finished the SPARTA tutorial! Reopen the welcome screen at any time via Help &gt; Welcome.
+      </onCompletion>
+   </item>
+
+</cheatsheet>

@@ -1,0 +1,340 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?NLS TYPE="org.eclipse.help.toc"?>
+<introContent>
+
+   <!--
+      Two pages: the landing page (root) and the guided tutorial page (tutorial).
+      Pages are rendered as HTML (see the html presentation in plugin.xml) and
+      styled by css/shared.css. Links use the built-in intro action URL scheme
+      (http://org.eclipse.ui.intro/...), so no Java is required:
+        - execute?command=...   runs a workbench command (here: open a New wizard,
+                                 including the bundled example installers)
+        - openBrowser?url=...    opens a documentation link in the external browser
+        - showPage?id=...        navigates between the intro pages
+        - showStandby?partId=org.eclipse.platform.cheatsheet&input=...
+                                 shrinks the intro to the side and runs a cheat sheet
+        - close                  dismisses the welcome screen
+   -->
+   <page id="root" style="css/shared.css" style-id="page">
+
+      <title style-id="intro-title">Welcome to SPARTA</title>
+
+      <group id="header" style-id="header">
+         <img src="img/sparta128.png" alt="SPARTA" style-id="logo"/>
+         <text style-id="tagline">Security and Privacy Analysis through Risk-driven Threat Assessment</text>
+         <text style-id="intro-lead">SPARTA automatically elicits threats from a Data Flow Diagram (DFD) model of your system and prioritizes them by risk. Follow the guided tutorial, start from a bundled example, or create your own project.</text>
+      </group>
+
+      <group id="start-columns" style-id="columns">
+
+         <group id="getting-started" label="Getting started" style-id="card">
+            <text style-id="step">1. Create a modeling project and a SPARTA model (DFD Model) for your system.</text>
+            <text style-id="step">2. Draw the system's data flow diagram in the graphical DFD editor.</text>
+            <text style-id="step">3. Attach a threat catalog (e.g. STRIDE or LINDDUN) to the model.</text>
+            <text style-id="step">4. Analyze it in the Threat Analysis view to elicit and prioritize threats.</text>
+            <text style-id="step">5. Apply security solutions and refine the model as your design evolves.</text>
+            <link label="Guided tutorial"
+                  url="http://org.eclipse.ui.intro/showPage?id=tutorial"
+                  id="open-tutorial"
+                  style-id="action-link">
+               <text>Walk through these steps one at a time, with the workbench next to the instructions.</text>
+            </link>
+         </group>
+
+         <group id="actions" label="Create your first project" style-id="card">
+            <link label="New Modeling Project"
+                  url="http://org.eclipse.ui.intro/execute?command=org.eclipse.ui.newWizard%28newWizardId%3Dorg.eclipse.sirius.ui.modelingproject.wizard%29&amp;standby=true"
+                  id="new-modeling-project"
+                  style-id="action-link">
+               <text>Start a Sirius modeling project to host your DFD.</text>
+            </link>
+            <link label="New SPARTA Model"
+                  url="http://org.eclipse.ui.intro/execute?command=org.eclipse.ui.newWizard%28newWizardId%3Dbe.kuleuven.cs.distrinet.sparta.spartamodel.presentation.SpartaModelModelWizardID%29&amp;standby=true"
+                  id="new-sparta-model"
+                  style-id="action-link">
+               <text>Create a SPARTA model file (DFD model, catalog or attacker model).</text>
+            </link>
+         </group>
+
+         <group id="examples" label="Start from an example" style-id="card">
+            <link label="Contoso"
+                  url="http://org.eclipse.ui.intro/execute?command=org.eclipse.ui.newWizard%28newWizardId%3Dbe.kuleuven.cs.distrinet.sparta.welcome.examples.contoso%29&amp;standby=true"
+                  id="example-contoso"
+                  style-id="action-link">
+               <text>Security threats (STRIDE), with loss estimates and security solutions applied.</text>
+            </link>
+            <link label="Social Network"
+                  url="http://org.eclipse.ui.intro/execute?command=org.eclipse.ui.newWizard%28newWizardId%3Dbe.kuleuven.cs.distrinet.sparta.welcome.examples.socialnetwork%29&amp;standby=true"
+                  id="example-socialnetwork"
+                  style-id="action-link">
+               <text>Privacy threats with the LINDDUN PRO catalog.</text>
+            </link>
+            <link label="WebRTC"
+                  url="http://org.eclipse.ui.intro/execute?command=org.eclipse.ui.newWizard%28newWizardId%3Dbe.kuleuven.cs.distrinet.sparta.welcome.examples.webrtc%29&amp;standby=true"
+                  id="example-webrtc"
+                  style-id="action-link">
+               <text>Security and privacy threats (STRIDE and LINDDUN) combined.</text>
+            </link>
+            <text style-id="card-note">Each example is installed as a project in your workspace, so you can change and re-analyze it freely. You can also find them under File &gt; New &gt; Example... &gt; SPARTA.</text>
+         </group>
+
+      </group>
+
+      <group id="docs-columns" style-id="columns">
+
+         <group id="user-docs" label="Documentation" style-id="card">
+            <link label="User guide"
+                  url="http://org.eclipse.ui.intro/openBrowser?url=https%3A%2F%2Fdocs.sparta.distrinet-research.be%2Fmain%2Fuser%2Foverview.html"
+                  id="doc-user-guide"
+                  style-id="doc-link">
+               <text>Concepts, the SPARTA interface, and modeling guidance.</text>
+            </link>
+            <link label="Tutorials"
+                  url="http://org.eclipse.ui.intro/openBrowser?url=https%3A%2F%2Fdocs.sparta.distrinet-research.be%2Fmain%2Fuser%2Ftutorials.html"
+                  id="doc-tutorials"
+                  style-id="doc-link">
+               <text>Modeling, solution catalogs, and attacker models, step by step.</text>
+            </link>
+            <link label="SPARTA website"
+                  url="http://org.eclipse.ui.intro/openBrowser?url=https%3A%2F%2Fsparta.distrinet-research.be%2F"
+                  id="doc-website"
+                  style-id="doc-link">
+               <text>Background on the method, publications, and news.</text>
+            </link>
+         </group>
+
+         <group id="dev-docs" label="Developers" style-id="card">
+            <link label="Developer guide"
+                  url="http://org.eclipse.ui.intro/openBrowser?url=https%3A%2F%2Fdocs.sparta.distrinet-research.be%2Fmain%2Fdeveloper%2Foverview.html"
+                  id="dev-guide"
+                  style-id="doc-link">
+               <text>Extend SPARTA in Eclipse or use the standalone libraries and CLI.</text>
+            </link>
+            <link label="API documentation"
+                  url="http://org.eclipse.ui.intro/openBrowser?url=https%3A%2F%2Fdownloads.sparta.distrinet-research.be%2Fdocs%2F2026.0.0%2Fapidocs%2F"
+                  id="dev-apidocs"
+                  style-id="doc-link">
+               <text>Javadoc for the SPARTA 2026 release line.</text>
+            </link>
+            <link label="Source code on GitHub"
+                  url="http://org.eclipse.ui.intro/openBrowser?url=https%3A%2F%2Fgithub.com%2FSPARTA-Threat-Modeling"
+                  id="dev-github"
+                  style-id="doc-link">
+               <text>SPARTA repositories: source, issues, and contributions.</text>
+            </link>
+         </group>
+
+         <group id="resources" label="Resources" style-id="card">
+            <link label="Downloads"
+                  url="http://org.eclipse.ui.intro/openBrowser?url=https%3A%2F%2Fsparta.distrinet-research.be%2Fdownloads%2F"
+                  id="res-downloads"
+                  style-id="doc-link">
+               <text>SPARTA builds for each platform, plus example models.</text>
+            </link>
+            <link label="Release notes"
+                  url="http://org.eclipse.ui.intro/openBrowser?url=https%3A%2F%2Fgithub.com%2FSPARTA-Threat-Modeling%2FSPARTA%2Freleases"
+                  id="res-releases"
+                  style-id="doc-link">
+               <text>GitHub releases with changes and downloadable assets.</text>
+            </link>
+            <link label="Example cases"
+                  url="http://org.eclipse.ui.intro/openBrowser?url=https%3A%2F%2Fgithub.com%2FSPARTA-Threat-Modeling%2Fexample-cases"
+                  id="res-examples"
+                  style-id="doc-link">
+               <text>Sample SPARTA models demonstrating the tool's capabilities.</text>
+            </link>
+            <link label="Catalogs"
+                  url="http://org.eclipse.ui.intro/openBrowser?url=https%3A%2F%2Fgithub.com%2FSPARTA-Threat-Modeling%2Fcatalogs"
+                  id="res-catalogs"
+                  style-id="doc-link">
+               <text>Threat type catalogs for STRIDE and LINDDUN.</text>
+            </link>
+         </group>
+
+      </group>
+
+      <!--
+         What the 2026 release line added, one group per minor release, newest
+         first. Keep in sync with
+         CHANGELOG.md. For a new release, copy a "release" group to the top, bump the
+         label and the id prefix (ids must be unique), and fill in its items.
+      -->
+      <group id="whats-new" label="What's new in the 2026 release line" style-id="news">
+
+         <group id="news-2026-3" label="2026.3" style-id="release">
+            <group id="news-2026-3-items" style-id="news-grid">
+               <group id="news-2026-3-welcome" style-id="news-item">
+                  <text style-id="news-title">Welcome screen, examples and tutorial</text>
+                  <text style-id="news-text">This page, bundled example projects, and a step-by-step tutorial that runs inside the workbench.</text>
+               </group>
+               <group id="news-2026-3-menu" style-id="news-item">
+                  <text style-id="news-title">SPARTA menu and toolbar</text>
+                  <text style-id="news-text">Analyze, clear and export from the main menu and toolbar, even when the Threat Analysis view is closed.</text>
+               </group>
+               <group id="news-2026-3-diagram" style-id="news-item">
+                  <text style-id="news-title">Diagram improvements</text>
+                  <text style-id="news-text">Improved views and editing, a Loss Estimates layer, and table editors for threat type catalogs and attacker profiles.</text>
+               </group>
+               <group id="news-2026-3-vql" style-id="news-item">
+                  <text style-id="news-title">VQL pattern editor</text>
+                  <text style-id="news-text">Edit threat patterns with syntax highlighting (right-click &gt; Edit VQL Pattern...). The Pattern Support view in the SPARTA perspective reports pattern problems.</text>
+               </group>
+               <group id="news-2026-3-report" style-id="news-item">
+                  <text style-id="news-title">Reports with DFD diagrams</text>
+                  <text style-id="news-text">Threat reports now include the model's data flow diagrams, drawn in TikZ from their diagram layout. Reports can also be exported from the command line.</text>
+               </group>
+               <group id="news-2026-3-export" style-id="news-item">
+                  <text style-id="news-title">Richer threat exports</text>
+                  <text style-id="news-text">CSV and XLSX exports add trust boundary crossings, nesting depth, parent elements and trust boundaries, and involved solutions.</text>
+               </group>
+               <group id="news-2026-3-properties" style-id="news-item">
+                  <text style-id="news-title">Multi-line properties</text>
+                  <text style-id="news-text">Edit descriptions, conditions and patterns as multi-line text in the Properties view.</text>
+               </group>
+                     </group>
+         </group>
+
+         <group id="news-2026-2" label="2026.2" style-id="release">
+            <group id="news-2026-2-items" style-id="news-grid">
+               <group id="news-2026-2-distribution" style-id="news-item">
+                  <text style-id="news-title">Releases for every platform on GitHub</text>
+                  <text style-id="news-text">Each release is published on GitHub with Windows, macOS and Linux products, an Eclipse update site per release line (/updates/2026/), and Maven artifacts for the standalone libraries.</text>
+               </group>
+               <group id="news-2026-2-analysis" style-id="news-item">
+                  <text style-id="news-title">More reliable analysis</text>
+                  <text style-id="news-text">Fixes for legacy interaction-based threat patterns and for estimates whose minimum equals their maximum. Risk calculation failures are now logged, and Threat Analysis sorting is more stable.</text>
+               </group>
+               <group id="news-2026-2-cli" style-id="news-item">
+                  <text style-id="news-title">Sturdier CLI and CI tools</text>
+                  <text style-id="news-text">Non-zero exit codes on failure, UTF-8 output for all exporters, and timeouts on server submission. Catalogs with missing values export correctly, and failed report exports are reported instead of producing partial output.</text>
+               </group>
+               <group id="news-2026-2-shortcodes" style-id="news-item">
+                  <text style-id="news-title">CLI option change</text>
+                  <text style-id="news-text">Ambiguous two-letter CLI option shortcodes were removed. Check scripts that use them.</text>
+               </group>
+            </group>
+         </group>
+
+         <group id="news-2026-1" label="2026.1" style-id="release">
+            <group id="news-2026-1-items" style-id="news-grid">
+               <group id="news-2026-1-rolebindings" style-id="news-item">
+                  <text style-id="news-title">Roles bound to multiple elements</text>
+                  <text style-id="news-text">A solution's role binding can now bind to any number of DFD elements, so one solution can cover several flows or processes.</text>
+               </group>
+            </group>
+         </group>
+
+         <group id="news-2026-0" label="2026.0" style-id="release">
+            <group id="news-2026-0-items" style-id="news-grid">
+               <group id="news-2026-0-opensource" style-id="news-item">
+                  <text style-id="news-title">Open source</text>
+                  <text style-id="news-text">SPARTA is now open source under the Eclipse Public License 2.0, developed on GitHub alongside its example cases and threat catalogs.</text>
+               </group>
+               <group id="news-2026-0-report" style-id="news-item">
+                  <text style-id="news-title">Threat report export</text>
+                  <text style-id="news-text">Export a LaTeX threat report from the Threat Analysis view, generated from templates with a Tufte-book layout and TikZ data flow diagram styles.</text>
+               </group>
+               <group id="news-2026-0-datatypes" style-id="news-item">
+                  <text style-id="news-title">Risk from data type estimates</text>
+                  <text style-id="news-text">Risk calculation now includes estimates defined on data types, and the data types diagram was updated to match.</text>
+               </group>
+               <group id="news-2026-0-cli" style-id="news-item">
+                  <text style-id="news-title">Custom threat patterns in the CLI</text>
+                  <text style-id="news-text">The CLI handles custom threat patterns, with number formatting for pattern-based threats.</text>
+               </group>
+               <group id="news-2026-0-styling" style-id="news-item">
+                  <text style-id="news-title">Conditional diagram styling</text>
+                  <text style-id="news-text">Diagram editor layers support conditional styling.</text>
+               </group>
+               <group id="news-2026-0-descriptions" style-id="news-item">
+                  <text style-id="news-title">Complete threat descriptions</text>
+                  <text style-id="news-text">Exported threat descriptions now have their parameters filled in.</text>
+               </group>
+               <group id="news-2026-0-location" style-id="news-item">
+                  <text style-id="news-title">VQL: threatened is now location</text>
+                  <text style-id="news-text">Threat patterns use location instead of threatened in the VQL queries too. Models that still use threatened keep working.</text>
+               </group>
+               <group id="news-2026-0-platform" style-id="news-item">
+                  <text style-id="news-title">Eclipse 2025-06 and Java 21</text>
+                  <text style-id="news-text">The platform moved to Eclipse 2025-06 on Java 21, with Guice upgraded and javax.inject replaced by jakarta.inject.</text>
+               </group>
+               <group id="news-2026-0-fixes" style-id="news-item">
+                  <text style-id="news-title">Fixes</text>
+                  <text style-id="news-text">A crash in the CSV export, threats and threat types being mixed up in the Threat Analysis view, and engine resource set handling (also used by the CLI).</text>
+               </group>
+            </group>
+         </group>
+
+      </group>
+
+      <group id="about" label="About &amp; support" style-id="about">
+         <text style-id="about-text">SPARTA is developed by DistriNet (KU Leuven) and released under the Eclipse Public License v2.0. This is the 2026 release line. To report an issue or request support, use the contact and issue-tracker links on the SPARTA website.</text>
+      </group>
+
+      <group id="footer" style-id="footer">
+         <link label="Go to the workbench"
+               url="http://org.eclipse.ui.intro/close"
+               id="close-intro"
+               style-id="close-link">
+            <text>Close this welcome screen. You can reopen it any time via Help &gt; Welcome.</text>
+         </link>
+      </group>
+
+   </page>
+
+   <!--
+      Guided tutorial. The actual step-by-step guidance is the cheat sheet
+      registered in plugin.xml (cheatsheets/first-model.xml). It runs beside the
+      editors, so the user can carry out each step while reading it.
+   -->
+   <page id="tutorial" style="css/shared.css" style-id="page">
+
+      <title style-id="intro-title">Guided tutorial</title>
+
+      <group id="tutorial-header" style-id="header">
+         <img src="img/sparta128.png" alt="SPARTA" style-id="logo-small"/>
+         <text style-id="tagline">Create and analyze your first model</text>
+         <text style-id="intro-lead">You model a small web shop, let SPARTA elicit and prioritize its threats, and mitigate them with a security solution. The tutorial opens as a panel beside the workbench. Each step explains what to do, and many can be carried out for you with a single click.</text>
+      </group>
+
+      <group id="tutorial-columns" style-id="columns">
+
+         <group id="tutorial-steps" label="What you will do" style-id="card wide">
+            <text style-id="step">1. Open the SPARTA perspective and create the tutorial project. It comes with a STRIDE threat catalog and a security solution catalog.</text>
+            <text style-id="step">2. Create a DFD model and its data flow diagram.</text>
+            <text style-id="step">3. Draw a trust boundary, processes, a data store, an external entity and the data flows between them.</text>
+            <text style-id="step">4. Attach the threat catalog and analyze the model in the Threat Analysis view.</text>
+            <text style-id="step">5. Optionally, add loss estimates so the risk ranking reflects your system.</text>
+            <text style-id="step">6. Apply a SecurePipe solution and watch the risk of the mitigated threats drop.</text>
+            <text style-id="step">7. Export the results as a threat report or spreadsheet.</text>
+         </group>
+
+         <group id="tutorial-actions" label="Start" style-id="card">
+            <link label="Start the guided tutorial"
+                  url="http://org.eclipse.ui.intro/showStandby?partId=org.eclipse.platform.cheatsheet&amp;input=be.kuleuven.cs.distrinet.sparta.welcome.cheatsheet.firstmodel"
+                  id="start-tutorial"
+                  style-id="action-link">
+               <text>Opens the step-by-step instructions next to the workbench.</text>
+            </link>
+            <link label="Read the tutorial online"
+                  url="http://org.eclipse.ui.intro/openBrowser?url=https%3A%2F%2Fdocs.sparta.distrinet-research.be%2Fmain%2Fuser%2Ftutorials.html%23creating-and-analyzing-a-new-model"
+                  id="tutorial-online"
+                  style-id="doc-link">
+               <text>The same walkthrough in the SPARTA documentation.</text>
+            </link>
+            <text style-id="card-note">You can return to the tutorial any time via Help &gt; Cheat Sheets... &gt; SPARTA.</text>
+         </group>
+
+      </group>
+
+      <group id="tutorial-footer" style-id="footer">
+         <link label="Back to Welcome"
+               url="http://org.eclipse.ui.intro/showPage?id=root"
+               id="back-home"
+               style-id="back-link">
+         </link>
+      </group>
+
+   </page>
+
+</introContent>

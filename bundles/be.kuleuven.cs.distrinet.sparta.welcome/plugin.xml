@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <!--
+      Contribute a custom welcome/intro screen and bind it to the SPARTA product.
+      The product reuses the stock IDE application (org.eclipse.ui.ide.workbench),
+      whose default WorkbenchAdvisor.openIntro() shows this intro automatically on
+      the first launch of a workspace (it then flips org.eclipse.ui/showIntro to
+      false) and thereafter exposes it via Help > Welcome.
+   -->
+   <extension
+         point="org.eclipse.ui.intro">
+      <intro
+            id="be.kuleuven.cs.distrinet.sparta.welcome.intro"
+            class="org.eclipse.ui.intro.config.CustomizableIntroPart">
+      </intro>
+      <introProductBinding
+            introId="be.kuleuven.cs.distrinet.sparta.welcome.intro"
+            productId="be.kuleuven.cs.distrinet.sparta.rcp.product">
+      </introProductBinding>
+   </extension>
+
+   <extension
+         point="org.eclipse.ui.intro.config">
+      <config
+            id="be.kuleuven.cs.distrinet.sparta.welcome.configId"
+            introId="be.kuleuven.cs.distrinet.sparta.welcome.intro"
+            content="intro/introContent.xml">
+         <presentation
+               home-page-id="root">
+            <implementation
+                  kind="html"
+                  os="win32,linux,macosx">
+            </implementation>
+         </presentation>
+      </config>
+   </extension>
+
+   <!--
+      Bundled example projects (File > New > Example... > SPARTA). Each wizard is
+      EMF's generic ExampleInstallerWizard, which looks up its project(s) in the
+      org.eclipse.emf.common.ui.examples registration below by wizard id and
+      imports the zipped project into the workspace. The zips must stay archives
+      (not folders): the bundle is jarred and the installer can only extract a
+      single file, not a directory tree, from a jarred plug-in.
+      The contoso/socialnetwork/webrtc projects mirror
+      https://github.com/SPARTA-Threat-Modeling/example-cases (see examples/README.md).
+   -->
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <category
+            id="be.kuleuven.cs.distrinet.sparta.welcome.examples"
+            name="SPARTA"
+            parentCategory="org.eclipse.ui.Examples">
+      </category>
+      <wizard
+            id="be.kuleuven.cs.distrinet.sparta.welcome.examples.contoso"
+            name="Contoso (STRIDE, security solutions)"
+            category="org.eclipse.ui.Examples/be.kuleuven.cs.distrinet.sparta.welcome.examples"
+            class="org.eclipse.emf.common.ui.wizard.ExampleInstallerWizard"
+            icon="icons/sparta16.png"
+            project="true">
+         <description>
+            The Contoso widget service DFD, analyzed with the STRIDE-per-interaction threat catalog, with loss estimates and security pattern solutions applied.
+         </description>
+      </wizard>
+      <wizard
+            id="be.kuleuven.cs.distrinet.sparta.welcome.examples.socialnetwork"
+            name="Social Network (LINDDUN privacy)"
+            category="org.eclipse.ui.Examples/be.kuleuven.cs.distrinet.sparta.welcome.examples"
+            class="org.eclipse.emf.common.ui.wizard.ExampleInstallerWizard"
+            icon="icons/sparta16.png"
+            project="true">
+         <description>
+            A social network DFD analyzed for privacy threats with the LINDDUN PRO catalog.
+         </description>
+      </wizard>
+      <wizard
+            id="be.kuleuven.cs.distrinet.sparta.welcome.examples.webrtc"
+            name="WebRTC (STRIDE and LINDDUN)"
+            category="org.eclipse.ui.Examples/be.kuleuven.cs.distrinet.sparta.welcome.examples"
+            class="org.eclipse.emf.common.ui.wizard.ExampleInstallerWizard"
+            icon="icons/sparta16.png"
+            project="true">
+         <description>
+            A WebRTC real-time communication DFD, analyzed for both security (STRIDE) and privacy (LINDDUN) threats, with security solutions applied.
+         </description>
+      </wizard>
+      <wizard
+            id="be.kuleuven.cs.distrinet.sparta.welcome.examples.tutorial"
+            name="Guided Tutorial Starter Project"
+            category="org.eclipse.ui.Examples/be.kuleuven.cs.distrinet.sparta.welcome.examples"
+            class="org.eclipse.emf.common.ui.wizard.ExampleInstallerWizard"
+            icon="icons/sparta16.png"
+            project="true">
+         <description>
+            An empty modeling project with a STRIDE threat catalog and a security solution catalog, used by the guided tutorial cheat sheet.
+         </description>
+      </wizard>
+   </extension>
+
+   <extension
+         point="org.eclipse.emf.common.ui.examples">
+      <example
+            id="be.kuleuven.cs.distrinet.sparta.welcome.example.contoso"
+            wizardID="be.kuleuven.cs.distrinet.sparta.welcome.examples.contoso">
+         <projectDescriptor
+               name="contoso"
+               contentURI="examples/contoso.zip"
+               description="Contoso DFD model with STRIDE-per-interaction and security pattern catalogs.">
+         </projectDescriptor>
+         <fileToOpen
+               location="contoso/representations.aird">
+         </fileToOpen>
+      </example>
+      <example
+            id="be.kuleuven.cs.distrinet.sparta.welcome.example.socialnetwork"
+            wizardID="be.kuleuven.cs.distrinet.sparta.welcome.examples.socialnetwork">
+         <projectDescriptor
+               name="socialnetwork"
+               contentURI="examples/socialnetwork.zip"
+               description="Social network DFD model with the LINDDUN PRO catalog.">
+         </projectDescriptor>
+         <fileToOpen
+               location="socialnetwork/representations.aird">
+         </fileToOpen>
+      </example>
+      <example
+            id="be.kuleuven.cs.distrinet.sparta.welcome.example.webrtc"
+            wizardID="be.kuleuven.cs.distrinet.sparta.welcome.examples.webrtc">
+         <projectDescriptor
+               name="webrtc"
+               contentURI="examples/webrtc.zip"
+               description="WebRTC DFD model with STRIDE, LINDDUN PRO and security pattern catalogs.">
+         </projectDescriptor>
+         <fileToOpen
+               location="webrtc/representations.aird">
+         </fileToOpen>
+      </example>
+      <example
+            id="be.kuleuven.cs.distrinet.sparta.welcome.example.tutorial"
+            wizardID="be.kuleuven.cs.distrinet.sparta.welcome.examples.tutorial">
+         <projectDescriptor
+               name="sparta-tutorial"
+               contentURI="examples/sparta-tutorial.zip"
+               description="Starter project for the guided tutorial: STRIDE-per-interaction threat catalog and security pattern solution catalog.">
+         </projectDescriptor>
+      </example>
+   </extension>
+
+   <!--
+      Guided tutorial. A cheat sheet runs next to the editors so the user can
+      follow and execute each step; steps that map onto a workbench command
+      (open a wizard, show a view, analyze, export) offer a "Click to perform"
+      link. Opened from the welcome screen's tutorial page and listed under
+      Help > Cheat Sheets... > SPARTA.
+   -->
+   <extension
+         point="org.eclipse.ui.cheatsheets.cheatSheetContent">
+      <category
+            id="be.kuleuven.cs.distrinet.sparta.welcome.cheatsheets"
+            name="SPARTA">
+      </category>
+      <cheatsheet
+            id="be.kuleuven.cs.distrinet.sparta.welcome.cheatsheet.firstmodel"
+            name="Create and analyze your first model"
+            category="be.kuleuven.cs.distrinet.sparta.welcome.cheatsheets"
+            contentFile="cheatsheets/first-model.xml"
+            composite="false">
+         <description>
+            Step by step: model a small web shop as a data flow diagram, attach a threat catalog, analyze its threats, and mitigate them with a security solution.
+         </description>
+      </cheatsheet>
+   </extension>
+
+</plugin>

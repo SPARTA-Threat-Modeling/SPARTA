@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: SPARTA Welcome
+Bundle-SymbolicName: be.kuleuven.cs.distrinet.sparta.welcome;singleton:=true
+Bundle-Version: 2026.3.0
+Bundle-Vendor: DistriNet
+Require-Bundle: org.eclipse.ui.intro,
+ org.eclipse.ui.cheatsheets,
+ org.eclipse.emf.common.ui
+Require-Capability: osgi.ee;filter:="(&(osgi.ee=JavaSE)(version=21))"
+Automatic-Module-Name: be.kuleuven.cs.distrinet.sparta.welcome
+Bundle-Localization: plugin

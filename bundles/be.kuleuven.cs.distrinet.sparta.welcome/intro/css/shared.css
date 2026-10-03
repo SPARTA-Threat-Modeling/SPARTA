@@ -1,0 +1,316 @@
+/*
+ * Styling for the SPARTA welcome/intro screen (HTML presentation).
+ * The intro framework renders each <page>/<group>/<link>/<text> element as an
+ * HTML element whose CSS class is the element's "style-id" and whose id is the
+ * element's "id". Selectors below therefore target those style-id classes/ids.
+ * Note that a <text> element renders as <p><span class="style-id">, so text
+ * style-ids sit on an inline span (made block-level below), and that a <link>
+ * renders as <a class="style-id"> holding <span class="link-label"> followed by
+ * its description as <p><span class="text">.
+ */
+
+:root {
+    --bg: #f5f7fa;
+    --card-bg: #ffffff;
+    --border: #d9dee5;
+    --text: #1c2530;
+    --muted: #5a6672;
+    --accent: #0b6d8c;
+    --accent-hover: #0a5871;
+    --shadow: rgba(20, 40, 60, 0.08);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg: #1b1f24;
+        --card-bg: #22272e;
+        --border: #333b45;
+        --text: #e6edf3;
+        --muted: #9aa7b4;
+        --accent: #4fb8db;
+        --accent-hover: #7fd0ec;
+        --shadow: rgba(0, 0, 0, 0.35);
+    }
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+#root, .page {
+    max-width: 1040px;
+    margin: 0 auto;
+    padding: 28px 32px 40px;
+    box-sizing: border-box;
+}
+
+p {
+    margin: 0;
+}
+
+/* Text style-ids land on the inner span; lay them out as blocks */
+.tagline, .intro-lead, .step, .card-note, .news-title, .news-text, .about-text {
+    display: block;
+}
+
+/* Page title (rendered near the top of the generated document) */
+.intro-title {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    margin: 0 0 4px;
+}
+
+/* Header ------------------------------------------------------------------ */
+.header {
+    text-align: center;
+    padding: 8px 0 24px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 28px;
+}
+
+.logo {
+    width: 96px;
+    height: 96px;
+    display: block;
+    margin: 0 auto 12px;
+}
+
+.logo-small {
+    width: 56px;
+    height: 56px;
+    display: block;
+    margin: 0 auto 10px;
+}
+
+.tagline {
+    font-size: 22px;
+    font-weight: 600;
+    margin: 0 0 10px;
+    color: var(--text);
+}
+
+.intro-lead {
+    max-width: 720px;
+    margin: 0 auto;
+    color: var(--muted);
+}
+
+/* Column cards ------------------------------------------------------------ */
+.columns {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    align-items: stretch;
+    margin-bottom: 20px;
+}
+
+.card {
+    flex: 1 1 260px;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 20px 20px;
+    box-shadow: 0 1px 3px var(--shadow);
+    box-sizing: border-box;
+}
+
+/* Group labels render as a heading inside the group container */
+.card h4, .card .div-label, .card span.div-label {
+    margin: 0 0 12px;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.card.wide {
+    flex: 2 1 420px;
+}
+
+.step {
+    margin: 0 0 10px;
+    color: var(--text);
+}
+
+.card-note {
+    margin-top: 4px;
+    color: var(--muted);
+    font-size: 12px;
+}
+
+/* Links (actions and documentation) -------------------------------------- */
+.action-link, .doc-link {
+    display: block;
+    text-decoration: none;
+    color: var(--accent);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin: 0 0 12px;
+    background: transparent;
+    transition: background 0.12s ease, border-color 0.12s ease;
+}
+
+.action-link:hover, .doc-link:hover {
+    border-color: var(--accent);
+    background: rgba(11, 109, 140, 0.06);
+}
+
+.action-link .link-label, .doc-link .link-label {
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--accent);
+}
+
+.action-link:hover .link-label, .doc-link:hover .link-label {
+    color: var(--accent-hover);
+}
+
+.action-link p, .doc-link p {
+    margin: 4px 0 0;
+    color: var(--muted);
+    font-size: 13px;
+}
+
+/* Doc links are secondary to actions: tighter, no box until hovered */
+.doc-link {
+    border-color: transparent;
+    padding: 6px 10px;
+    margin: 0 -10px 6px;
+}
+
+.doc-link .link-label {
+    font-size: 14px;
+}
+
+/* The framework's blank spacer image inside every link */
+.action-link .background-image, .doc-link .background-image,
+.close-link .background-image, .back-link .background-image {
+    display: none;
+}
+
+/* What's new ---------------------------------------------------------------- */
+.news {
+    margin-top: 8px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+}
+
+.news h4, .news .div-label {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0 0 12px;
+}
+
+/* One block per release, newest first; the release label is a small heading */
+.release {
+    margin: 0 0 18px;
+}
+
+.release h4 {
+    margin: 0 0 10px;
+}
+
+.release .div-label {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    border-radius: 10px;
+    padding: 1px 9px;
+}
+
+.news-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 20px;
+}
+
+.news-item {
+    flex: 1 1 280px;
+    border-left: 3px solid var(--accent);
+    padding: 2px 0 2px 12px;
+    box-sizing: border-box;
+}
+
+.news-title {
+    font-weight: 600;
+    color: var(--text);
+}
+
+.news-text {
+    color: var(--muted);
+    font-size: 13px;
+}
+
+/* About & footer ---------------------------------------------------------- */
+.about {
+    margin-top: 28px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+}
+
+.about h4, .about .div-label {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0 0 8px;
+}
+
+.about-text {
+    color: var(--muted);
+    max-width: 820px;
+}
+
+.footer {
+    margin-top: 24px;
+    text-align: center;
+}
+
+.close-link {
+    text-decoration: none;
+}
+
+.close-link .link-label {
+    display: inline-block;
+    background: var(--accent);
+    color: #ffffff;
+    font-weight: 600;
+    padding: 10px 22px;
+    border-radius: 8px;
+}
+
+.close-link:hover .link-label {
+    background: var(--accent-hover);
+}
+
+.close-link p {
+    margin: 8px 0 0;
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.back-link {
+    text-decoration: none;
+}
+
+.back-link .link-label {
+    color: var(--accent);
+    font-weight: 600;
+}
+
+.back-link .link-label::before {
+    content: "\2190\00a0";
+}
+
+.back-link:hover .link-label {
+    color: var(--accent-hover);
+}
