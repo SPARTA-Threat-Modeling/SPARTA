@@ -11,3 +11,11 @@ standalone/standalone-dependencies/target/
 target/
 standalone/*/bin/
 *.xml.versionsBackup
+
+# Eclipse metadata that m2e regenerates from the pom. The bundles/ (Tycho)
+# projects keep their .project, .classpath and core.resources/jdt.core prefs
+# tracked: tycho-compiler-plugin reads .settings/org.eclipse.jdt.core.prefs.
+org.eclipse.m2e.core.prefs
+standalone/**/.classpath
+standalone/**/.project
+standalone/**/.settings/
