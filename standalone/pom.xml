@@ -60,7 +60,7 @@
 		<!-- Matches the log4j-api that POI 5.x pulls transitively; the log4j-to-slf4j bridge
 		     routes POI's log4j2 logging to slf4j (bound by slf4j-simple), so the plain-Java
 		     runtime no longer prints "Log4j API could not find a logging provider". -->
-		<log4j.version>2.24.3</log4j.version>
+		<log4j.version>2.26.1</log4j.version>
 		<!-- slf4j 2.x: matches the log4j-to-slf4j 2.24 bridge (which targets the slf4j 2.x
 		     provider SPI); slf4j-simple 2.x is a drop-in for the basic API usage here. -->
 		<slf4j.version>2.0.18</slf4j.version>
