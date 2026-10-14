@@ -63,7 +63,7 @@ jobs:
       # Ephemeral, browsable-from-the-run build outputs (see notes in chat:
       # this is the "workflow artifact", distinct from release assets).
       - name: Upload build artifacts
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: ${{ !cancelled() }}
         with:
           name: packages
@@ -80,7 +80,7 @@ jobs:
       # tycho.testArgLine, plain surefire via argLine). Measurement only --
       # no external coverage service, no gates.
       - name: Upload coverage reports
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: ${{ !cancelled() }}
         with:
           name: jacoco-coverage
