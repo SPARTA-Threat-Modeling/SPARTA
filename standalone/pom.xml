@@ -47,7 +47,7 @@
 		-->
 		<!-- Must be the exact version core.runtime 3.34.200 was co-released/co-signed with,
 		     so the shared org.eclipse.core.runtime package has one signer. -->
-		<equinox-common.version>3.20.300</equinox-common.version>
+		<equinox-common.version>3.21.0</equinox-common.version>
 		<commons-math3.version>3.6.1</commons-math3.version>
 		<!-- poi core + poi-ooxml pinned to the same version to avoid a core/ooxml skew. -->
 		<poi.version>5.5.1</poi.version>
